@@ -190,7 +190,7 @@ eval('declare(strict_types=1);namespace BoschSHC {?>' . file_get_contents(__DIR_
             if ($http_code != 0) {
                 $this->SendDebug('Request Headers', curl_getinfo($ch)['request_header'], 0);
             }
-			$this->SendDebug('RAW Response', $response, 0);
+            $this->SendDebug('RAW Response', $response, 0);
             $curl_errno = curl_errno($ch);
             if ($curl_errno) {
                 throw new \Exception(curl_error($ch), $curl_errno);
@@ -202,7 +202,7 @@ eval('declare(strict_types=1);namespace BoschSHC {?>' . file_get_contents(__DIR_
                 $header = array_shift($Parts);
                 $response = implode("\r\n\r\n", $Parts);
             }
-			$this->SendDebug('Response Headers', $header, 0);
+            $this->SendDebug('Response Headers', $header, 0);
 
             if ($http_code > 400) {
                 throw new \Exception($http_code . ' ' . explode("\r\n", $header)[0]);
@@ -210,6 +210,7 @@ eval('declare(strict_types=1);namespace BoschSHC {?>' . file_get_contents(__DIR_
             }
 
             /*
+            Keine Header möglich und wie funktioniert RequestData?
             $result = $this->SendDataToParent(json_encode([
                 'DataID'        => '{D4C1D08F-CD3B-494B-BE18-B36EF73B8F43}',
                 'RequestMethod' => utf8_encode($RequestMethod),
@@ -221,90 +222,50 @@ eval('declare(strict_types=1);namespace BoschSHC {?>' . file_get_contents(__DIR_
             $this->SendDebug('Result', $response, 0);
             return $response;
         }
+
         /**
          * Erzeugt ein selbst-signiertes Zertifikat.
-         *
-         * @param string $basedir Der Speicherort der Zertifikate.
          *
          * @return bool True bei Erflog, sonst false
          */
         private function CreateNewCert()
         {
             $this->SendDebug('CreateNewCert', 'start', 0);
-            // todo
-            // mehr individuell
-            // zufalls passwort
-            // Lizenz Mail
-            // oss_+root name
             $basedir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->InstanceID;
             $configfile = $basedir . '.cnf';
             $newLine = "\r\n";
             $strCONFIG = 'default_md = sha256' . $newLine;
             $strCONFIG .= 'default_days = 3650' . $newLine;
             $strCONFIG .= $newLine;
-            //$strCONFIG .= 'x509_extensions = x509v3' . $newLine;
             $strCONFIG .= '[ req ]' . $newLine;
             $strCONFIG .= 'default_bits = 2048' . $newLine;
             $strCONFIG .= 'distinguished_name = req_DN' . $newLine;
             $strCONFIG .= 'string_mask = nombstr' . $newLine;
             $strCONFIG .= 'prompt = no' . $newLine;
-            //$strCONFIG .= 'req_extensions = v3_req' . $newLine;
             $strCONFIG .= $newLine;
             $strCONFIG .= '[ req_DN ]' . $newLine;
-            //$strCONFIG .= 'countryName = .' . $newLine;
-            //$strCONFIG .= 'stateOrProvinceName = none' . $newLine;
-            //$strCONFIG .= 'localityName = none' . $newLine;
             $strCONFIG .= '0.organizationName = "' . $this->ClientName . '"' . $newLine;
-            //$strCONFIG .= 'organizationalUnitName  = "IPS"' . $newLine;
             $strCONFIG .= 'commonName = "' . $this->ClientName . '"' . $newLine;
-            //$strCONFIG .= 'emailAddress = ' . $EMAIL . $newLine;
             $strCONFIG .= $newLine;
-            /*$strCONFIG .= '[ v3_req ]' . $newLine;
-            $strCONFIG .= 'basicConstraints=CA:FALSE' . $newLine;
-            $strCONFIG .= 'subjectKeyIdentifier=hash' . $newLine;
-            $strCONFIG .= $newLine;
-            $strCONFIG .= '[ x509v3 ]' . $newLine;
-            $strCONFIG .= 'basicConstraints=CA:FALSE' . $newLine;
-            $strCONFIG .= 'nsCertType       = server' . $newLine;
-            $strCONFIG .= 'keyUsage         = digitalSignature,nonRepudiation,keyEncipherment' . $newLine;
-            $strCONFIG .= 'extendedKeyUsage = msSGC,nsSGC,serverAuth' . $newLine;
-            $strCONFIG .= 'subjectKeyIdentifier=hash' . $newLine;
-            $strCONFIG .= 'authorityKeyIdentifier=keyid,issuer:allways' . $newLine;
-            $strCONFIG .= 'issuerAltName = issuer:copy' . $newLine;
-            $strCONFIG .= 'subjectAltName = IP:192.168.201.34' . $newLine;
-            $strCONFIG .= $newLine;*/
-//        $strCONFIG .= '[alt_names]' . $newLine;
-//        $strCONFIG .= 'email = '.$EMAIL . $newLine;
-//        $strCONFIG .= 'IP = 192.168.201.34' . $newLine;
-//        $strCONFIG .= $newLine;
-
             $fp = fopen($configfile, 'w');
             fwrite($fp, $strCONFIG);
             fclose($fp);
-
             $dn = [
-                //'countryName'            => 'DE',
-                //'stateOrProvinceName'    => 'none',
-                //'localityName'           => 'none',
                 'organizationName'       => $this->ClientName,
-                //'organizationalUnitName' => 'IPS',
-                'commonName'             => $this->ClientName
-                //'emailAddress'           => 'oss_Nall-chan'
+                'commonName'             => $this->ClientName,
+                'emailAddress'           => IPS_GetLicensee()
             ];
-
             $config = [
                 'config'      => $configfile,
                 'encrypt_key' => true];
 
             $configKey = [
                 'config'           => $configfile,
-                //'encrypt_key'      => true,
-                //'digest_alg'       => 'sha256',
                 'private_key_bits' => 2048,
                 'private_key_type' => OPENSSL_KEYTYPE_RSA,
             ];
             $pkGenerate = openssl_pkey_new($configKey);
-            openssl_pkey_export($pkGenerate, $pkGeneratePrivate, $this->ClientName, $config);
+            openssl_pkey_export($pkGenerate, $pkGeneratePrivate, IPS_GetLicensee(), $config);
             $pkGeneratePublic = openssl_pkey_get_details($pkGenerate)['key'];
             $csr = openssl_csr_new($dn, $pkGenerate, $config);
             if ($csr === false) {
@@ -324,6 +285,7 @@ eval('declare(strict_types=1);namespace BoschSHC {?>' . file_get_contents(__DIR_
                 return false;
             }
             unlink($configfile);
+            //Prepare for JSON Payload
             $cert = str_replace(
                 [
                     "\r",
