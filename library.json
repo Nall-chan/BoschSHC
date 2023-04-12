@@ -1,0 +1,12 @@
+{
+    "id": "{696DA716-1D5D-E834-5A17-04FE076DBA24}",
+    "name": "Bosch Smart Home",
+    "author": "Michael Tröger",
+    "url": "https://github.com/Nall-chan/BoschSHC",
+    "compatibility": {
+        "version": "6.0"
+    },
+    "version": "0.1",
+    "build": 1,
+    "date": 0
+}

@@ -1,0 +1,19 @@
+{
+    "id": "{8D1D21A7-FDE3-EB16-B5B3-6D38D0673B62}",
+    "name": "Bosch SHC",
+    "type": 2,
+    "vendor": "Bosch",
+    "aliases": [],
+    "parentRequirements": [
+        "{D4C1D08F-CD3B-494B-BE18-B36EF73B8F43}"
+    ],
+    "childRequirements": [
+        "{182D359D-1C4A-5B7B-2402-54D7B2575C23}"
+    ],
+    "implemented": [
+        "{FCC91718-B5E6-FD03-A393-7BAF6E4A7EEF}",
+        "{018EF6B5-AB94-40C6-AA53-46943E824ACF}"
+    ],
+    "prefix": "BSHC",
+    "url": "https://github.com/Nall-chan/BoschSHC/Bosch%20SHC"
+}
