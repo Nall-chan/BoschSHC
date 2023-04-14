@@ -1,0 +1,16 @@
+{
+    "id": "{8D1D21A7-FDE3-EB16-B5B3-6D38D0673B62}",
+    "name": "Bosch SmartHome IO",
+    "type": 1,
+    "vendor": "Bosch",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [
+        "{182D359D-1C4A-5B7B-2402-54D7B2575C23}"
+    ],
+    "implemented": [
+        "{FCC91718-B5E6-FD03-A393-7BAF6E4A7EEF}"
+    ],
+    "prefix": "BSHC",
+    "url": "https://github.com/Nall-chan/BoschSHC/Bosch%20SmartHome%20IO"
+}

@@ -1,6 +1,6 @@
 {
     "id": "{D9479A03-8726-B4E2-FFD1-2CC390CFE166}",
-    "name": "Bosch SHC Configurator",
+    "name": "Bosch SmartHome Configurator",
     "type": 4,
     "vendor": "Bosch",
     "aliases": [],
@@ -12,5 +12,5 @@
         "{182D359D-1C4A-5B7B-2402-54D7B2575C23}"
     ],
     "prefix": "BSHC",
-    "url": "https://github.com/Nall-chan/BoschSHC/Bosch%20SHC%20Configurator"
+    "url": "https://github.com/Nall-chan/BoschSHC/Bosch%20SmartHome%20Configurator"
 }

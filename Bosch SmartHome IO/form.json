@@ -9,11 +9,6 @@
             "type": "ValidationTextBox",
             "name": "Host",
             "caption": "Host"
-        },
-        {
-            "type": "PasswordTextBox",
-            "name": "Password",
-            "caption": "Password"
         }
     ],
     "actions": [
@@ -32,7 +27,7 @@
                 "buttons": [
                     {
                         "caption": "Pair",
-                        "onClick": "echo BSHC_StartPairing($id);"
+                        "onClick": "echo BSHC_StartPairing($id, $Password);"
                     }
                 ],
                 "items": [
@@ -44,7 +39,12 @@
                     {
                         "name": "PopupText",
                         "type": "Label",
-                        "caption": "Press the Bosch Smart Home Controller's front-side button, until the LEDs begin flashing.\r\nClick the \"Pair\" button."
+                        "caption": "Press the Bosch Smart Home Controller's front-side button, until the LEDs begin flashing.\r\n\r\nEnter your Bosch Smart Home Controller password into the Textbox below\r\n and then click the \"Pair\" button."
+                    },
+                    {
+                        "type": "PasswordTextBox",
+                        "name": "Password",
+                        "caption": "Password"
                     }
                 ]
             }
@@ -78,10 +78,15 @@
         {
             "code": 202,
             "icon": "error",
-            "caption": "Symcon is not paired with SHC"
+            "caption": "Unauthorized"
         },
         {
             "code": 203,
+            "icon": "error",
+            "caption": "Symcon is not paired with SHC"
+        },
+        {
+            "code": 204,
             "icon": "error",
             "caption": "No certificate available"
         }
