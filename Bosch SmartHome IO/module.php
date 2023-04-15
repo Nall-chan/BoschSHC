@@ -178,7 +178,9 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             }
             $this->Host = 'https://' . $this->ReadPropertyString(\BoschSHC\Property::IO_Property_Host);
             if ($this->CheckSHC()) {
-                $this->StartConnection();
+                if ($this->isPaired) {
+                    $this->StartConnection();
+                }
             }
         }
         public function GetConfigurationForm()
