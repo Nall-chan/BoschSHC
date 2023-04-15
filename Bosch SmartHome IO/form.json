@@ -48,6 +48,19 @@
                     }
                 ]
             }
+        },        {
+            "name": "NoConnectPopup",
+            "type": "PopupAlert",
+            "visible": false,
+            "popup": {
+                "items": [
+                    {
+                        "type": "Label",
+                        "name": "CheckSHCResult",
+                        "caption": ""
+                    }
+                ]
+            }
         },
         {
             "type": "Label",
@@ -89,6 +102,11 @@
             "code": 204,
             "icon": "error",
             "caption": "No certificate available"
+        },
+        {
+            "code": 205,
+            "icon": "error",
+            "caption": "Connection lost"
         }
     ]
 }

@@ -29,3 +29,24 @@ class GUID
     const SendToIO = '{FCC91718-B5E6-FD03-A393-7BAF6E4A7EEF}';
     const SendToChild = '{182D359D-1C4A-5B7B-2402-54D7B2575C23}';
 }
+
+class Property
+{
+    const IO_Property_Open = 'Open';
+    const IO_Property_Host = 'Host';
+    const Device_Property_DeviceId = 'DeviceId';
+}
+class FlowToParent
+{
+    const DataID = 'DataID';
+    const Call = 'ApiCall';
+    const Method = 'Method';
+    const Payload = 'Payload';
+}
+
+class FlowToDevice
+{
+    const DataID = 'DataID';
+    const DeviceId = 'DeviceId';
+    const Event = 'Event';
+}

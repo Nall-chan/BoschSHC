@@ -23,6 +23,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
         const IS_Unauthorized = IS_EBASE + 2;
         const IS_NotPaired = IS_EBASE + 3;
         const IS_NoCert = IS_EBASE + 4;
+        const IS_ConnectionLost = IS_EBASE + 5;
         const SHC_Info = ':8446/smarthome/public/information';
         const SHC_Client = ':8443/smarthome/clients';
         const SHC_Poll = ':8444/remote/json-rpc';
@@ -33,8 +34,6 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
         const Attribute_PrivateKey = 'privatekey';
         const Attribute_PublicKey = 'publickey';
         const Attribute_MyCert = 'cert';
-        const Property_Open = 'Open';
-        const Property_Host = 'Host';
 
         private static $CURL_error_codes = [
             0  => 'UNKNOWN ERROR',
@@ -132,8 +131,8 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $this->RegisterAttributeString(self::Attribute_PrivateKey, '');
             $this->RegisterAttributeString(self::Attribute_PublicKey, '');
             $this->RegisterAttributeString(self::Attribute_MyCert, '');
-            $this->RegisterPropertyBoolean(self::Property_Open, false);
-            $this->RegisterPropertyString(self::Property_Host, '');
+            $this->RegisterPropertyBoolean(\BoschSHC\Property::IO_Property_Open, false);
+            $this->RegisterPropertyString(\BoschSHC\Property::IO_Property_Host, '');
             $this->RegisterTimer(self::TIMER_LongPoll, 0, 'IPS_RequestAction(' . $this->InstanceID . ',"PollLong",true);');
             $this->Host = '';
             $this->ClientId = '';
@@ -167,7 +166,8 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $this->SHCPollId = '';
             $this->SetStatus(IS_INACTIVE);
             parent::ApplyChanges();
-            if (!$this->ReadPropertyBoolean(self::Property_Open)) {
+            if (!$this->ReadPropertyBoolean(\BoschSHC\Property::IO_Property_Open)) {
+                $this->LogMessage($this->Translate('Connection closed'), KL_MESSAGE);
                 return;
             }
             if (!$this->ReadAttributeString(self::Attribute_MyCert)) {
@@ -176,9 +176,9 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                     return;
                 }
             }
-            $this->Host = 'https://' . $this->ReadPropertyString(self::Property_Host);
+            $this->Host = 'https://' . $this->ReadPropertyString(\BoschSHC\Property::IO_Property_Host);
             if ($this->CheckSHC()) {
-                $this->Subscribe();
+                $this->StartConnection();
             }
         }
         public function GetConfigurationForm()
@@ -194,12 +194,16 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
         public function RequestAction($Ident, $Value)
         {
             switch ($Ident) {
-                    case 'CheckSHC':
-                        $this->CheckSHC();
-                        return;
-                        case 'PollLong':
-                            $this->PollLong();
-                            return;
+                case 'CheckSHC':
+                    $this->UpdateFormField('CheckSHCResult', 'caption', ($this->CheckSHC() ? 'OK' : $this->Translate('Controller not reachable.')));
+                    $this->UpdateFormField('NoConnectPopup', 'visible', true);
+                    return;
+                case 'PollLong':
+                    $this->PollLong();
+                    return;
+                case 'RequestAllStates':
+                   $this->RequestAllStates();
+                    return;
                 }
         }
         public function ForwardData($JSONString)
@@ -219,8 +223,12 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 return serialize(false);
             }
             $Data = json_decode($JSONString, true);
-            $Result = $this->SendRequest(self::SHC_Api . $Data['URI'], $Data['Method'], $Data['Payload']);
-            return serialize($Result);
+            $Result = $this->SendRequest(
+                self::SHC_Api . $Data[\BoschSHC\FlowToParent::Call],
+                $Data[\BoschSHC\FlowToParent::Method],
+                $Data[\BoschSHC\FlowToParent::Payload]
+                );
+            return ($Result !== false) ? serialize($Result) : NULL;
         }
 
         public function StartPairing(string $Password)
@@ -255,23 +263,40 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             if ($result) {
                 $this->isPaired = true;
                 $this->SendDebug('PairState', $this->isPaired, 0);
-                $this->SetStatus(IS_ACTIVE);
+                $this->StartConnection();
                 return 'MESSAGE:' . $this->Translate('Paring with SHC complete.');
             }
             return $this->Translate('Paring error! Button pressed? Password correct?');
-        }
-        public function ListDevices()
-        {
-            $result = $this->SendRequest(self::SHC_Api . \BoschSHC\ApiUrl::Devices);
         }
 
         protected function ModulErrorHandler($errno, $errstr)
         {
             echo $errstr . PHP_EOL;
         }
+        private function RequestAllStates()
+        {
+            //{{shc_api}}/services
+            $Services = $this->SendRequest(self::SHC_Api . \BoschSHC\ApiUrl::Services);
+            if (!$Services) {
+                return false;
+            }
+            foreach (json_decode($Services, true) as $Service) {
+                $DeviceId = $Service['deviceId'];
+                unset($Service['deviceId']);
+                $this->SendDebug('Event Device', $DeviceId, 0);
+                $this->SendDebug('Event Data', $Service, 0);
+                $JSON = json_encode([
+                    \BoschSHC\FlowToDevice::DataID   => \BoschSHC\GUID::SendToChild,
+                    \BoschSHC\FlowToDevice::DeviceId => $DeviceId,
+                    \BoschSHC\FlowToDevice::Event    => $Service
+                ]
+                );
+                $this->SendDataToChildren($JSON);
+            }
+        }
         private function Subscribe()
         {
-            // send bubscribe
+            // send subscribe
             $Payload = json_encode([
                 'jsonrpc' => '2.0',
                 'method'  => 'RE/subscribe',
@@ -297,10 +322,18 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $Payload = json_encode([
                 'jsonrpc' => '2.0',
                 'method'  => 'RE/longPoll',
-                'params'  => [$this->SHCPollId, 15]
+                'params'  => [$this->SHCPollId, 30]
 
             ]);
-            $Result = $this->SendRequest(self::SHC_Poll, \BoschSHC\HTTP::POST, $Payload, 17000);
+            $Result = $this->SendRequest(self::SHC_Poll, \BoschSHC\HTTP::POST, $Payload, 31000);
+            if (!$Result) {
+                $this->LogMessage($this->Translate('Connection lost'), KL_ERROR);
+                $this->SendDebug('Connection lost', '', 0);
+                $this->SendDebug('END PollLong', $Result, 0);
+                $this->SHCPollId = '';
+                $this->SetStatus(self::IS_ConnectionLost);
+                return;
+            }
             $Events = json_decode($Result, true)['result'];
             foreach ($Events as $Event) {
                 $DeviceId = $Event['deviceId'];
@@ -308,9 +341,9 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 $this->SendDebug('Event Device', $DeviceId, 0);
                 $this->SendDebug('Event Data', $Event, 0);
                 $JSON = json_encode([
-                    'DataID'   => \BoschSHC\GUID::SendToChild,
-                    'DeviceId' => $DeviceId,
-                    'Event'    => $Event
+                    \BoschSHC\FlowToDevice::DataID   => \BoschSHC\GUID::SendToChild,
+                    \BoschSHC\FlowToDevice::DeviceId => $DeviceId,
+                    \BoschSHC\FlowToDevice::Event    => $Event
                 ]
                 );
                 $this->SendDataToChildren($JSON);
@@ -338,6 +371,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             }
             $result = $this->SendRequest(self::SHC_Info);
             if (!$result) {
+                $this->SHCPollId = '';
                 $this->SetStatus(self::IS_NotReachable);
                 return false;
             }
@@ -347,14 +381,18 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $isPaired = in_array($this->ClientId, $json['clientIds']);
             $this->isPaired = $isPaired;
             $this->SendDebug('PairState', $isPaired, 0);
-            if ($isPaired) {
-                $this->SetStatus(IS_ACTIVE);
-            } else {
+            if (!$isPaired) {
                 $this->UpdateFormField('PairingPopup', 'visible', true);
                 $this->SetStatus(self::IS_NotPaired);
             }
-
             return true;
+        }
+        private function StartConnection()
+        {
+            $this->SetStatus(IS_ACTIVE);
+            $this->LogMessage($this->Translate('Connection established'), KL_MESSAGE);
+            $this->Subscribe();
+            IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"RequestAllStates",true);');
         }
         private function GetTempFile(string $Type)
         {
@@ -389,7 +427,6 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 'User-Agent: Symcon BSHC-Lib by Nall-chan',
                 'Content-Type: application/json',
             ], $RequestHeader);
-
             $ch = curl_init($CurlURL);
             curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
             curl_setopt($ch, CURLOPT_CAINFO, dirname(__DIR__) . '/libs/Cert/Smart Home Controller CA chain.crt');
@@ -410,8 +447,9 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
 
             curl_setopt($ch, CURLOPT_HEADER, true);
             curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-
+            curl_setopt($ch, CURLOPT_TIMEOUT_MS, $Timeout);
             $response = curl_exec($ch);
+
             $HttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if ($HttpCode != 0) {
                 $this->SendDebug('Request Headers', curl_getinfo($ch)['request_header'], 0);
@@ -435,13 +473,18 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                     trigger_error(self::$CURL_error_codes[$curl_errno], E_USER_WARNING);
                     $Result = false;
                 break;
+                case 204:
+                    if ($RequestMethod == \BoschSHC\HTTP::PUT) {
+                        $Result = true;
+                    }
+                break;
                 case 400:
                 case 401:
                 case 403:
                 case 404:
                 case 500:
-                    $this->SendDebug(self::$http_error[$curl_errno][0], $HttpCode, 0);
-                    trigger_error(self::$http_error[$curl_errno][0], E_USER_WARNING);
+                    $this->SendDebug(self::$http_error[$HttpCode][0], $HttpCode, 0);
+                    trigger_error(self::$http_error[$HttpCode][0], E_USER_WARNING);
                     $Result = false;
                 break;
             }
