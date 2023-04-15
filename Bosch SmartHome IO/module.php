@@ -117,11 +117,12 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
         ];
         private static $http_error =
         [
-            400 => ['Bad Request', self::IS_NotReachable],
-            401 => ['Unauthorized', self::IS_Unauthorized],
-            403 => ['Forbidden', self::IS_Unauthorized],
-            404 => ['Not Found', self::IS_NotReachable],
-            500 => ['Server error', self::IS_NotReachable]
+            400 => 'Bad Request',
+            401 => 'Unauthorized',
+            403 => 'Forbidden',
+            404 => 'Not Found',
+            405 => 'Method Not Allowed',
+            500 => 'Server error'
         ];
 
         public function Create()
@@ -145,9 +146,10 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
 
         public function Destroy()
         {
-            if ($this->SHCPollId != '') {
+            // Todo -> Buffer schon weg, somit kein Unsubscribe möglich :(
+            /*if ($this->SHCPollId != '') {
                 $this->Unsubscribe();
-            }
+            }*/
             //Never delete this line!
             parent::Destroy();
         }
@@ -165,6 +167,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $this->isPaired = false;
             $this->SHCPollId = '';
             $this->SetStatus(IS_INACTIVE);
+            $this->SetSummary($this->ReadPropertyString(\BoschSHC\Property::IO_Property_Host));
             parent::ApplyChanges();
             if (!$this->ReadPropertyBoolean(\BoschSHC\Property::IO_Property_Open)) {
                 $this->LogMessage($this->Translate('Connection closed'), KL_MESSAGE);
@@ -230,7 +233,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 $Data[\BoschSHC\FlowToParent::Method],
                 $Data[\BoschSHC\FlowToParent::Payload]
                 );
-            return ($Result !== false) ? serialize($Result) : NULL;
+            return ($Result !== false) ? serialize($Result) : null;
         }
 
         public function StartPairing(string $Password)
@@ -484,9 +487,10 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 case 401:
                 case 403:
                 case 404:
+                case 405:
                 case 500:
-                    $this->SendDebug(self::$http_error[$HttpCode][0], $HttpCode, 0);
-                    trigger_error(self::$http_error[$HttpCode][0], E_USER_WARNING);
+                    $this->SendDebug(self::$http_error[$HttpCode], $HttpCode, 0);
+                    trigger_error(self::$http_error[$HttpCode], E_USER_WARNING);
                     $Result = false;
                 break;
             }

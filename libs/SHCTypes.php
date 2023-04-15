@@ -12,6 +12,7 @@ class ApiUrl
     const Scenarios = '/scenarios';
     const Messages = '/messages';
     const OpenWindows = '/doors-windows/openwindows';
+    const State = '/state';
 }
 
 class HTTP
