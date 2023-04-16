@@ -8,6 +8,69 @@
     ],
     "actions": [
         {
+            "type": "PopupButton",
+            "name": "UnsupportedServicesButton",
+            "caption": "Show unsupported services",
+            "visible": false,
+            "popup": {
+                "caption": "Device send following unsupported services",
+                "items": [
+                    {
+                        "type": "List",
+                        "name": "UnsupportedServices",
+                        "caption": "Services",
+                        "add": false,
+                        "delete": false,
+                        "rowCount": 0,
+                        "sort": {
+                            "column": "ServiceId",
+                            "direction": "ascending"
+                        },
+                        "columns": [
+                            {
+                                "caption": "Service id",
+                                "name": "ServiceId",
+                                "width": "auto"
+                            },
+                            {
+                                "caption": "States that service sends",
+                                "name": "States",
+                                "visible": false,
+                                "edit": {
+                                    "type": "List",
+                                    "add": false,
+                                    "delete": false,
+                                    "rowCount": 0,
+                                    "sort": {
+                                        "column": "Property",
+                                        "direction": "ascending"
+                                    },
+                                    "columns": [
+                                        {
+                                            "caption": "Property",
+                                            "name": "Property",
+                                            "width": "150px"
+                                        },
+                                        {
+                                            "caption": "Value",
+                                            "name": "Value",
+                                            "width": "auto"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Button",
+            "name": "ReloadServices",
+            "caption": "Request states",
+            "onClick": "BSH_RequestStates($id);"
+        },
+        {
             "type": "TestCenter"
         },
         {

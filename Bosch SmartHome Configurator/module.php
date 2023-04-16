@@ -111,6 +111,14 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
         {
             $this->IORegisterParent();
         }
+        protected function FilterInstances(int $InstanceID)
+        {
+            return IPS_GetInstance($InstanceID)['ConnectionID'] == IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        }
+        protected function GetConfigParam(&$item1, $InstanceID, $ConfigParam)
+        {
+            $item1 = IPS_GetProperty($InstanceID, $ConfigParam);
+        }
 
         private function GetRooms()
         {
@@ -152,23 +160,43 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 return [];
             }
             $Devices = json_decode($Result, true);
+            $IPSDevices = $this->GetIPSInstances();
             $Values = [];
             foreach ($Devices as $Device) {
+                $InstanceID = array_search($Device['id'], $IPSDevices);
                 $Values[] = [
                     'id'               => $Device['id'],
-                    'name'             => $Device['name'],
+                    'name'             => ($InstanceID ? IPS_GetName($InstanceID) : $Device['name']),
                     'deviceModel'      => $Device['deviceModel'],
-                    //'instanceID'       => 0,
-                    'create'=> [
+                    'instanceID'       => ($InstanceID ? $InstanceID : 0),
+                    'create'           => [
                         'moduleID'         => \BoschSHC\GUID::Device,
                         'location'         => isset($Device['roomId']) ? [$Rooms[$Device['roomId']]] : [],
                         'configuration'    => [
-                            'DeviceId' => $Device['id']
+                            \BoschSHC\Property::Device_Property_DeviceId => $Device['id']
                         ]
                     ]
                 ];
+                if ($InstanceID !== false) {
+                    unset($IPSDevices[$InstanceID]);
+                }
             }
-
+            foreach ($IPSDevices as $InstanceID => $DeviceId) {
+                $Values[] = [
+                    'id'               => $Device['id'],
+                    'name'             => IPS_GetName($InstanceID),
+                    'deviceModel'      => '',
+                    'instanceID'       => $InstanceID,
+                ];
+            }
             return $Values;
+        }
+
+        private function GetIPSInstances(): array
+        {
+            $InstanceIDList = array_filter(IPS_GetInstanceListByModuleID(\BoschSHC\GUID::Device), [$this, 'FilterInstances']);
+            $InstanceIDList = array_flip(array_values($InstanceIDList));
+            array_walk($InstanceIDList, [$this, 'GetConfigParam'], \BoschSHC\Property::Device_Property_DeviceId);
+            return $InstanceIDList;
         }
     }

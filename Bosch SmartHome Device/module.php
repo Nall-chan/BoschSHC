@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 eval('declare(strict_types=1);namespace BoschSHCDevice {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/BufferHelper.php') . '}');
 eval('declare(strict_types=1);namespace BoschSHCDevice {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/DebugHelper.php') . '}');
-eval('declare(strict_types=1);namespace BoschSHCDevice {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/ParentIOHelper.php') . '}');
+eval('declare(strict_types=1);namespace BoschSHCDevice {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/VariableProfileHelper.php') . '}');
 require_once dirname(__DIR__) . '/libs/SHCTypes.php';
 require_once dirname(__DIR__) . '/libs/Services.php';
 /**
- * @property int $ParentID
  * @property string $DeviceId
+ * @property array $Multi_UnsupportedServices
  */
     class BoschSmartHomeDevice extends IPSModule
     {
         use \BoschSHCDevice\BufferHelper;
         use \BoschSHCDevice\DebugHelper;
+        use \BoschSHCDevice\VariableProfileHelper;
+        use \BoschSHC\Services\IPSProfile;
+
         public function Create()
         {
             //Never delete this line!
@@ -22,6 +25,7 @@ require_once dirname(__DIR__) . '/libs/Services.php';
             $this->RegisterPropertyString(\BoschSHC\Property::Device_Property_DeviceId, '');
             $this->ConnectParent(\BoschSHC\GUID::IO);
             $this->DeviceId = '';
+            $this->Multi_UnsupportedServices = [];
         }
 
         public function Destroy()
@@ -32,8 +36,10 @@ require_once dirname(__DIR__) . '/libs/Services.php';
 
         public function ApplyChanges()
         {
+            $this->Multi_UnsupportedServices = [];
             //Never delete this line!
             parent::ApplyChanges();
+            $this->RegisterProfiles();
             $DeviceId = $this->ReadPropertyString(\BoschSHC\Property::Device_Property_DeviceId);
             $GetAllServices = ($this->DeviceId != $DeviceId);
             $this->DeviceId = $DeviceId;
@@ -44,10 +50,38 @@ require_once dirname(__DIR__) . '/libs/Services.php';
                 return;
             }
             if (($this->DeviceId != '') && ($GetAllServices) && ($this->HasActiveParent())) {
+                $this->Multi_UnsupportedServices = [];
                 $this->GetServices();
-                // Services und Values auslesen
-                // Variablen anlegen
             }
+        }
+        public function GetConfigurationForm()
+        {
+            $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+            $UnsupportedServices = $this->Multi_UnsupportedServices;
+            if (count($UnsupportedServices)) {
+                $Form['actions'][0]['visible'] = true;
+                $Services = [];
+                foreach ($UnsupportedServices as $ServiceId => $ServiceStates) {
+                    $Properties = [];
+                    foreach ($ServiceStates as $Property => $Value) {
+                        if (is_array($Value)) {
+                            $Value = json_encode($Value);
+                        }
+                        $Properties[] = [
+                            'Property' => $Property,
+                            'Value'    => $Value
+                        ];
+                    }
+                    $Services[] = [
+                        'ServiceId' => $ServiceId,
+                        'States'    => $Properties
+                    ];
+                }
+                $Form['actions'][0]['popup']['items'][0]['values'] = $Services;
+            }
+            $this->SendDebug('FORM', json_encode($Form), 0);
+            $this->SendDebug('FORM', json_last_error_msg(), 0);
+            return json_encode($Form);
         }
         public function RequestAction($Ident, $Value)
         {
@@ -55,28 +89,30 @@ require_once dirname(__DIR__) . '/libs/Services.php';
             if ($ServiceId) {
                 /** @var \BoschSHC\Services\ServiceBasics */
                 $Service = '\\BoschSHC\\Services\\' . $ServiceId;
-                if ($Service::PropertyHasAction($Ident)) {
-                    $Payload = $Service::getServiceStateRequest($Ident, $Value);
-                    return $this->SendData(
+                $Payload = $Service::getServiceStateRequest($Ident, $Value);
+                return $this->SendData(
                     \BoschSHC\ApiUrl::Devices . '/' . $this->DeviceId .
                     \BoschSHC\ApiUrl::Services . '/' . $ServiceId .
                     \BoschSHC\ApiUrl::State,
                     \BoschSHC\HTTP::PUT,
-                    $Payload);
-                }
+                    $Payload
+                );
             }
             set_error_handler([$this, 'ModulErrorHandler']);
             trigger_error($this->Translate('Invalid Ident'), E_USER_NOTICE);
             restore_error_handler();
             return false;
         }
-
         public function ReceiveData($JSONString)
         {
             $Data = json_decode($JSONString, true);
             $this->SendDebug('Event Device', $Data['DeviceId'], 0);
             $this->SendDebug('Event Data', $Data['Event'], 0);
             $this->DecodeServiceData($Data['Event']);
+        }
+        public function RequestStates()
+        {
+            return $this->GetServices();
         }
         protected function ModulErrorHandler($errno, $errstr)
         {
@@ -93,17 +129,26 @@ require_once dirname(__DIR__) . '/libs/Services.php';
                 unset($Service['deviceId']);
                 $this->DecodeServiceData($Service);
             }
+            return true;
         }
         private function DecodeServiceData($ServiceData)
         {
             if (!\BoschSHC\Services::ServiceIsValid($ServiceData)) {
-                //todo -> Merken das ServiceId Aktuell nicht unterstützt wird und in der Instanz anzeigen.
+                //Merken das ServiceId Aktuell nicht unterstützt wird.
+                $Services = $this->Multi_UnsupportedServices;
+                $ServiceId = $ServiceData['id'];
+                unset($ServiceData['id']);
+                $Services[$ServiceId] = $ServiceData['state'];
+                $this->Multi_UnsupportedServices = $Services;
                 return false;
             }
             /** @var \BoschSHC\Services\ServiceBasics */
             $Service = '\\BoschSHC\\Services\\' . $ServiceData['id'];
             foreach ($ServiceData['state'] as $Property => $Value) {
                 if ($Property == '@type') {
+                    continue;
+                }
+                if (!$Service::PropertyIsValid($Property)) {
                     continue;
                 }
                 $VariableValues = $Service::getIPSVariable($Property, $Value);

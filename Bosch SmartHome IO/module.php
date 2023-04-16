@@ -341,6 +341,9 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             }
             $Events = json_decode($Result, true)['result'];
             foreach ($Events as $Event) {
+                if (!isset($Event['deviceId'])){
+                    $this->LogMessage("Event without DeviceId:\r\n".print_r($Event,true),KL_ERROR);
+                }
                 $DeviceId = $Event['deviceId'];
                 unset($Event['deviceId']);
                 $this->SendDebug('Event Device', $DeviceId, 0);

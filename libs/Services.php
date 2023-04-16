@@ -8,13 +8,25 @@ namespace BoschSHC
     {
         const PowerMeter = 'PowerMeter';
         const PowerSwitch = 'PowerSwitch';
+        const PowerSwitchProgram = 'PowerSwitchProgram';
         const RoomClimateControl = 'RoomClimateControl';
         const TemperatureLevel = 'TemperatureLevel';
+        const ShutterContact = 'ShutterContact';
+        const LatestMotion = 'LatestMotion';
+        const HCWasher = 'HCWasher';
+        const HCDishwasher = 'HCDishwasher';
+        const HCOven = 'HCOven';
         protected static $Services = [
             self::PowerMeter,
             self::PowerSwitch,
+            self::PowerSwitchProgram,
             self::RoomClimateControl,
             self::TemperatureLevel,
+            self::ShutterContact,
+            self::LatestMotion,
+            self::HCWasher,
+            self::HCDishwasher,
+            self::HCOven,
         ];
         public static function ServiceIsValid(array $Service)
         {
@@ -23,7 +35,10 @@ namespace BoschSHC
         public static function getServiceIdByProperty(string $Property)
         {
             foreach (self::$Services as $ServiceId) {
-                if (('\\BoschSHC\\Services\\' . $ServiceId)::PropertyIsValid($Property)) {
+                if (
+                    ('\\BoschSHC\\Services\\' . $ServiceId)::PropertyIsValid($Property) &&
+                    ('\\BoschSHC\\Services\\' . $ServiceId)::PropertyHasAction($Property)
+                ) {
                     return $ServiceId;
                 }
             }
@@ -34,6 +49,9 @@ namespace BoschSHC
 
 namespace BoschSHC\Services
 {
+
+    use BoschSHC\Services;
+
     const IPSProfile = 'Profile';
     const IPSVarType = 'VarType';
     const IPSVarFactor = 'Factor';
@@ -71,6 +89,9 @@ namespace BoschSHC\Services
                     }
                     break;
             }
+            if (static::$properties[$Property]['type'] == 'string') {
+                $Request[$Property] = (string) $Request[$Property];
+            }
             $Request['@type'] = static::getServiceState();
             return json_encode($Request);
         }
@@ -100,6 +121,13 @@ namespace BoschSHC\Services
             $Result[IPSVarAction] = static::getIPSAction($Property);
             return $Result;
         }
+        public static function getIPSProfile(string $Property)
+        {
+            return
+                isset(static::$properties[$Property][IPSProfile]) ?
+                static::$properties[$Property][IPSProfile] :
+                '';
+        }
         protected static function getServiceState()
         {
             return lcfirst(explode('\\', get_called_class())[2]) . static::$state;
@@ -117,13 +145,6 @@ namespace BoschSHC\Services
                 isset(static::$properties[$Property][IPSVarType]) ?
                 static::$properties[$Property][IPSVarType] :
                 VARIABLETYPE_STRING;
-        }
-        private static function getIPSProfile(string $Property)
-        {
-            return
-                isset(static::$properties[$Property][IPSProfile]) ?
-                static::$properties[$Property][IPSProfile] :
-                '';
         }
         private static function getIPSAction(string $Property)
         {
@@ -165,20 +186,180 @@ namespace BoschSHC\Services
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Switch'
-            ],
-            'automaticPowerOffTime' => [
-                'type'       => 'number',
-                IPSProfile   => '', //todo
-                IPSVarType   => VARIABLETYPE_INTEGER,
+            ]
+        ];
+    }
+    class PowerSwitchProgram extends ServiceBasics
+    {
+        protected static $properties = [
+            'operationMode' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.PowerSwitchProgram.operationMode',
+                IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarAction => true,
-                IPSVarName   => 'Automatic power off time'
-            ],
+                IPSVarName   => 'Operation mode'
+            ]
         ];
     }
     class RoomClimateControl extends ServiceBasics
     {
+        protected static $properties = [
+            'setpointTemperature' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.PowerSwitchProgram.setpointTemperature',
+                IPSVarType   => VARIABLETYPE_FLOAT,
+                IPSVarAction => true,
+                IPSVarName   => 'Setpoint temperature'
+            ]
+        ];
     }
     class TemperatureLevel extends ServiceBasics
     {
+        protected static $properties = [
+            'temperature' => [
+                'type'       => 'number',
+                IPSProfile   => '~Temperature',
+                IPSVarType   => VARIABLETYPE_FLOAT,
+                IPSVarName   => 'Current temperature'
+            ]
+        ];
+    }
+    class ShutterContact extends ServiceBasics
+    {
+        protected static $properties = [
+            'value' => [
+                'type' => 'string',
+                'enum' => [
+                    true   => 'CLOSED',
+                    false  => 'OPEN',
+                ],
+                IPSProfile   => '~Window.Reversed',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarName   => 'State'
+            ]
+        ];
+    }
+    class LatestMotion extends ServiceBasics
+    {
+        protected static $properties = [
+            'latestMotionDetected' => [
+                'type'       => 'string',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'latest motion detected'
+            ]
+        ];
+    }
+    class HCWasher extends ServiceBasics
+    {
+        protected static $properties = [
+            'operationState' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.HCWasher.operationState',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Operation state'
+            ],
+            'remoteControlStartAllowed' => [
+                'type'       => 'bool',
+                IPSProfile   => '~Switch',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarName   => 'Remote control start allowed'
+            ]
+        ];
+    }
+    class HCDishwasher extends ServiceBasics
+    {
+        protected static $properties = [
+            'operationState' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.HCDishwasher.operationState',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Operation state'
+            ],
+            'remoteControlStartAllowed' => [
+                'type'       => 'bool',
+                IPSProfile   => '~Switch',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarName   => 'Remote control start allowed'
+            ]
+        ];
+    }
+    class HCOven extends ServiceBasics
+    {
+        protected static $properties = [
+            'operationState' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.HCOven.operationState',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Operation state'
+            ],
+            'remoteControlStartAllowed' => [
+                'type'       => 'bool',
+                IPSProfile   => '~Switch',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarName   => 'Remote control start allowed'
+            ]
+
+        ];
+    }
+    trait IPSProfile
+    {
+        public function RegisterProfiles()
+        {
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\PowerSwitchProgram::getIPSProfile('operationMode'),
+                'Clock',
+                '',
+                '',
+                [
+                    ['MANUAL', 'manual', '', -1],
+                    ['SCHEDULE', 'schedule', '', -1]
+                ]
+            );
+            $this->RegisterProfileFloat(
+                \BoschSHC\Services\RoomClimateControl::getIPSProfile('setpointTemperature'),
+                'Temperature',
+                '',
+                '',
+                5,
+                30,
+                0.5,
+                1
+            );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\HCWasher::getIPSProfile('operationState'),
+                'Menu',
+                '',
+                '',
+                [
+                    ['RUNNING', 'running', '', -1],
+                    ['END', 'end', '', -1],
+                    ['UNKNOWN', 'unknown', '', -1],
+                ]
+            );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\HCDishwasher::getIPSProfile('operationState'),
+                'Menu',
+                '',
+                '',
+                [
+                    ['RUNNING', 'running', '', -1],
+                    ['END', 'end', '', -1],
+                    ['STANDBY', 'standby', '', -1],
+                    ['UNKNOWN', 'unknown', '', -1],
+                ]
+            );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\HCOven::getIPSProfile('operationState'),
+                'Menu',
+                '',
+                '',
+                [
+                    ['RUNNING', 'running', '', -1],
+                    ['END', 'end', '', -1],
+                    ['STANDBY', 'standby', '', -1],
+                    ['UNKNOWN', 'unknown', '', -1],
+                ]
+            );
+        }
     }
 }
