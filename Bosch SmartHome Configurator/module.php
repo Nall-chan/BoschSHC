@@ -6,7 +6,7 @@ eval('declare(strict_types=1);namespace BoschSHCConf {?>' . file_get_contents(di
 require_once dirname(__DIR__) . '/libs/SHCTypes.php';
     class BoschSmartHomeConfigurator extends IPSModule
     {
-        use            \BoschSHCConf\DebugHelper;
+        use \BoschSHCConf\DebugHelper;
 
         public function Create()
         {
