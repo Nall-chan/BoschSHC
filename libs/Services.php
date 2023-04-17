@@ -16,6 +16,14 @@ namespace BoschSHC
         const HCWasher = 'HCWasher';
         const HCDishwasher = 'HCDishwasher';
         const HCOven = 'HCOven';
+        const PrivacyMode = 'PrivacyMode';
+        const ShutterControl = 'ShutterControl';
+        const SmokeDetectorCheck = 'SmokeDetectorCheck';
+        const ValveTappet = 'ValveTappet';
+        const AirQualityLevel = 'AirQualityLevel';
+        const Keypad = 'Keypad';
+        const HumidityLevel = 'HumidityLevel';
+        const CameraLight = 'CameraLight';
         protected static $Services = [
             self::PowerMeter,
             self::PowerSwitch,
@@ -27,6 +35,14 @@ namespace BoschSHC
             self::HCWasher,
             self::HCDishwasher,
             self::HCOven,
+            self::PrivacyMode,
+            self::ShutterControl,
+            self::SmokeDetectorCheck,
+            self::ValveTappet,
+            self::AirQualityLevel,
+            self::Keypad,
+            self::HumidityLevel,
+            self::CameraLight,
         ];
         public static function ServiceIsValid(array $Service)
         {
@@ -300,6 +316,133 @@ namespace BoschSHC\Services
             ]
 
         ];
+    }
+    class PrivacyMode extends ServiceBasics
+    {
+        protected static $properties = [
+            'value' => [
+                'type' => 'string',
+                'enum' => [
+                    false => 'ENABLED',
+                    true  => 'DISABLED',
+                ],
+                IPSProfile   => '~Switch',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarAction => true,
+                IPSVarName   => 'Privacy mode']
+        ];
+    }
+    class ShutterControl extends ServiceBasics
+    {
+        protected static $properties = [
+            'level' => [
+                'type'       => 'string',
+                IPSVarFactor => 0.01,
+                IPSProfile   => '~Shutter',
+                IPSVarType   => VARIABLETYPE_INTEGER,
+                IPSVarAction => true,
+                IPSVarName   => 'Level']
+            // operationState
+            // STOPPED, ..., ... ???
+        ];
+    }
+    class SmokeDetectorCheck extends ServiceBasics
+    {
+        // buhu.. value again -> need service in device/ident?
+        //value
+        /*'enum' => [
+            0 => 'SMOKE_TEST_REQUESTED',
+            1 => 'NONE']
+            IPSVarAction => true,
+        ],*/
+    }
+    class ValveTappet extends ServiceBasics
+    {
+        /*'position' => [
+            'type' => 'integer',
+        ],*/
+    }
+    class AirQualityLevel extends ServiceBasics
+    {
+        /*'properties'  => [
+            'combinedRating' => [
+                                'type' => 'string',
+                'enum' => [
+                    0 => 'GOOD',
+                    1 => 'MEDIUM',
+                    2 => 'BAD',
+                ],
+            ],
+            'description' => [
+                'type' => 'string',
+            ],
+            'temperature' => [
+                'type' => 'number',
+            ],
+            'temperatureRating' => [
+                                'type' => 'string',
+                'enum' => [
+                    0 => 'GOOD',
+                    1 => 'MEDIUM',
+                    2 => 'BAD',
+                ],
+            ],
+            'humidity' => [
+                'type' => 'number',
+            ],
+            'humidityRating' => [
+                              'type' => 'string',
+                'enum' => [
+                    0 => 'GOOD',
+                    1 => 'MEDIUM',
+                    2 => 'BAD',
+                ],
+            ],
+            'purity' => [
+                'type' => 'number',
+            ],
+            'purityRating' => [
+                'type' => 'string',
+            ],
+        ],*/
+    }
+    class Keypad extends ServiceBasics
+    {
+        /*
+        'properties'  => [
+            'keyCode' => [
+                'type' => 'integer',
+            ],
+            'keyName' => [
+                'type' => 'string',
+                'enum' => [
+                    0 => 'LOWER_BUTTON',
+                    1 => 'UPPER_BUTTON',
+                ],
+            ],
+            'eventType' => [
+                'type' => 'string',
+                'enum' => [
+                    0 => 'PRESS_SHORT',
+                    1 => 'PRESS_LONG',
+                ],
+            ],
+            'eventTimestamp' => [
+                'type' => 'integer',
+            ],
+        ],*/
+    }
+    class HumidityLevel extends ServiceBasics
+    {
+        /*'humidity' => [
+            'type' => 'number',
+        ],*/
+    }
+    class CameraLight extends ServiceBasics
+    {
+        //'value'
+        //OFF/ON
+        //IPSVarAction => true,
     }
     trait IPSProfile
     {

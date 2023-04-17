@@ -138,7 +138,13 @@ require_once dirname(__DIR__) . '/libs/Services.php';
                 $Services = $this->Multi_UnsupportedServices;
                 $ServiceId = $ServiceData['id'];
                 unset($ServiceData['id']);
-                $Services[$ServiceId] = $ServiceData['state'];
+                if (isset($ServiceData['state'])) {
+                    $Services[$ServiceId] = $ServiceData['state'];
+                } else {
+                    $Services[$ServiceId] = [
+                        'No states!' => 'Only Notification'
+                    ];
+                }
                 $this->Multi_UnsupportedServices = $Services;
                 return false;
             }

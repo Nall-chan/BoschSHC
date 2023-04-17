@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 //Intrusion Detection Alarm System
-// not a Service !
+// global Service !
 $I = [
     'paths' => [
         '/intrusion/states/system' => [
@@ -388,273 +388,433 @@ $I = [
 ];
 
 //Presence Simulation System
-$P=[
-  'paths' => [
-    '/devices/{deviceId}/services/PresenceSimulationConfiguration' => [
-      'get' => [
-        'summary' => 'Retrieve the PresenceSimulationConfiguration service of the PresenceSimulationSystem.',
-        'description' => 'Presence is simulated by automatically controlling lights and electrical devices connected to Smart Plugs like the radio or television. A random algorithm changes the switching times just as if you were at home to give you peace of mind even when you are not there.',
-        'tags' => [
-          0 => 'Services',
+$P = [
+    'paths' => [
+        '/devices/{deviceId}/services/PresenceSimulationConfiguration' => [
+            'get' => [
+                'summary'     => 'Retrieve the PresenceSimulationConfiguration service of the PresenceSimulationSystem.',
+                'description' => 'Presence is simulated by automatically controlling lights and electrical devices connected to Smart Plugs like the radio or television. A random algorithm changes the switching times just as if you were at home to give you peace of mind even when you are not there.',
+                'tags'        => [
+                    0 => 'Services',
+                ],
+                'parameters' => [
+                    0 => [
+                        '$ref' => '#/components/parameters/apiVersionHeaderParam',
+                    ],
+                    1 => [
+                        '$ref' => '#/components/parameters/deviceIdPathParam',
+                    ],
+                ],
+                'responses' => [
+                    200 => [
+                        'description' => 'The PresenceSimulationConfiguration was successfully retrieved.',
+                        'content'     => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/PresenceSimulationService',
+                                ],
+                            ],
+                        ],
+                    ],
+                    404 => [
+                        'description' => 'The entity could not be found. One of the defined query parameters was invalid.',
+                        'content'     => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/AdvancedError',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        '/devices/{deviceId}/services/PresenceSimulationConfiguration/state' => [
+            'get' => [
+                'summary'     => 'Retrieve the state of the PresenceSimulationConfiguration service.',
+                'description' => 'Retrieve the state of the PresenceSimulationConfiguration service identified by the `deviceId` path parameter.',
+                'tags'        => [
+                    0 => 'States',
+                ],
+                'parameters' => [
+                    0 => [
+                        '$ref' => '#/components/parameters/apiVersionHeaderParam',
+                    ],
+                    1 => [
+                        '$ref' => '#/components/parameters/deviceIdPathParam',
+                    ],
+                ],
+                'responses' => [
+                    200 => [
+                        'description' => 'The state of PresenceSimulationConfiguration was successfully retrieved.',
+                        'content'     => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/PresenceSimulationServiceStates',
+                                ],
+                            ],
+                        ],
+                    ],
+                    404 => [
+                        'description' => 'The entity could not be found. One of the defined query parameters was invalid.',
+                        'content'     => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/AdvancedError',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'put' => [
+                'summary'     => 'Executes the presenceSimulationConfigurationState on the device.',
+                'description' => 'Executes the presenceSimulationConfigurationState on the device identified by the `deviceId` path parameter.',
+                'tags'        => [
+                    0 => 'States',
+                ],
+                'parameters' => [
+                    0 => [
+                        '$ref' => '#/components/parameters/apiVersionHeaderParam',
+                    ],
+                    1 => [
+                        '$ref' => '#/components/parameters/deviceIdPathParam',
+                    ],
+                ],
+                'responses' => [
+                    204 => [
+                        'description' => 'Accepted request.',
+                    ],
+                    400 => [
+                        'description' => 'One of the defined query parameters was invalid.',
+                        'content'     => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/AdvancedError',
+                                ],
+                            ],
+                        ],
+                    ],
+                    404 => [
+                        'description' => 'The entity could not be found. One of the defined path parameters was invalid.',
+                        'content'     => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/AdvancedError',
+                                ],
+                            ],
+                        ],
+                    ],
+                    405 => [
+                        'description' => 'The method was not allowed.',
+                    ],
+                    422 => [
+                        'description' => 'Mapping of defined query parameter failed.',
+                        'content'     => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/AdvancedError',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                'requestBody' => [
+                    '$ref' => '#/components/requestBodies/PresenceSimulationServicePresenceSimulationConfigurationStatePayload',
+                ],
+            ],
+        ],
+    ],
+    'components' => [
+        'schemas' => [
+            'AdvancedError' => [
+                'type'       => 'object',
+                'properties' => [
+                    '@type' => [
+                        'type'        => 'string',
+                        'description' => 'The type of the Object.',
+                        'example'     => 'JsonRestExceptionResponseEntity',
+                    ],
+                    'errorCode' => [
+                        'type'        => 'string',
+                        'description' => 'The error code of the occurred Exception.',
+                    ],
+                    'statusCode' => [
+                        'type'        => 'integer',
+                        'description' => 'The HTTP status of the error.',
+                    ],
+                ],
+            ],
+            'ServiceDefinition' => [
+                'type'        => 'array',
+                'minItems'    => 1,
+                'uniqueItems' => true,
+                'items'       => [
+                    'type'        => 'string',
+                    'description' => 'A single fully qualified identifier of the Service of a Device.',
+                ],
+                'example' => [
+                    0 => 'PresenceSimulationConfiguration',
+                ],
+            ],
+            'PresenceSimulationServiceStates' => [
+                'type'        => 'object',
+                'description' => 'PresenceSimulationService states of PresenceSimulationSystem',
+                'properties'  => [
+                    '@type' => [
+                        'type' => 'string',
+                        'enum' => [
+                            0 => 'presenceSimulationConfigurationState',
+                        ],
+                        'description' => 'The type of the Object.',
+                    ],
+                    'enabled' => [
+                        'type' => 'boolean',
+                    ],
+                ],
+            ],
+            'PresenceSimulationService' => [
+                'type'       => 'object',
+                'properties' => [
+                    '@type' => [
+                        'type' => 'string',
+                        'enum' => [
+                            0 => 'DeviceServiceData',
+                        ],
+                        'description' => 'The type of the Object.',
+                    ],
+                    'id' => [
+                        'type' => 'string',
+                        'enum' => [
+                            0 => 'deviceServiceId',
+                        ],
+                        'description' => 'A single fully qualified identifier of the Service of a Device.',
+                    ],
+                    'deviceId' => [
+                        'type'        => 'string',
+                        'description' => 'A single fully qualified identifier of the Device.',
+                    ],
+                    'state' => [
+                        '$ref' => '#/components/schemas/PresenceSimulationServiceStates',
+                    ],
+                    'path' => [
+                        'type'        => 'string',
+                        'description' => 'The path to the Property.',
+                    ],
+                ],
+            ],
+        ],
+        'requestBodies' => [
+            'PresenceSimulationServicePresenceSimulationConfigurationStatePayload' => [
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            'type'       => 'object',
+                            'properties' => [
+                                '@type' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        0 => 'presenceSimulationConfigurationState',
+                                    ],
+                                    'description' => 'The type of the Object.',
+                                ],
+                                'enabled' => [
+                                    'type' => 'boolean',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ],
         'parameters' => [
-          0 => [
-            '$ref' => '#/components/parameters/apiVersionHeaderParam',
-          ],
-          1 => [
-            '$ref' => '#/components/parameters/deviceIdPathParam',
-          ],
-        ],
-        'responses' => [
-          200 => [
-            'description' => 'The PresenceSimulationConfiguration was successfully retrieved.',
-            'content' => [
-              'application/json' => [
-                'schema' => [
-                  '$ref' => '#/components/schemas/PresenceSimulationService',
+            'apiVersionHeaderParam' => [
+                'in'          => 'header',
+                'name'        => 'api-version',
+                'description' => 'The version of the API.',
+                'schema'      => [
+                    'type'    => 'string',
+                    'example' => '1.0',
                 ],
-              ],
             ],
-          ],
-          404 => [
-            'description' => 'The entity could not be found. One of the defined query parameters was invalid.',
-            'content' => [
-              'application/json' => [
-                'schema' => [
-                  '$ref' => '#/components/schemas/AdvancedError',
+            'deviceIdPathParam' => [
+                'name'        => 'deviceId',
+                'in'          => 'path',
+                'description' => 'A single fully qualified identifier of the Device.',
+                'required'    => true,
+                'schema'      => [
+                    'type' => 'string',
                 ],
-              ],
             ],
-          ],
+            'propertyPathPathParam' => [
+                'name'        => 'propertyPath',
+                'in'          => 'path',
+                'description' => 'The path to the Property.',
+                'required'    => true,
+                'schema'      => [
+                    'type' => 'string',
+                ],
+            ],
         ],
-      ],
     ],
-    '/devices/{deviceId}/services/PresenceSimulationConfiguration/state' => [
-      'get' => [
-        'summary' => 'Retrieve the state of the PresenceSimulationConfiguration service.',
-        'description' => 'Retrieve the state of the PresenceSimulationConfiguration service identified by the `deviceId` path parameter.',
-        'tags' => [
-          0 => 'States',
-        ],
-        'parameters' => [
-          0 => [
-            '$ref' => '#/components/parameters/apiVersionHeaderParam',
-          ],
-          1 => [
-            '$ref' => '#/components/parameters/deviceIdPathParam',
-          ],
-        ],
-        'responses' => [
-          200 => [
-            'description' => 'The state of PresenceSimulationConfiguration was successfully retrieved.',
-            'content' => [
-              'application/json' => [
-                'schema' => [
-                  '$ref' => '#/components/schemas/PresenceSimulationServiceStates',
-                ],
-              ],
-            ],
-          ],
-          404 => [
-            'description' => 'The entity could not be found. One of the defined query parameters was invalid.',
-            'content' => [
-              'application/json' => [
-                'schema' => [
-                  '$ref' => '#/components/schemas/AdvancedError',
-                ],
-              ],
-            ],
-          ],
-        ],
-      ],
-      'put' => [
-        'summary' => 'Executes the presenceSimulationConfigurationState on the device.',
-        'description' => 'Executes the presenceSimulationConfigurationState on the device identified by the `deviceId` path parameter.',
-        'tags' => [
-          0 => 'States',
-        ],
-        'parameters' => [
-          0 => [
-            '$ref' => '#/components/parameters/apiVersionHeaderParam',
-          ],
-          1 => [
-            '$ref' => '#/components/parameters/deviceIdPathParam',
-          ],
-        ],
-        'responses' => [
-          204 => [
-            'description' => 'Accepted request.',
-          ],
-          400 => [
-            'description' => 'One of the defined query parameters was invalid.',
-            'content' => [
-              'application/json' => [
-                'schema' => [
-                  '$ref' => '#/components/schemas/AdvancedError',
-                ],
-              ],
-            ],
-          ],
-          404 => [
-            'description' => 'The entity could not be found. One of the defined path parameters was invalid.',
-            'content' => [
-              'application/json' => [
-                'schema' => [
-                  '$ref' => '#/components/schemas/AdvancedError',
-                ],
-              ],
-            ],
-          ],
-          405 => [
-            'description' => 'The method was not allowed.',
-          ],
-          422 => [
-            'description' => 'Mapping of defined query parameter failed.',
-            'content' => [
-              'application/json' => [
-                'schema' => [
-                  '$ref' => '#/components/schemas/AdvancedError',
-                ],
-              ],
-            ],
-          ],
-        ],
-        'requestBody' => [
-          '$ref' => '#/components/requestBodies/PresenceSimulationServicePresenceSimulationConfigurationStatePayload',
-        ],
-      ],
-    ],
-  ],
-  'components' => [
-    'schemas' => [
-      'AdvancedError' => [
-        'type' => 'object',
-        'properties' => [
-          '@type' => [
-            'type' => 'string',
-            'description' => 'The type of the Object.',
-            'example' => 'JsonRestExceptionResponseEntity',
-          ],
-          'errorCode' => [
-            'type' => 'string',
-            'description' => 'The error code of the occurred Exception.',
-          ],
-          'statusCode' => [
-            'type' => 'integer',
-            'description' => 'The HTTP status of the error.',
-          ],
-        ],
-      ],
-      'ServiceDefinition' => [
-        'type' => 'array',
-        'minItems' => 1,
-        'uniqueItems' => true,
-        'items' => [
-          'type' => 'string',
-          'description' => 'A single fully qualified identifier of the Service of a Device.',
-        ],
-        'example' => [
-          0 => 'PresenceSimulationConfiguration',
-        ],
-      ],
-      'PresenceSimulationServiceStates' => [
-        'type' => 'object',
-        'description' => 'PresenceSimulationService states of PresenceSimulationSystem',
-        'properties' => [
-          '@type' => [
-            'type' => 'string',
-            'enum' => [
-              0 => 'presenceSimulationConfigurationState',
-            ],
-            'description' => 'The type of the Object.',
-          ],
-          'enabled' => [
-            'type' => 'boolean',
-          ],
-        ],
-      ],
-      'PresenceSimulationService' => [
-        'type' => 'object',
-        'properties' => [
-          '@type' => [
-            'type' => 'string',
-            'enum' => [
-              0 => 'DeviceServiceData',
-            ],
-            'description' => 'The type of the Object.',
-          ],
-          'id' => [
-            'type' => 'string',
-            'enum' => [
-              0 => 'deviceServiceId',
-            ],
-            'description' => 'A single fully qualified identifier of the Service of a Device.',
-          ],
-          'deviceId' => [
-            'type' => 'string',
-            'description' => 'A single fully qualified identifier of the Device.',
-          ],
-          'state' => [
-            '$ref' => '#/components/schemas/PresenceSimulationServiceStates',
-          ],
-          'path' => [
-            'type' => 'string',
-            'description' => 'The path to the Property.',
-          ],
-        ],
-      ],
-    ],
-    'requestBodies' => [
-      'PresenceSimulationServicePresenceSimulationConfigurationStatePayload' => [
-        'content' => [
-          'application/json' => [
-            'schema' => [
-              'type' => 'object',
-              'properties' => [
-                '@type' => [
-                  'type' => 'string',
-                  'enum' => [
-                    0 => 'presenceSimulationConfigurationState',
-                  ],
-                  'description' => 'The type of the Object.',
-                ],
-                'enabled' => [
-                  'type' => 'boolean',
-                ],
-              ],
-            ],
-          ],
-        ],
-      ],
-    ],
-    'parameters' => [
-      'apiVersionHeaderParam' => [
-        'in' => 'header',
-        'name' => 'api-version',
-        'description' => 'The version of the API.',
-        'schema' => [
-          'type' => 'string',
-          'example' => '1.0',
-        ],
-      ],
-      'deviceIdPathParam' => [
-        'name' => 'deviceId',
-        'in' => 'path',
-        'description' => 'A single fully qualified identifier of the Device.',
-        'required' => true,
-        'schema' => [
-          'type' => 'string',
-        ],
-      ],
-      'propertyPathPathParam' => [
-        'name' => 'propertyPath',
-        'in' => 'path',
-        'description' => 'The path to the Property.',
-        'required' => true,
-        'schema' => [
-          'type' => 'string',
-        ],
-      ],
-    ],
-  ],
 ];
+
+// Water Alarm
+// global Service !
+$water = [
+    'tags' => [
+        0 => [
+            'name'        => 'States',
+            'description' => 'States of your Water Detection Alam System',
+        ],
+        1 => [
+            'name'        => 'Actions',
+            'description' => 'Actions of your Water Detection Alarm System',
+        ],
+    ],
+    'paths' => [
+        '/wateralarm' => [
+            'get' => [
+                'summary'     => 'Get the alarm system\'s combined state.',
+                'description' => 'Returns the combined system sate of the water detection alarm system.',
+                'tags'        => [
+                    0 => 'States',
+                ],
+                'parameters' => [
+                ],
+                'responses' => [
+                    200 => [
+                        'description' => 'OK',
+                        'content'     => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/WaterAlarmSystemStateData',
+                                ],
+                            ],
+                        ],
+                    ],
+                    404 => [
+                        'description' => 'The entity could not be found. One of the defined query parameters was invalid.',
+                        'content'     => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/AdvancedError',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        '/wateralarm/actions/mute' => [
+            'post' => [
+                'summary'     => 'Mutes an ongoing alarm of the water detection system.',
+                'description' => 'Sets the water detection alarm system\'s sate to mute.',
+                'tags'        => [
+                    0 => 'Actions',
+                ],
+                'parameters' => [
+                ],
+                'responses' => [
+                    202 => [
+                        'description' => 'Accepted',
+                    ],
+                    404 => [
+                        'description' => 'The entity could not be found. One of the defined query parameters was invalid.',
+                        'content'     => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/AdvancedError',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'components' => [
+        'schemas' => [
+            'AdvancedError' => [
+                'type'       => 'object',
+                'properties' => [
+                    '@type' => [
+                        'type'        => 'string',
+                        'description' => 'The type of the Object.',
+                        'example'     => 'JsonRestExceptionResponseEntity',
+                    ],
+                    'errorCode' => [
+                        'type'        => 'string',
+                        'description' => 'The error code of the occurred Exception.',
+                    ],
+                    'statusCode' => [
+                        'type'        => 'integer',
+                        'description' => 'The HTTP status of the error.',
+                    ],
+                ],
+            ],
+            'WaterAlarmIncidentData' => [
+                'type'       => 'object',
+                'properties' => [
+                    'deviceId' => [
+                        'type'     => 'string',
+                        'readOnly' => true,
+                    ],
+                    'roomName' => [
+                        'type'     => 'string',
+                        'readOnly' => true,
+                    ],
+                    'timestamp' => [
+                        'type'     => 'integer',
+                        'format'   => 'int64',
+                        'readOnly' => true,
+                    ],
+                ],
+            ],
+            'WaterAlarmSystemStateData' => [
+                'type'       => 'object',
+                'properties' => [
+                    'available' => [
+                        'type'     => 'boolean',
+                        'readOnly' => true,
+                    ],
+                    'visualActuatorsAvailable' => [
+                        'type'     => 'boolean',
+                        'readOnly' => true,
+                    ],
+                    'videoActuatorsAvailable' => [
+                        'type'     => 'boolean',
+                        'readOnly' => true,
+                    ],
+                    'state' => [
+                        'type'     => 'string',
+                        'readOnly' => true,
+                        'enum'     => [
+                            0 => 'WATER_ALARM',
+                            1 => 'ALARM_OFF',
+                            2 => 'ALARM_MUTED',
+                        ],
+                    ],
+                    'firstIncident' => [
+                        'readOnly' => true,
+                        '$ref'     => '#/components/schemas/WaterAlarmIncidentData',
+                    ],
+                    'id' => [
+                        'type' => 'string',
+                    ],
+                    'deleted' => [
+                        'type' => 'boolean',
+                    ],
+                ],
+            ],
+        ],
+    ],
+];
+
+//Special instances for:
+  // Scenarios
+  // Messages
+  // Doors/Windows
+  //Water Alarm ?!
+  //intrusion ?!
+  //PresenceSimulation ?!

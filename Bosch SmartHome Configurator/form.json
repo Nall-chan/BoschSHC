@@ -13,7 +13,7 @@
                 {
                     "caption": "Device-ID",
                     "name": "id",
-                    "width": "300px"
+                    "width": "400px"
                 },
                 {
                     "caption": "Name",
@@ -23,7 +23,7 @@
                 {
                     "caption": "Type",
                     "name": "deviceModel",
-                    "width": "200px"
+                    "width": "300px"
                 }
             ],
             "values": []

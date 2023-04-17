@@ -136,6 +136,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             if ($Result === false) {
                 return [];
             }
+            $this->SendDebug('GetRooms', $Result, 0);
             $Values = json_decode($Result, true);
             return array_column($Values, 'name', 'id');
         }
@@ -159,6 +160,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             if ($Result === false) {
                 return [];
             }
+            $this->SendDebug('GetDevices', $Result, 0);
             $Devices = json_decode($Result, true);
             $IPSDevices = $this->GetIPSInstances();
             $Values = [];

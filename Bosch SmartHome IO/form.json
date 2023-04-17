@@ -48,7 +48,8 @@
                     }
                 ]
             }
-        },        {
+        },
+        {
             "name": "NoConnectPopup",
             "type": "PopupAlert",
             "visible": false,
