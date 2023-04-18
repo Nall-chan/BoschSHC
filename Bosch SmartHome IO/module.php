@@ -115,6 +115,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             87 => 'CURLE_FTP_BAD_FILE_LIST',
             88 => 'CURLE_CHUNK_FAILED'
         ];
+
         private static $http_error =
         [
             400 => 'Bad Request',
@@ -156,7 +157,6 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
 
         public function ApplyChanges()
         {
-            //Never delete this line!
             if ($this->SHCPollId != '') {
                 $this->Unsubscribe();
             }
@@ -168,6 +168,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $this->SHCPollId = '';
             $this->SetStatus(IS_INACTIVE);
             $this->SetSummary($this->ReadPropertyString(\BoschSHC\Property::IO_Property_Host));
+            //Never delete this line!
             parent::ApplyChanges();
             if (!$this->ReadPropertyBoolean(\BoschSHC\Property::IO_Property_Open)) {
                 $this->LogMessage($this->Translate('Connection closed'), KL_MESSAGE);
@@ -186,6 +187,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 }
             }
         }
+
         public function GetConfigurationForm()
         {
             $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
@@ -196,6 +198,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $this->SendDebug('FORM', json_last_error_msg(), 0);
             return json_encode($Form);
         }
+
         public function RequestAction($Ident, $Value)
         {
             switch ($Ident) {
@@ -211,6 +214,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                     return;
                 }
         }
+
         public function ForwardData($JSONString)
         {
             switch ($this->GetStatus()) {
@@ -232,7 +236,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 self::SHC_Api . $Data[\BoschSHC\FlowToParent::Call],
                 $Data[\BoschSHC\FlowToParent::Method],
                 $Data[\BoschSHC\FlowToParent::Payload]
-                );
+            );
             return ($Result !== false) ? serialize($Result) : null;
         }
 
@@ -278,6 +282,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
         {
             echo $errstr . PHP_EOL;
         }
+
         private function RequestAllStates()
         {
             //{{shc_api}}/services
@@ -290,15 +295,17 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 unset($Service['deviceId']);
                 $this->SendDebug('Event Device', $DeviceId, 0);
                 $this->SendDebug('Event Data', $Service, 0);
-                $JSON = json_encode([
-                    \BoschSHC\FlowToDevice::DataID   => \BoschSHC\GUID::SendToChild,
-                    \BoschSHC\FlowToDevice::DeviceId => $DeviceId,
-                    \BoschSHC\FlowToDevice::Event    => $Service
-                ]
+                $JSON = json_encode(
+                    [
+                        \BoschSHC\FlowToDevice::DataID   => \BoschSHC\GUID::SendToChild,
+                        \BoschSHC\FlowToDevice::DeviceId => $DeviceId,
+                        \BoschSHC\FlowToDevice::Event    => $Service
+                    ]
                 );
                 $this->SendDataToChildren($JSON);
             }
         }
+
         private function Subscribe()
         {
             // send subscribe
@@ -317,6 +324,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             }
             return $Result ? true : false;
         }
+
         private function PollLong()
         {
             if ($this->SHCPollId == '') {
@@ -348,17 +356,19 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 unset($Event['deviceId']);
                 $this->SendDebug('Event Device', $DeviceId, 0);
                 $this->SendDebug('Event Data', $Event, 0);
-                $JSON = json_encode([
-                    \BoschSHC\FlowToDevice::DataID   => \BoschSHC\GUID::SendToChild,
-                    \BoschSHC\FlowToDevice::DeviceId => $DeviceId,
-                    \BoschSHC\FlowToDevice::Event    => $Event
-                ]
+                $JSON = json_encode(
+                    [
+                        \BoschSHC\FlowToDevice::DataID   => \BoschSHC\GUID::SendToChild,
+                        \BoschSHC\FlowToDevice::DeviceId => $DeviceId,
+                        \BoschSHC\FlowToDevice::Event    => $Event
+                    ]
                 );
                 $this->SendDataToChildren($JSON);
             }
             $this->SendDebug('END PollLong', $Result, 0);
             IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"PollLong",true);');
         }
+
         private function Unsubscribe()
         {
             // send unsubscribe
@@ -372,6 +382,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $this->SendDebug('Unsubscribe Result', $Result, 0);
             return $Result ? true : false;
         }
+
         private function CheckSHC()
         {
             if ($this->Host == '') {
@@ -395,6 +406,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             }
             return true;
         }
+
         private function StartConnection()
         {
             $this->SetStatus(IS_ACTIVE);
@@ -402,6 +414,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $this->Subscribe();
             IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"RequestAllStates",true);');
         }
+
         private function GetTempFile(string $Type)
         {
             if ($this->{'TempFile' . $Type} != '') {
@@ -500,11 +513,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             restore_error_handler();
             return $Result;
         }
-        /**
-         * Erzeugt ein selbst-signiertes Zertifikat.
-         *
-         * @return bool True bei Erflog, sonst false
-         */
+
         private function CreateNewCert()
         {
             $this->SendDebug('CreateNewCert', 'start', 0);
@@ -571,4 +580,3 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             return true;
         }
     }
-

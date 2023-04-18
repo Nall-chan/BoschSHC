@@ -54,6 +54,7 @@ require_once dirname(__DIR__) . '/libs/Services.php';
                 $this->GetServices();
             }
         }
+
         public function GetConfigurationForm()
         {
             $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
@@ -83,26 +84,30 @@ require_once dirname(__DIR__) . '/libs/Services.php';
             $this->SendDebug('FORM', json_last_error_msg(), 0);
             return json_encode($Form);
         }
+
         public function RequestAction($Ident, $Value)
         {
-            $ServiceId = \BoschSHC\Services::getServiceIdByProperty($Ident);
-            if ($ServiceId) {
-                /** @var \BoschSHC\Services\ServiceBasics */
-                $Service = '\\BoschSHC\\Services\\' . $ServiceId;
-                $Payload = $Service::getServiceStateRequest($Ident, $Value);
-                return $this->SendData(
-                    \BoschSHC\ApiUrl::Devices . '/' . $this->DeviceId .
-                    \BoschSHC\ApiUrl::Services . '/' . $ServiceId .
-                    \BoschSHC\ApiUrl::State,
-                    \BoschSHC\HTTP::PUT,
-                    $Payload
-                );
+            list($ServiceId, $Property) = explode('_', $Ident);
+            $Service = '\\BoschSHC\\Services\\' . $ServiceId;
+            if (class_exists($Service)) {
+                /** @var \BoschSHC\Services\ServiceBasics $Service */
+                if ($Service::PropertyIsValid($Property)) {
+                    $Payload = $Service::getServiceStateRequest($Property, $Value);
+                    return $this->SendData(
+                        \BoschSHC\ApiUrl::Devices . '/' . $this->DeviceId .
+                        \BoschSHC\ApiUrl::Services . '/' . $ServiceId .
+                        \BoschSHC\ApiUrl::State,
+                        \BoschSHC\HTTP::PUT,
+                        $Payload
+                    );
+                }
             }
             set_error_handler([$this, 'ModulErrorHandler']);
             trigger_error($this->Translate('Invalid Ident'), E_USER_NOTICE);
             restore_error_handler();
             return false;
         }
+
         public function ReceiveData($JSONString)
         {
             $Data = json_decode($JSONString, true);
@@ -110,14 +115,17 @@ require_once dirname(__DIR__) . '/libs/Services.php';
             $this->SendDebug('Event Data', $Data['Event'], 0);
             $this->DecodeServiceData($Data['Event']);
         }
+
         public function RequestStates()
         {
             return $this->GetServices();
         }
+
         protected function ModulErrorHandler($errno, $errstr)
         {
             echo $errstr . PHP_EOL;
         }
+
         private function GetServices()
         {
             $Services = $this->SendData(\BoschSHC\ApiUrl::Devices . '/' . $this->DeviceId . \BoschSHC\ApiUrl::Services);
@@ -131,6 +139,7 @@ require_once dirname(__DIR__) . '/libs/Services.php';
             }
             return true;
         }
+
         private function DecodeServiceData($ServiceData)
         {
             if (!\BoschSHC\Services::ServiceIsValid($ServiceData)) {
@@ -159,7 +168,7 @@ require_once dirname(__DIR__) . '/libs/Services.php';
                 }
                 $VariableValues = $Service::getIPSVariable($Property, $Value);
                 $this->MaintainVariable(
-                    $Property,
+                    $VariableValues[\BoschSHC\Services\IPSVarIdent],
                     $this->Translate($VariableValues[\BoschSHC\Services\IPSVarName]),
                     $VariableValues[\BoschSHC\Services\IPSVarType],
                     $VariableValues[\BoschSHC\Services\IPSProfile],
@@ -167,11 +176,12 @@ require_once dirname(__DIR__) . '/libs/Services.php';
                     true
                 );
                 if ($VariableValues[\BoschSHC\Services\IPSVarAction]) {
-                    $this->EnableAction($Property);
+                    $this->EnableAction($VariableValues[\BoschSHC\Services\IPSVarIdent]);
                 }
-                $this->SetValue($Property, $VariableValues[\BoschSHC\Services\IPSVarValue]);
+                $this->SetValue($VariableValues[\BoschSHC\Services\IPSVarIdent], $VariableValues[\BoschSHC\Services\IPSVarValue]);
             }
         }
+
         private function SendData(string $ApiCall, string $Method = \BoschSHC\HTTP::GET, string $Payload = '')
         {
             $this->SendDebug('Send Method', $Method, 0);
