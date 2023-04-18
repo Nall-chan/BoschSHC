@@ -500,7 +500,7 @@ namespace BoschSHC\Services
             'purity' => [ //todo
                 'type' => 'number',
             ],
-            'purityRating'=> [
+            'purityRating' => [
                 'type'       => 'string',
                 IPSProfile   => 'BSH.AirQualityLevel.temperatureRating',
                 IPSVarType   => VARIABLETYPE_STRING,
@@ -565,7 +565,7 @@ namespace BoschSHC\Services
     class BatteryLevel extends ServiceBasics
     {
         protected static $properties = [
-            'batteryLevel'=> [
+            'batteryLevel' => [
                 'type'       => 'string',
                 IPSProfile   => 'BSH.BatteryLevel.batteryLevel',
                 IPSVarType   => VARIABLETYPE_STRING,
@@ -576,7 +576,7 @@ namespace BoschSHC\Services
 
     class MultiLevelSwitch extends ServiceBasics
     {
-        protected static $properties = [
+        protected static $properties = [ //todo
             'level' => [
                 'type'       => 'number',
                 IPSVarType   => VARIABLETYPE_INTEGER,
@@ -624,7 +624,7 @@ namespace BoschSHC\Services
             'targetAngle' => [
                 'type'       => 'number',
                 IPSVarFactor => 0.01,
-                IPSProfile   => 'BSH.BlindsControl.targetAngle',
+                IPSProfile   => '~Lamella',
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Target angle'
@@ -803,7 +803,7 @@ namespace BoschSHC\Services
     class LockActuator extends ServiceBasics
     {
         protected static $properties = [
-            'lockState ' => [
+            'lockState' => [
                 'type'       => 'string',
                 IPSProfile   => 'BSH.LockActuator.lockState',
                 IPSVarType   => VARIABLETYPE_STRING,
@@ -815,7 +815,7 @@ namespace BoschSHC\Services
     class CameraNotification extends ServiceBasics
     {
         protected static $properties = [
-            'value ' => [
+            'value' => [
                 'type'       => 'string',
                 'enum'       => [
                     false => 'ENABLED',
@@ -840,50 +840,6 @@ namespace BoschSHC\Services
     {
         public function RegisterProfiles()
         {
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\AirQualityLevel::getIPSProfile('combinedRating'),
-                '',
-                '',
-                '',
-                [
-                    ['OK', 'OK', '', -1],
-                    ['COLD', 'COLD', '', -1],
-                    ['COLD_DRY', 'COLD_DRY', '', -1],
-                    ['COLD_HUMID', 'COLD_HUMID', '', -1],
-                    ['COLD_STUFFY', 'COLD_STUFFY', '', -1],
-                    ['COLD_DRY_STUFFY', 'COLD_DRY_STUFFY', '', -1],
-                    ['COLD_HUMID_STUFFY', 'COLD_HUMID_STUFFY', '', -1],
-                    ['LITTLE_COLD', 'LITTLE_COLD', '', -1],
-                    ['LITTLE_DRY', 'LITTLE_DRY', '', -1],
-                    ['LITTLE_HUMID', 'LITTLE_HUMID', '', -1],
-                    ['LITTLE_STUFFY', 'LITTLE_STUFFY', '', -1],
-                    ['LITTLE_WARM', 'LITTLE_WARM', '', -1],
-                    ['DRY', 'DRY', '', -1],
-                    ['DRY_STUFFY', 'DRY_STUFFY', '', -1],
-                    ['HUMID', 'HUMID', '', -1],
-                    ['HUMID_STUFFY', 'HUMID_STUFFY', '', -1],
-                    ['STUFFY', 'STUFFY', '', -1],
-                    ['WARM', 'WARM', '', -1],
-                    ['WARM_DRY', 'WARM_DRY', '', -1],
-                    ['WARM_HUMID', 'WARM_HUMID', '', -1],
-                    ['WARM_STUFFY', 'WARM_STUFFY', '', -1],
-                    ['WARM_HUMID_STUFFY', 'WARM_HUMID_STUFFY', '', -1],
-                    ['WARM_DRY_STUFFY', 'WARM_DRY_STUFFY', '', -1],
-                    ['UNKNOWN', 'unknown', '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\AirQualityLevel::getIPSProfile('temperatureRating'),
-                '',
-                '',
-                '',
-                [
-                    ['GOOD', 'good', '', -1],
-                    ['MEDIUM', 'medium', '', -1],
-                    ['BAD', 'bad', '', -1],
-                    ['UNKNOWN', 'unknown', '', -1],
-                ]
-            );
             $this->RegisterProfileStringEx(
                 \BoschSHC\Services\PowerSwitchProgram::getIPSProfile('operationMode'),
                 'Clock',
@@ -978,21 +934,70 @@ namespace BoschSHC\Services
                     ['UNKNOWN', 'UNKNOWN', '', -1]
                 ]
             );
-
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\BatteryLevel::getIPSProfile('batteryLevel'),
-                'Execute',
+            $this->RegisterProfileStringEx( //todo
+                \BoschSHC\Services\ValveTappet::getIPSProfile('value'),
+                '',
                 '',
                 '',
                 [
-                    ['OK', 'ok', '', -1],
-                    ['LOW_BATTERY', 'low battery', '', -1],
-                    ['CRITICAL_LOW', 'critically low', '', -1],
-                    ['CRITICALLY_LOW_BATTERY', 'critically low battery', '', -1],
-                    ['NOT_AVAILABLE', 'not available', '', -1],
+                    ['NO_AVAILABLE', 'NOT_AVAILABLE', '', -1],
+                    ['RUN_TO_START_POSITION', 'RUN_TO_START_POSITION', '', -1],
+                    ['START_POSITION_REQUESTED', 'START_POSITION_REQUESTED', '', -1],
+                    ['IN_START_POSITION', 'IN_START_POSITION', '', -1],
+                    ['VALVE_ADAPTION_REQUESTED', 'VALVE_ADAPTION_REQUESTED', '', -1],
+                    ['VALVE_ADAPTION_IN_PROGRESS', 'VALVE_ADAPTION_IN_PROGRESS', '', -1],
+                    ['VALVE_ADAPTION_SUCCESSFUL', 'VALVE_ADAPTION_SUCCESSFUL', '', -1],
+                    ['VALVE_TOO_TIGHT', 'VALVE_TOO_TIGHT', '', -1],
+                    ['RANGE_TOO_BIG', 'RANGE_TOO_BIG', '', -1],
+                    ['RANGE_TOO_SMALL', 'RANGE_TOO_SMALL', '', -1],
+                    ['ERROR', 'ERROR', '', -1],
+                    ['UNKNOWN', 'UNKNOWN', '', -1]
                 ]
             );
-
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\AirQualityLevel::getIPSProfile('combinedRating'),
+                '',
+                '',
+                '',
+                [
+                    ['OK', 'OK', '', -1],
+                    ['COLD', 'COLD', '', -1],
+                    ['COLD_DRY', 'COLD_DRY', '', -1],
+                    ['COLD_HUMID', 'COLD_HUMID', '', -1],
+                    ['COLD_STUFFY', 'COLD_STUFFY', '', -1],
+                    ['COLD_DRY_STUFFY', 'COLD_DRY_STUFFY', '', -1],
+                    ['COLD_HUMID_STUFFY', 'COLD_HUMID_STUFFY', '', -1],
+                    ['LITTLE_COLD', 'LITTLE_COLD', '', -1],
+                    ['LITTLE_DRY', 'LITTLE_DRY', '', -1],
+                    ['LITTLE_HUMID', 'LITTLE_HUMID', '', -1],
+                    ['LITTLE_STUFFY', 'LITTLE_STUFFY', '', -1],
+                    ['LITTLE_WARM', 'LITTLE_WARM', '', -1],
+                    ['DRY', 'DRY', '', -1],
+                    ['DRY_STUFFY', 'DRY_STUFFY', '', -1],
+                    ['HUMID', 'HUMID', '', -1],
+                    ['HUMID_STUFFY', 'HUMID_STUFFY', '', -1],
+                    ['STUFFY', 'STUFFY', '', -1],
+                    ['WARM', 'WARM', '', -1],
+                    ['WARM_DRY', 'WARM_DRY', '', -1],
+                    ['WARM_HUMID', 'WARM_HUMID', '', -1],
+                    ['WARM_STUFFY', 'WARM_STUFFY', '', -1],
+                    ['WARM_HUMID_STUFFY', 'WARM_HUMID_STUFFY', '', -1],
+                    ['WARM_DRY_STUFFY', 'WARM_DRY_STUFFY', '', -1],
+                    ['UNKNOWN', 'unknown', '', -1],
+                ]
+            );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\AirQualityLevel::getIPSProfile('temperatureRating'),
+                '',
+                '',
+                '',
+                [
+                    ['GOOD', 'good', '', -1],
+                    ['MEDIUM', 'medium', '', -1],
+                    ['BAD', 'bad', '', -1],
+                    ['UNKNOWN', 'unknown', '', -1],
+                ]
+            );
             $this->RegisterProfileStringEx(
                 \BoschSHC\Services\Keypad::getIPSProfile('keyName'),
                 'Execute',
@@ -1013,6 +1018,19 @@ namespace BoschSHC\Services
                     ['PRESS_LONG', 'Long press', '', -1],
                 ]
             );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\BatteryLevel::getIPSProfile('batteryLevel'),
+                'Execute',
+                '',
+                '',
+                [
+                    ['OK', 'ok', '', -1],
+                    ['LOW_BATTERY', 'low battery', '', -1],
+                    ['CRITICAL_LOW', 'critically low', '', -1],
+                    ['CRITICALLY_LOW_BATTERY', 'critically low battery', '', -1],
+                    ['NOT_AVAILABLE', 'not available', '', -1],
+                ]
+            );
             $this->RegisterProfileInteger(
                 \BoschSHC\Services\VentilationDelay::getIPSProfile('delay'),
                 'Clock',
@@ -1021,26 +1039,6 @@ namespace BoschSHC\Services
                 0,
                 3600,
                 1
-            );
-            $this->RegisterProfileStringEx( //todo
-                \BoschSHC\Services\ValveTappet::getIPSProfile('value'),
-                '',
-                '',
-                '',
-                [
-                    ['NO_AVAILABLE', 'NOT_AVAILABLE', '', -1],
-                    ['RUN_TO_START_POSITION', 'RUN_TO_START_POSITION', '', -1],
-                    ['START_POSITION_REQUESTED', 'START_POSITION_REQUESTED', '', -1],
-                    ['IN_START_POSITION', 'IN_START_POSITION', '', -1],
-                    ['VALVE_ADAPTION_REQUESTED', 'VALVE_ADAPTION_REQUESTED', '', -1],
-                    ['VALVE_ADAPTION_IN_PROGRESS', 'VALVE_ADAPTION_IN_PROGRESS', '', -1],
-                    ['VALVE_ADAPTION_SUCCESSFUL', 'VALVE_ADAPTION_SUCCESSFUL', '', -1],
-                    ['VALVE_TOO_TIGHT', 'VALVE_TOO_TIGHT', '', -1],
-                    ['RANGE_TOO_BIG', 'RANGE_TOO_BIG', '', -1],
-                    ['RANGE_TOO_SMALL', 'RANGE_TOO_SMALL', '', -1],
-                    ['ERROR', 'ERROR', '', -1],
-                    ['UNKNOWN', 'UNKNOWN', '', -1]
-                ]
             );
             $this->RegisterProfileStringEx(
                 \BoschSHC\Services\HueBlinking::getIPSProfile('blinkingState'),
