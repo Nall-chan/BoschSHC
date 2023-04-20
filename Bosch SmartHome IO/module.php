@@ -215,7 +215,7 @@ class BoschSmartHomeIO extends IPSModule
                 case 'RequestAllStates':
                    $this->RequestAllStates();
                    $this->RequestAllAutomationRules();
-                   $this->RequestWaterAlarmSystemState()();
+                   $this->RequestWaterAlarmSystemState();
                     return;
                 }
     }
