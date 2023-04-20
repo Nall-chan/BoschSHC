@@ -45,9 +45,11 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 $this->SendDebug('FORM', json_last_error_msg(), 0);
                 return json_encode($Form);
             }
-            $Values = $this->GetDevices();
-
-            $Form['actions'][0]['values'] = $Values;
+            $Devices = $this->GetDevices();
+            $AutomationRules = $this->GetAutomationRules();
+            $Scenarios = $this->GetScenarios();
+            //Check & Add WaterAlarmSystem
+            $Form['actions'][0]['values'] = array_merge($Devices,$AutomationRules,$Scenarios);
             $this->SendDebug('FORM', json_encode($Form), 0);
             $this->SendDebug('FORM', json_last_error_msg(), 0);
 
@@ -82,32 +84,55 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             }
             $this->SendDebug('GetRooms', $Result, 0);
             $Values = json_decode($Result, true);
-            return array_column($Values, 'name', 'id');
+           
         }
+        private function GetAutomationRules()
+        {
+            $AutomationRules = $this->GetLists(\BoschSHC\ApiUrl::AutomationRules);
+            $IPSDevices = $this->GetIPSInstances(\BoschSHC\GUID::AutomationRule, \BoschSHC\Property::AutomationRule_Property_RuleId);
+            $Values = [];
+            foreach ($AutomationRules as $AutomationRule) {
+                $InstanceID = array_search($AutomationRule['id'], $IPSDevices);
+                $Values[] = [
+                    'id'               => $AutomationRule['id'],
+                    'name'             => ($InstanceID ? IPS_GetName($InstanceID) : $AutomationRule['name']),
+                    'deviceModel'      => 'AutomationRule',
+                    'instanceID'       => ($InstanceID ? $InstanceID : 0),
+                    'create'           => [
+                        'moduleID'         => \BoschSHC\GUID::AutomationRule,
+                        'location'         =>  [$this->Translate('Bosch SmartHome Automation Rules')] ,
+                        'configuration'    => [
+                            \BoschSHC\Property::AutomationRule_Property_RuleId => $AutomationRule['id']
+                        ]
+                    ]
+                ];
+                if ($InstanceID !== false) {
+                    unset($IPSDevices[$InstanceID]);
+                }
+            }
+            foreach ($IPSDevices as $InstanceID => $AutomationRuleId) {
+                $Values[] = [
+                    'id'               => $AutomationRuleId,
+                    'name'             => IPS_GetName($InstanceID),
+                    'deviceModel'      => '',
+                    'instanceID'       => $InstanceID,
+                ];
+            }
+            return $Values;
 
+        }
+        private function GetScenarios()
+        {
+            $Scenarios = $this->GetLists(\BoschSHC\ApiUrl::Scenarios);
+            return [];
+
+        }
         private function GetDevices()
         {
-            $Rooms = $this->GetRooms();
-            if (!count($Rooms)) {
-                return [];
-            }
-            $JSON = json_encode([
-                \BoschSHC\FlowToParent::DataID     => \BoschSHC\GUID::SendToIO,
-                \BoschSHC\FlowToParent::Call       => \BoschSHC\ApiUrl::Devices,
-                \BoschSHC\FlowToParent::Method     => \BoschSHC\HTTP::GET,
-                \BoschSHC\FlowToParent::Payload    => ''
-            ]);
-            $Result = $this->SendDataToParent($JSON);
-            if (!$Result) {
-                return [];
-            }
-            $Result = unserialize($Result);
-            if ($Result === false) {
-                return [];
-            }
-            $this->SendDebug('GetDevices', $Result, 0);
-            $Devices = json_decode($Result, true);
-            $IPSDevices = $this->GetIPSInstances();
+            $RoomList = $this->GetLists(\BoschSHC\ApiUrl::Rooms);
+            $Rooms = array_column($RoomList, 'name', 'id');
+            $Devices = $this->GetLists(\BoschSHC\ApiUrl::Devices);
+            $IPSDevices = $this->GetIPSInstances(\BoschSHC\GUID::Device, \BoschSHC\Property::Device_Property_DeviceId);
             $Values = [];
             foreach ($Devices as $Device) {
                 $InstanceID = array_search($Device['id'], $IPSDevices);
@@ -130,7 +155,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             }
             foreach ($IPSDevices as $InstanceID => $DeviceId) {
                 $Values[] = [
-                    'id'               => $Device['id'],
+                    'id'               => $DeviceId,
                     'name'             => IPS_GetName($InstanceID),
                     'deviceModel'      => '',
                     'instanceID'       => $InstanceID,
@@ -139,11 +164,32 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             return $Values;
         }
 
-        private function GetIPSInstances()
+        private function GetLists(string $Call)
         {
-            $InstanceIDList = array_filter(IPS_GetInstanceListByModuleID(\BoschSHC\GUID::Device), [$this, 'FilterInstances']);
+            $JSON = json_encode([
+                \BoschSHC\FlowToParent::DataID     => \BoschSHC\GUID::SendToIO,
+                \BoschSHC\FlowToParent::Call       => $Call,
+                \BoschSHC\FlowToParent::Method     => \BoschSHC\HTTP::GET,
+                \BoschSHC\FlowToParent::Payload    => ''
+            ]);
+            $Result = $this->SendDataToParent($JSON);
+            if (!$Result) {
+                return [];
+            }
+            $Result = unserialize($Result);
+            if ($Result === false) {
+                return [];
+            }
+            $this->SendDebug($Call, $Result, 0);
+            $decoded = json_decode($Result, true);
+            return (count($decoded) ? $decoded : []);
+        }
+
+        private function GetIPSInstances(string $GUID, string $ConfigParam)
+        {
+            $InstanceIDList = array_filter(IPS_GetInstanceListByModuleID($GUID), [$this, 'FilterInstances']);
             $InstanceIDList = array_flip(array_values($InstanceIDList));
-            array_walk($InstanceIDList, [$this, 'GetConfigParam'], \BoschSHC\Property::Device_Property_DeviceId);
+            array_walk($InstanceIDList, [$this, 'GetConfigParam'], $ConfigParam);
             return $InstanceIDList;
         }
     }

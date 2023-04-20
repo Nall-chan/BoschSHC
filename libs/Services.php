@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BoschSHC
 {
+
     class Services
     {
         const PowerMeter = 'PowerMeter';
@@ -44,6 +45,11 @@ namespace BoschSHC
         const LockActuator = 'LockActuator';
         const CameraNotification = 'CameraNotification';
         const ColorActuator = 'ColorActuator';
+        const WaterLeakageSensor='WaterLeakageSensor';
+        const WaterLeakageSensorCheck ='WaterLeakageSensorCheck';
+        const WaterLeakageSensorTilt ='WaterLeakageSensorTilt';
+        const WaterAlarmSystem='WaterAlarmSystem';
+        const AutomationRule ='AutomationRule';
         //todo
         const Thermostat = 'Thermostat';
         const VibrationSensor = 'VibrationSensor';
@@ -107,11 +113,14 @@ namespace BoschSHC
             self::LockActuator,
             self::CameraNotification,
             self::ColorActuator,
+            self::WaterLeakageSensor,
+            self::WaterLeakageSensorCheck,
+            self::WaterLeakageSensorTilt
         ];
 
-        public static function ServiceIsValid(array $Service)
+        public static function ServiceIsValid(string $Service)
         {
-            return in_array($Service['id'], self::$Services);
+            return in_array($Service, self::$Services);
         }
 
         public static function getServiceIdByProperty(string $Property)
@@ -836,9 +845,90 @@ namespace BoschSHC\Services
             ColorTemperatureRange colorTemperatureRange;
          */
     }
+    class WaterLeakageSensor extends ServiceBasics
+    {
+        protected static $properties = [
+            'state' => [
+                'type'       => 'string',
+                'enum'       => [
+                    false => 'NO_LEAKAGE',
+                    true  => 'LEAKAGE_DETECTED',
+                ],
+                IPSProfile   => '~Alert',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarName   => 'Water leakage state'
+            ]
+        ];
+    }
+    class WaterLeakageSensorCheck extends ServiceBasics
+    {
+        protected static $properties = [
+            'result' => [
+                'type'       => 'string',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Water leakage sensor check'
+            ]
+        ];
+    }
+    class WaterLeakageSensorTilt extends ServiceBasics
+    {
+        protected static $properties = [
+            'pushNotificationState' => [
+                'type'       => 'string',
+                'enum'       => [
+                    true => 'ENABLED',
+                    false  => 'DISABLED',
+                ],
+                IPSProfile   => '~Switch',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarAction => true,
+                IPSVarName   => 'Push notification state on tilt'
+            ],
+            'acousticSignalState' => [
+                'type'       => 'string',
+                'enum'       => [
+                    true => 'ENABLED',
+                    false  => 'DISABLED',
+                ],
+                IPSProfile   => '~Switch',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarAction => true,
+                IPSVarName   => 'Acoustic signal state on tilt'
+            ]
+        ];
+    }
+    class WaterAlarmSystem extends ServiceBasics
+    {
+        protected static $properties = [
+            'state' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.WaterAlarmSystem.state',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Water alarm system state'
+            ],
+            'mute' => [
+                'type'       => 'number',
+                IPSProfile   => 'BSH.WaterAlarmSystem.mute',
+                IPSVarType   => VARIABLETYPE_INTEGER,
+                IPSVarAction => true,
+                IPSVarName   => 'Set muted'
+            ]
+        ];
+    }
+    class AutomationRule extends ServiceBasics
+    {
+        protected static $properties = [
+            'enabled' => [
+                'type'       => 'bool',
+                IPSProfile   => '~Switch',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarName   => 'Enabled'
+            ]
+        ];
+    }
     trait IPSProfile
     {
-        public function RegisterProfiles()
+        protected function RegisterProfiles()
         {
             $this->RegisterProfileStringEx(
                 \BoschSHC\Services\PowerSwitchProgram::getIPSProfile('operationMode'),
@@ -1065,7 +1155,7 @@ namespace BoschSHC\Services
                     ['UNKNOWN', 'UNKNOWN', '', -1]
                 ]
             );
-            $this->RegisterProfileStringEx( //todo
+            $this->RegisterProfileStringEx(
                 \BoschSHC\Services\CommunicationQuality::getIPSProfile('quality'),
                 '',
                 '',
@@ -1147,6 +1237,57 @@ namespace BoschSHC\Services
                     ['UNLOCKING', 'UNLOCKING', '', -1],
                 ]
             );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\WaterAlarmSystem::getIPSProfile('state'),
+                '',
+                '',
+                '',
+                [
+                    ['ALARM_OFF', 'ALARM_OFF', '', -1],
+                    ['WATER_ALARM', 'WATER_ALARM', '', -1],
+                    ['ALARM_OFF', 'ALARM_OFF', '', -1],
+                    ['ALARM_MUTED', 'ALARM_MUTED', '', -1]
+                ]
+            );
+            $this->RegisterProfileIntegerEx(
+                \BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'),
+                '',
+                '',
+                '',
+                [
+                    [0, 'Execute', '', -1]
+                ]
+            );
+        }
+        protected function UnregisterProfiles()
+        {
+            $this->UnregisterProfile(\BoschSHC\Services\PowerSwitchProgram::getIPSProfile('operationMode'));
+            $this->UnregisterProfile(\BoschSHC\Services\RoomClimateControl::getIPSProfile('setpointTemperature'));
+            $this->UnregisterProfile(\BoschSHC\Services\HCWasher::getIPSProfile('operationState'));
+            $this->UnregisterProfile(\BoschSHC\Services\HCDishwasher::getIPSProfile('operationState'));
+            $this->UnregisterProfile(\BoschSHC\Services\HCOven::getIPSProfile('operationState'));
+            $this->UnregisterProfile(\BoschSHC\Services\ShutterControl::getIPSProfile('operationState'));
+            $this->UnregisterProfile(\BoschSHC\Services\SmokeDetectorCheck::getIPSProfile('value'));
+            $this->UnregisterProfile(\BoschSHC\Services\SmokeSensitivity::getIPSProfile('smokeSensitivity'));
+            $this->UnregisterProfile(\BoschSHC\Services\ValveTappet::getIPSProfile('value'));
+            $this->UnregisterProfile(\BoschSHC\Services\AirQualityLevel::getIPSProfile('combinedRating'));
+            $this->UnregisterProfile(\BoschSHC\Services\AirQualityLevel::getIPSProfile('temperatureRating'));
+            $this->UnregisterProfile(\BoschSHC\Services\Keypad::getIPSProfile('keyName'));
+            $this->UnregisterProfile(\BoschSHC\Services\Keypad::getIPSProfile('eventType'));
+            $this->UnregisterProfile(\BoschSHC\Services\BatteryLevel::getIPSProfile('batteryLevel'));
+            $this->UnregisterProfile(\BoschSHC\Services\VentilationDelay::getIPSProfile('delay'));
+            $this->UnregisterProfile(\BoschSHC\Services\HueBlinking::getIPSProfile('blinkingState'));
+            $this->UnregisterProfile(\BoschSHC\Services\HueBridgeSearcher::getIPSProfile('searcherState'));
+            $this->UnregisterProfile(\BoschSHC\Services\CommunicationQuality::getIPSProfile('quality'));
+            $this->UnregisterProfile(\BoschSHC\Services\MultiswitchConfiguration::getIPSProfile('updateState'));
+            $this->UnregisterProfile(\BoschSHC\Services\WalkTest::getIPSProfile('walkState'));
+            $this->UnregisterProfile(\BoschSHC\Services\ClimateControl::getIPSProfile('operationMode'));
+            $this->UnregisterProfile(\BoschSHC\Services\ClimateControl::getIPSProfile('roomControlMode'));
+            $this->UnregisterProfile(\BoschSHC\Services\DoorSensor::getIPSProfile('doorState'));
+            $this->UnregisterProfile(\BoschSHC\Services\LockActuator::getIPSProfile('lockState'));
+            $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'));
+            $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'));
         }
     }
+    
 }
