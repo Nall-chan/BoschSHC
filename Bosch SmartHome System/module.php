@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-eval('declare(strict_types=1);namespace BoschSHCDevice {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/BufferHelper.php') . '}');
+eval('declare(strict_types=1);namespace BoschSmartHomeSystem {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/BufferHelper.php') . '}');
 require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
 /**
  * @property string $DeviceId
  * @property array $Multi_UnsupportedServices
  */
-class BoschSmartHomeDevice extends BSHBasicClass
+class BoschSmartHomeSystem extends BSHBasicClass
 {
-    use \BoschSHCDevice\BufferHelper;
+    use \BoschSmartHomeSystem\BufferHelper;
 
     public function Create()
     {
-        $this->RegisterPropertyString(\BoschSHC\Property::Device_Property_DeviceId, '');
+        $this->RegisterPropertyString(\BoschSHC\Property::System_Property_SystemMAC, '');
         $this->DeviceId = '';
         $this->Multi_UnsupportedServices = [];
         //Never delete this line!
@@ -26,7 +26,7 @@ class BoschSmartHomeDevice extends BSHBasicClass
         $this->Multi_UnsupportedServices = [];
         //Never delete this line!
         parent::ApplyChanges();
-        $DeviceId = $this->ReadPropertyString(\BoschSHC\Property::Device_Property_DeviceId);
+        $DeviceId = $this->ReadPropertyString(\BoschSHC\Property::System_Property_SystemMAC);
         $GetAllServices = ($this->DeviceId != $DeviceId);
         $this->DeviceId = $DeviceId;
         if ($DeviceId != '') {
@@ -150,7 +150,7 @@ class BoschSmartHomeDevice extends BSHBasicClass
 
     private function GetServices()
     {
-        $Services = $this->SendData(\BoschSHC\ApiUrl::Devices . '/' . $this->DeviceId . \BoschSHC\ApiUrl::Services);
+        $Services = $this->SendData(\BoschSHC\ApiUrl::System . \BoschSHC\ApiUrl::Services);
         if (!$Services) {
             return false;
         }

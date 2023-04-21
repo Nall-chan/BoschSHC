@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-eval('declare(strict_types=1);namespace BoschSHCDevice {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/BufferHelper.php') . '}');
+eval('declare(strict_types=1);namespace BoschSmartHomeAutomationRule {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/BufferHelper.php') . '}');
 require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
 /**
  * @property string $RuleId
  */
 class BoschSmartHomeAutomationRule extends BSHBasicClass
 {
-    use \BoschSHCDevice\BufferHelper;
+    use \BoschSmartHomeAutomationRule\BufferHelper;
 
     public function Create()
     {
@@ -25,9 +25,9 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
         $RuleId = $this->ReadPropertyString(\BoschSHC\Property::AutomationRule_Property_RuleId);
         $this->RuleId = $RuleId;
         if ($RuleId != '') {
-            $this->SetReceiveDataFilter('.*"'.\BoschSHC\FlowToAutomationRule::RuleId.'":"' . $RuleId . '".*');
+            $this->SetReceiveDataFilter('.*"' . \BoschSHC\FlowToAutomationRule::RuleId . '":"' . $RuleId . '".*');
         }
-    
+
         if (IPS_GetKernelRunlevel() != KR_READY) {
             return;
         }
@@ -48,7 +48,7 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
 
     public function RequestAction($Ident, $Value)
     {
-        if ($Ident != \BoschSHC\Services::AutomationRule.'_enabled') {
+        if ($Ident != \BoschSHC\Services::AutomationRule . '_enabled') {
             set_error_handler([$this, 'ModulErrorHandler']);
             trigger_error($this->Translate('Invalid Ident'), E_USER_NOTICE);
             restore_error_handler();
@@ -56,7 +56,7 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
         }
         return $this->SendData(
             \BoschSHC\ApiUrl::AutomationRules .
-                '/'. $this->RuleId .
+                '/' . $this->RuleId .
                 \BoschSHC\ApiUrl::Enabled,
             \BoschSHC\HTTP::PUT,
             json_encode($Value)
@@ -68,20 +68,9 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
         return $this->GetState();
     }
 
-    private function GetState()
-    {
-        $AutomationRule = $this->SendData(\BoschSHC\ApiUrl::AutomationRules.'/'.$this->RuleId);
-        if (!$AutomationRule) {
-            return false;
-        }
-        $this->SendDebug('AutomationRule', $AutomationRule, 0);
-        $this->DecodeServiceData($AutomationRule);
-        return true;
-    }
-
     protected function DecodeServiceData($AutomationRule)
     {
-        if ($AutomationRule['@type'] =! lcfirst(\BoschSHC\Services::AutomationRule)) {
+        if ($AutomationRule['@type'] = !lcfirst(\BoschSHC\Services::AutomationRule)) {
             return false;
         }
         $VariableValues = \BoschSHC\Services\AutomationRule::getIPSVariable('enabled', $AutomationRule['enabled']);
@@ -94,5 +83,16 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
             true
         );
         $this->SetValue($VariableValues[\BoschSHC\Services\IPSVarIdent], $VariableValues[\BoschSHC\Services\IPSVarValue]);
+    }
+
+    private function GetState()
+    {
+        $AutomationRule = $this->SendData(\BoschSHC\ApiUrl::AutomationRules . '/' . $this->RuleId);
+        if (!$AutomationRule) {
+            return false;
+        }
+        $this->SendDebug('AutomationRule', $AutomationRule, 0);
+        $this->DecodeServiceData($AutomationRule);
+        return true;
     }
 }

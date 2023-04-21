@@ -32,7 +32,7 @@ require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
 
         public function RequestAction($Ident, $Value)
         {
-            if ($Ident != \BoschSHC\Services::WaterAlarmSystem.'_mute') {
+            if ($Ident != \BoschSHC\Services::WaterAlarmSystem . '_mute') {
                 set_error_handler([$this, 'ModulErrorHandler']);
                 trigger_error($this->Translate('Invalid Ident'), E_USER_NOTICE);
                 restore_error_handler();
@@ -50,20 +50,9 @@ require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
             return $this->GetState();
         }
 
-        private function GetState()
-        {
-            $WaterAlarmState = $this->SendData(\BoschSHC\ApiUrl::WaterAlarm);
-            if (!$WaterAlarmState) {
-                return false;
-            }
-            $this->SendDebug('WaterAlarmState', $WaterAlarmState, 0);
-            $this->DecodeServiceData($WaterAlarmState);
-            return true;
-        }
-
         protected function DecodeServiceData($ServiceData)
         {
-            if ($ServiceData['@type'] =! self::WaterAlarmSystemState) {
+            if ($ServiceData['@type'] = !self::WaterAlarmSystemState) {
                 return false;
             }
             $VariableValues = \BoschSHC\Services\WaterAlarmSystem::getIPSVariable('state', $ServiceData['state']);
@@ -76,5 +65,16 @@ require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
                 true
             );
             $this->SetValue($VariableValues[\BoschSHC\Services\IPSVarIdent], $VariableValues[\BoschSHC\Services\IPSVarValue]);
+        }
+
+        private function GetState()
+        {
+            $WaterAlarmState = $this->SendData(\BoschSHC\ApiUrl::WaterAlarm);
+            if (!$WaterAlarmState) {
+                return false;
+            }
+            $this->SendDebug('WaterAlarmState', $WaterAlarmState, 0);
+            $this->DecodeServiceData($WaterAlarmState);
+            return true;
         }
     }

@@ -1,5 +1,11 @@
 {
-    "elements": [],
+    "elements": [
+        {
+            "type": "ValidationTextBox",
+            "name": "ScenarioId",
+            "caption": "Scenario ID"
+        }
+    ],
     "actions": [
         {
             "type": "Button",

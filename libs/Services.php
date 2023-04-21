@@ -45,11 +45,11 @@ namespace BoschSHC
         const LockActuator = 'LockActuator';
         const CameraNotification = 'CameraNotification';
         const ColorActuator = 'ColorActuator';
-        const WaterLeakageSensor='WaterLeakageSensor';
-        const WaterLeakageSensorCheck ='WaterLeakageSensorCheck';
-        const WaterLeakageSensorTilt ='WaterLeakageSensorTilt';
-        const WaterAlarmSystem='WaterAlarmSystem';
-        const AutomationRule ='AutomationRule';
+        const WaterLeakageSensor = 'WaterLeakageSensor';
+        const WaterLeakageSensorCheck = 'WaterLeakageSensorCheck';
+        const WaterLeakageSensorTilt = 'WaterLeakageSensorTilt';
+        const WaterAlarmSystem = 'WaterAlarmSystem';
+        const AutomationRule = 'AutomationRule';
         //todo
         const Thermostat = 'Thermostat';
         const VibrationSensor = 'VibrationSensor';
@@ -326,7 +326,7 @@ namespace BoschSHC\Services
                 ],
                 IPSProfile   => '~Window.Reversed',
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
-                IPSVarName   => 'State'
+                IPSVarName   => 'Shutter contact state'
             ]
         ];
     }
@@ -461,13 +461,13 @@ namespace BoschSHC\Services
                 'type'       => 'string',
                 IPSProfile   => '~Intensity.100',
                 IPSVarType   => VARIABLETYPE_INTEGER,
-                IPSVarName   => 'Position'
+                IPSVarName   => 'Valve position'
             ],
             'value' => [
                 'type'       => 'string',
                 IPSProfile   => 'BSH.ValveTappet.value',
                 IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'State'
+                IPSVarName   => 'Valve state'
             ]
         ];
     }
@@ -567,7 +567,7 @@ namespace BoschSHC\Services
                 IPSProfile   => '~Switch',
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
-                IPSVarName   => 'Switch'
+                IPSVarName   => 'Camera light state'
             ]
         ];
     }
@@ -876,7 +876,7 @@ namespace BoschSHC\Services
             'pushNotificationState' => [
                 'type'       => 'string',
                 'enum'       => [
-                    true => 'ENABLED',
+                    true   => 'ENABLED',
                     false  => 'DISABLED',
                 ],
                 IPSProfile   => '~Switch',
@@ -887,7 +887,7 @@ namespace BoschSHC\Services
             'acousticSignalState' => [
                 'type'       => 'string',
                 'enum'       => [
-                    true => 'ENABLED',
+                    true   => 'ENABLED',
                     false  => 'DISABLED',
                 ],
                 IPSProfile   => '~Switch',
@@ -1258,6 +1258,15 @@ namespace BoschSHC\Services
                     [0, 'Execute', '', -1]
                 ]
             );
+            $this->RegisterProfileIntegerEx(
+                'BSH.Scenario.Trigger',
+                '',
+                '',
+                '',
+                [
+                    [0, 'Execute', '', -1]
+                ]
+            );
         }
         protected function UnregisterProfiles()
         {
@@ -1287,7 +1296,8 @@ namespace BoschSHC\Services
             $this->UnregisterProfile(\BoschSHC\Services\LockActuator::getIPSProfile('lockState'));
             $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'));
             $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'));
+            $this->UnregisterProfile('BSH.Scenario.Trigger');
         }
     }
-    
+
 }

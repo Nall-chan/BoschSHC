@@ -665,3 +665,57 @@ $P = [
   // Doors/Windows
   //intrusion ?!
   //PresenceSimulation ?!
+
+  //system in Services.php fehlt noch
+  /*
+  [
+    {
+        "@type": "DeviceServiceData",
+        "id": "SoftwareUpdate",
+        "deviceId": "64-da-a0-10-4e-a1",
+        "state": {
+            "@type": "softwareUpdateState",
+            "swUpdateState": "NO_UPDATE_AVAILABLE",
+            "swUpdateLastResult": "UPDATE_SUCCESS",
+            "swUpdateAvailableVersion": "",
+            "swInstalledVersion": "10.13.2863-28466",
+            "swActivationDate": {
+                "@type": "softwareActivationDate",
+                "timeout": 604800000
+            },
+            "automaticUpdatesEnabled": true
+        },
+        "path": "/system/services/SoftwareUpdate"
+    },
+    {
+        "@type": "DeviceServiceData",
+        "id": "RemoteAccess",
+        "deviceId": "64-da-a0-10-4e-a1",
+        "state": {
+            "@type": "remoteAccessState",
+            "state": "ENABLED"
+        },
+        "path": "/system/services/RemoteAccess"
+    },
+    {
+        "@type": "DeviceServiceData",
+        "id": "RemotePushNotification",
+        "deviceId": "64-da-a0-10-4e-a1",
+        "state": {
+            "@type": "remotePushNotificationState",
+            "state": "ENABLED"
+        },
+        "path": "/system/services/RemotePushNotification"
+    },
+    {
+        "@type": "DeviceServiceData",
+        "id": "ArmDisarmPushNotification",
+        "deviceId": "64-da-a0-10-4e-a1",
+        "state": {
+            "@type": "armDisarmPushNotificationState",
+            "state": "ENABLED"
+        },
+        "path": "/system/services/ArmDisarmPushNotification"
+    }
+]
+   */

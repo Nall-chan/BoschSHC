@@ -41,12 +41,12 @@ abstract class BSHBasicClass extends IPSModule
         $this->DecodeServiceData($Data['Event']);
     }
 
+    abstract public function RequestState();
+
     protected function ModulErrorHandler($errno, $errstr)
     {
         echo $errstr . PHP_EOL;
     }
-
-    abstract public function RequestState();
     abstract protected function DecodeServiceData($ServiceData);
 
     protected function SendData(string $ApiCall, string $Method = \BoschSHC\HTTP::GET, string $Payload = '')
@@ -55,11 +55,11 @@ abstract class BSHBasicClass extends IPSModule
         $this->SendDebug('Send ApiCall', $ApiCall, 0);
         $this->SendDebug('Send Payload', $Payload, 0);
         $JSON = json_encode([
-                \BoschSHC\FlowToParent::DataID  => \BoschSHC\GUID::SendToIO,
-                \BoschSHC\FlowToParent::Call    => $ApiCall,
-                \BoschSHC\FlowToParent::Method  => $Method,
-                \BoschSHC\FlowToParent::Payload => $Payload
-            ]);
+            \BoschSHC\FlowToParent::DataID  => \BoschSHC\GUID::SendToIO,
+            \BoschSHC\FlowToParent::Call    => $ApiCall,
+            \BoschSHC\FlowToParent::Method  => $Method,
+            \BoschSHC\FlowToParent::Payload => $Payload
+        ]);
         set_error_handler([$this, 'ModulErrorHandler']);
         $Result = $this->SendDataToParent($JSON);
         restore_error_handler();

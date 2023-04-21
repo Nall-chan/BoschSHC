@@ -46,10 +46,11 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 return json_encode($Form);
             }
             $Devices = $this->GetDevices();
+            $Systems = $this->GetSystems();
             $AutomationRules = $this->GetAutomationRules();
             $Scenarios = $this->GetScenarios();
             //Check & Add WaterAlarmSystem
-            $Form['actions'][0]['values'] = array_merge($Devices,$AutomationRules,$Scenarios);
+            $Form['actions'][0]['values'] = array_merge($Systems, $Devices, $AutomationRules, $Scenarios);
             $this->SendDebug('FORM', json_encode($Form), 0);
             $this->SendDebug('FORM', json_last_error_msg(), 0);
 
@@ -84,8 +85,43 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             }
             $this->SendDebug('GetRooms', $Result, 0);
             $Values = json_decode($Result, true);
-           
         }
+        private function GetSystems()
+        {
+            $Systems = $this->GetLists(\BoschSHC\ApiUrl::System . \BoschSHC\ApiUrl::Services);
+            $SystemMACs = array_unique(array_column($Systems, 'deviceId'));
+            $IPSDevices = $this->GetIPSInstances(\BoschSHC\GUID::System, \BoschSHC\Property::System_Property_SystemMAC);
+            $Values = [];
+            foreach ($SystemMACs as $SystemMAC) {
+                $InstanceID = array_search($SystemMAC, $IPSDevices);
+                $Values[] = [
+                    'id'               => $SystemMAC,
+                    'name'             => ($InstanceID ? IPS_GetName($InstanceID) : 'Bosch SmartHome Controller'),
+                    'deviceModel'      => 'SHC',
+                    'instanceID'       => ($InstanceID ? $InstanceID : 0),
+                    'create'           => [
+                        'moduleID'         => \BoschSHC\GUID::System,
+                        'location'         => [$this->Translate('Bosch SmartHome Controller')],
+                        'configuration'    => [
+                            \BoschSHC\Property::System_Property_SystemMAC => $SystemMAC
+                        ]
+                    ]
+                ];
+                if ($InstanceID !== false) {
+                    unset($IPSDevices[$InstanceID]);
+                }
+            }
+            foreach ($IPSDevices as $InstanceID => $SystemMAC) {
+                $Values[] = [
+                    'id'               => $SystemMAC,
+                    'name'             => IPS_GetName($InstanceID),
+                    'deviceModel'      => 'SHC',
+                    'instanceID'       => $InstanceID,
+                ];
+            }
+            return $Values;
+        }
+
         private function GetAutomationRules()
         {
             $AutomationRules = $this->GetLists(\BoschSHC\ApiUrl::AutomationRules);
@@ -100,7 +136,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                     'instanceID'       => ($InstanceID ? $InstanceID : 0),
                     'create'           => [
                         'moduleID'         => \BoschSHC\GUID::AutomationRule,
-                        'location'         =>  [$this->Translate('Bosch SmartHome Automation Rules')] ,
+                        'location'         => [$this->Translate('Bosch SmartHome Automation Rules')],
                         'configuration'    => [
                             \BoschSHC\Property::AutomationRule_Property_RuleId => $AutomationRule['id']
                         ]
@@ -114,18 +150,45 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 $Values[] = [
                     'id'               => $AutomationRuleId,
                     'name'             => IPS_GetName($InstanceID),
-                    'deviceModel'      => '',
+                    'deviceModel'      => 'AutomationRule',
                     'instanceID'       => $InstanceID,
                 ];
             }
             return $Values;
-
         }
         private function GetScenarios()
         {
             $Scenarios = $this->GetLists(\BoschSHC\ApiUrl::Scenarios);
-            return [];
-
+            $IPSDevices = $this->GetIPSInstances(\BoschSHC\GUID::Scenarios, \BoschSHC\Property::Scenario_Property_ScenarioId);
+            $Values = [];
+            foreach ($Scenarios as $Scenario) {
+                $InstanceID = array_search($Scenario['id'], $IPSDevices);
+                $Values[] = [
+                    'id'               => $Scenario['id'],
+                    'name'             => ($InstanceID ? IPS_GetName($InstanceID) : $Scenario['name']),
+                    'deviceModel'      => 'Scenario',
+                    'instanceID'       => ($InstanceID ? $InstanceID : 0),
+                    'create'           => [
+                        'moduleID'         => \BoschSHC\GUID::Scenarios,
+                        'location'         => [$this->Translate('Bosch SmartHome Scenarios')],
+                        'configuration'    => [
+                            \BoschSHC\Property::Scenario_Property_ScenarioId => $Scenario['id']
+                        ]
+                    ]
+                ];
+                if ($InstanceID !== false) {
+                    unset($IPSDevices[$InstanceID]);
+                }
+            }
+            foreach ($IPSDevices as $InstanceID => $ScenarioId) {
+                $Values[] = [
+                    'id'               => $ScenarioId,
+                    'name'             => IPS_GetName($InstanceID),
+                    'deviceModel'      => 'AutomationRule',
+                    'instanceID'       => $InstanceID,
+                ];
+            }
+            return $Values;
         }
         private function GetDevices()
         {
@@ -182,7 +245,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             }
             $this->SendDebug($Call, $Result, 0);
             $decoded = json_decode($Result, true);
-            return (count($decoded) ? $decoded : []);
+            return count($decoded) ? $decoded : [];
         }
 
         private function GetIPSInstances(string $GUID, string $ConfigParam)

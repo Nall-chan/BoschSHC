@@ -1,0 +1,16 @@
+{
+    "id": "{6E721ADA-F07D-4C17-9BAD-AC2087DE2F74}",
+    "name": "Bosch SmartHome Scenarios",
+    "type": 3,
+    "vendor": "Bosch",
+    "aliases": [],
+    "parentRequirements": [
+        "{FCC91718-B5E6-FD03-A393-7BAF6E4A7EEF}"
+    ],
+    "childRequirements": [],
+    "implemented": [
+        "{602677ED-7193-4E26-841D-3069FDB9F7B1}"
+    ],
+    "prefix": "BSH",
+    "url": "https://github.com/Nall-chan/BoschSHC/Bosch%20SmartHome%20Scenarios"
+}
