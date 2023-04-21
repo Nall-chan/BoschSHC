@@ -29,6 +29,7 @@ namespace BoschSHC
         const BatteryLevel = 'BatteryLevel';
         const MultiLevelSwitch = 'MultiLevelSwitch';
         const PresenceSimulationConfiguration = 'PresenceSimulationConfiguration';
+        const PresenceSimulationScheduling = 'PresenceSimulationScheduling';
         const VentilationDelay = 'VentilationDelay';
         const BlindsControl = 'BlindsControl';
         const BlindsSceneControl = 'BlindsSceneControl';
@@ -37,6 +38,7 @@ namespace BoschSHC
         const Routing = 'Routing';
         const HueBlinking = 'HueBlinking';
         const HueBridgeSearcher = 'HueBridgeSearcher';
+        const HueBridgeConnector = 'HueBridgeConnector'; //todo
         const CommunicationQuality = 'CommunicationQuality';
         const MultiswitchConfiguration = 'MultiswitchConfiguration';
         const WalkTest = 'WalkTest';
@@ -50,6 +52,11 @@ namespace BoschSHC
         const WaterLeakageSensorTilt = 'WaterLeakageSensorTilt';
         const WaterAlarmSystem = 'WaterAlarmSystem';
         const AutomationRule = 'AutomationRule';
+        const SoftwareUpdate = 'SoftwareUpdate';
+        const RemoteAccess = 'RemoteAccess';
+        const RemotePushNotification = 'RemotePushNotification';
+        const ArmDisarmPushNotification = 'ArmDisarmPushNotification';
+
         //todo
         const Thermostat = 'Thermostat';
         const VibrationSensor = 'VibrationSensor';
@@ -97,6 +104,7 @@ namespace BoschSHC
             self::BatteryLevel,
             self::MultiLevelSwitch,
             self::PresenceSimulationConfiguration,
+            self::PresenceSimulationScheduling,
             self::VentilationDelay,
             self::BlindsControl,
             self::BlindsSceneControl,
@@ -115,7 +123,11 @@ namespace BoschSHC
             self::ColorActuator,
             self::WaterLeakageSensor,
             self::WaterLeakageSensorCheck,
-            self::WaterLeakageSensorTilt
+            self::WaterLeakageSensorTilt,
+            self::SoftwareUpdate,
+            self::RemoteAccess,
+            self::RemotePushNotification,
+            self::ArmDisarmPushNotification,
         ];
 
         public static function ServiceIsValid(string $Service)
@@ -615,6 +627,9 @@ namespace BoschSHC\Services
             ]
         ];
     }
+    class PresenceSimulationScheduling extends ServiceBasics
+    {
+    }
     class VentilationDelay extends ServiceBasics
     {
         protected static $properties = [
@@ -923,6 +938,87 @@ namespace BoschSHC\Services
                 IPSProfile   => '~Switch',
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarName   => 'Enabled'
+            ]
+        ];
+    }
+    class SoftwareUpdate extends ServiceBasics
+    {
+        protected static $properties = [
+            'swUpdateState' => [
+                'type'       => 'string',
+                //NO_UPDATE_AVAILABLE
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Software update state'
+            ],
+            'swUpdateLastResult' => [
+                'type'       => 'string',
+                //UPDATE_SUCCESS
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Software update last result'
+            ],
+            'swUpdateAvailableVersion' => [
+                'type'       => 'string',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Available software version'
+            ],
+            'swInstalledVersion' => [
+                'type'       => 'string',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Installed software version'
+            ],
+            'automaticUpdatesEnabled' => [
+                'type'       => 'bool',
+                IPSProfile   => '~Switch',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarAction => true,
+                IPSVarName   => 'Automatic updates enabled'
+            ]
+        ];
+    }
+    class RemoteAccess extends ServiceBasics
+    {
+        protected static $properties = [
+            'state' => [
+                'type' => 'string',
+                'enum' => [
+                    true   => 'ENABLED',
+                    false  => 'DISABLED',
+                ],                IPSProfile   => '~Switch',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarAction => true,
+                IPSVarName   => 'Remote access'
+            ]
+        ];
+    }
+    class RemotePushNotification extends ServiceBasics
+    {
+        protected static $properties = [
+            'state' => [
+                'type' => 'string',
+                'enum' => [
+                    true   => 'ENABLED',
+                    false  => 'DISABLED',
+                ],
+                IPSProfile   => '~Switch',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarAction => true,
+                IPSVarName   => 'Remote push notification'
+            ]
+        ];
+    }
+    class ArmDisarmPushNotification extends ServiceBasics
+    {
+        protected static $properties = [
+            'state' => [
+                'type' => 'string',
+                'enum' => [
+                    true   => 'ENABLED',
+                    false  => 'DISABLED',
+                ],
+                IPSProfile   => '~Switch',
+                IPSVarType   => VARIABLETYPE_BOOLEAN,
+                IPSVarAction => true,
+                IPSVarName   => 'Arm/Disarm push notification'
             ]
         ];
     }

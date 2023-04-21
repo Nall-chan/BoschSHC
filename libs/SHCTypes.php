@@ -93,49 +93,6 @@ class EventTypes
     const Client = 'client';
     const AutomationRule = 'automationRule';
     const ScenarioTriggered = 'scenarioTriggered';
+    const EmergencySystemServiceData = 'EmergencySystemServiceData';
+    const EmergencySupportServiceData = 'emergencySupportServiceData';
 }
-/*
-Array
-(
-    [automationConditions] => Array
-        (
-        )
-
-    [automationTriggers] => Array
-        (
-            [0] => Array
-                (
-                    [configuration] => {"smartPlugId":"hdm:ZigBee:385b44fffeaefde8","triggerState":"ON"}
-                    [type] => SmartPlugOnOffTrigger
-                )
-
-        )
-
-    [@type] => automationRule
-    [name] => Stecker testen
-    [automationActions] => Array
-        (
-            [0] => Array
-                (
-                    [configuration] => {"smartPlugId":"hdm:ZigBee:385b44fffeaefde8","action":"TURN_OFF"}
-                    [delayInSeconds] => 300
-                    [type] => SmartPlugOnOffAction
-                )
-
-        )
-
-    [id] => bd8a0ebb-6f5a-41be-b9f0-cc2cf87abf71
-    [conditionLogicalOp] => AND
-    [enabled] => bool
-)
- */
-/*
-20.04.2023, 11:10:28 | Bosch SmartHome IO   | Event with unhandled EventTypes:
-Array
-(
-    [@type] => scenarioTriggered
-    [name] => Nach Hause kommen
-    [id] => 1f7fbb71-c6a6-4541-931e-dddf942237ca
-    [lastTimeTriggered] => 1681981828485
-)
- */

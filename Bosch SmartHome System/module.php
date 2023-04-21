@@ -80,7 +80,7 @@ class BoschSmartHomeSystem extends BSHBasicClass
             if ($Service::PropertyIsValid($Property)) {
                 $Payload = $Service::getServiceStateRequest($Property, $Value);
                 return $this->SendData(
-                    \BoschSHC\ApiUrl::Devices . '/' . $this->DeviceId .
+                    \BoschSHC\ApiUrl::System .
                         \BoschSHC\ApiUrl::Services . '/' . $ServiceId .
                         \BoschSHC\ApiUrl::State,
                     \BoschSHC\HTTP::PUT,

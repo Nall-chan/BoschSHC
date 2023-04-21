@@ -351,6 +351,8 @@ class BoschSmartHomeIO extends IPSModule
             case \BoschSHC\EventTypes::Room: //ignore
             case \BoschSHC\EventTypes::Device: //ignore
             case \BoschSHC\EventTypes::WaterAlarmSystemConfiguration: //ignore
+            case \BoschSHC\EventTypes::EmergencySystemServiceData: // ignore
+            case \BoschSHC\EventTypes::EmergencySupportServiceData: //ignore
             case \BoschSHC\EventTypes::Message: //todo
                 return;
             }
