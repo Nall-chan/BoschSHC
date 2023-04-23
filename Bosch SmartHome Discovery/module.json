@@ -1,0 +1,12 @@
+{
+    "id": "{98281B33-2867-4A31-9D21-DFEC24D4ECCF}",
+    "name": "Bosch SmartHome Discovery",
+    "type": 5,
+    "vendor": "Bosch",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "BSHC",
+    "url": "https://github.com/Nall-chan/BoschSHC/Bosch%20SmartHome%20Discovery"
+}

@@ -49,7 +49,8 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $Systems = $this->GetSystems();
             $AutomationRules = $this->GetAutomationRules();
             $Scenarios = $this->GetScenarios();
-            //Check & Add WaterAlarmSystem
+            //Add WaterAlarmSystem
+            //Add Messages
             $Form['actions'][0]['values'] = array_merge($Systems, $Devices, $AutomationRules, $Scenarios);
             $this->SendDebug('FORM', json_encode($Form), 0);
             $this->SendDebug('FORM', json_last_error_msg(), 0);

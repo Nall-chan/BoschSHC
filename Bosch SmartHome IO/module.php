@@ -294,7 +294,7 @@ class BoschSmartHomeIO extends IPSModule
                 $DeviceId = $Data['deviceId'];
                 unset($Data['deviceId']);
                 $this->SendDebug('Device', $DeviceId, 0);
-                $this->SendDebug('Data', $Data, 0);
+                $this->SendDebug('Device Data', $Data, 0);
                 $JSON = json_encode(
                     [
                         \BoschSHC\FlowToDevice::DataID   => \BoschSHC\GUID::SendToDevice,
@@ -320,8 +320,8 @@ class BoschSmartHomeIO extends IPSModule
                 }
                 $RuleId = $Data['id'];
                 unset($Data['id']);
-                $this->SendDebug('Device', $RuleId, 0);
-                $this->SendDebug('Data', $Data, 0);
+                $this->SendDebug('RuleId', $RuleId, 0);
+                $this->SendDebug('Rule Data', $Data, 0);
                 $JSON = json_encode(
                     [
                         \BoschSHC\FlowToAutomationRule::DataID   => \BoschSHC\GUID::SendToAutomationRule,
@@ -337,8 +337,8 @@ class BoschSmartHomeIO extends IPSModule
                 }
                 $ScenarioId = $Data['id'];
                 unset($Data['id']);
-                $this->SendDebug('Device', $ScenarioId, 0);
-                $this->SendDebug('Data', $Data, 0);
+                $this->SendDebug('ScenarioId', $ScenarioId, 0);
+                $this->SendDebug('Scenario Data', $Data, 0);
                 $JSON = json_encode(
                     [
                         \BoschSHC\FlowToScenarios::DataID     => \BoschSHC\GUID::SendToScenarios,
@@ -348,12 +348,21 @@ class BoschSmartHomeIO extends IPSModule
                 );
                 $this->SendDataToChildren($JSON);
                 return;
+            case \BoschSHC\EventTypes::Message:
+                $this->SendDebug('Message Data', $Data, 0);
+                $JSON = json_encode(
+                    [
+                        \BoschSHC\FlowToMessages::DataID     => \BoschSHC\GUID::SendToMessages,
+                        \BoschSHC\FlowToMessages::Event      => $Data
+                    ]
+                );
+                $this->SendDataToChildren($JSON);
+                return;
             case \BoschSHC\EventTypes::Room: //ignore
             case \BoschSHC\EventTypes::Device: //ignore
             case \BoschSHC\EventTypes::WaterAlarmSystemConfiguration: //ignore
             case \BoschSHC\EventTypes::EmergencySystemServiceData: // ignore
             case \BoschSHC\EventTypes::EmergencySupportServiceData: //ignore
-            case \BoschSHC\EventTypes::Message: //todo
                 return;
             }
         $this->LogMessage("Data with unhandled EventTypes:\r\n" . print_r($Data, true), KL_ERROR);
@@ -410,18 +419,20 @@ class BoschSmartHomeIO extends IPSModule
     private function PollLong()
     {
         if ($this->SHCPollId == '') {
-            return; // not more subscribed -> exit IPS_RunScriptText loop
+            return; // not more subscribed -> exit IPS_RunScriptText PollLong loop
         }
         $this->SendDebug('START PollLong', '', 0);
-        //Get Data
         $Payload = json_encode([
             'jsonrpc' => '2.0',
             'method'  => 'RE/longPoll',
-            'params'  => [$this->SHCPollId, 5]
-
+            'params'  => [$this->SHCPollId, 5] //Long poll for 5 seconds
         ]);
-        $Result = $this->SendRequest(self::SHC_Poll, \BoschSHC\HTTP::POST, $Payload, 6000);
+        $Result = $this->SendRequest(self::SHC_Poll, \BoschSHC\HTTP::POST, $Payload, 6000); //6 seconds timeout
         if (!$Result) {
+            $this->SendDebug('ABORT PollLong -> Resubscribe', $Result, 0);
+            if ($this->Subscribe()) { // new loop start in Subscribe()
+                return;
+            } //No Subscribe possible -> Connection lost :(
             $this->LogMessage($this->Translate('Connection lost'), KL_ERROR);
             $this->SendDebug('Connection lost', '', 0);
             $this->SendDebug('END PollLong', $Result, 0);
@@ -430,8 +441,12 @@ class BoschSmartHomeIO extends IPSModule
             return;
         }
         $Events = json_decode($Result, true)['result'];
-        foreach ($Events as $Event) {
-            $this->DecodeAndSendToChildren($Event['@type'], $Event);
+        try {
+            foreach ($Events as $Event) {
+                $this->DecodeAndSendToChildren($Event['@type'], $Event);
+            }
+        } catch (\Throwable $th) {
+            $this->LogMessage($th->getMessage(), KL_ERROR);
         }
         $this->SendDebug('END PollLong', $Result, 0);
         IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"PollLong",true);');
