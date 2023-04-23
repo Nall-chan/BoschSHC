@@ -363,6 +363,7 @@ class BoschSmartHomeIO extends IPSModule
             case \BoschSHC\EventTypes::WaterAlarmSystemConfiguration: //ignore
             case \BoschSHC\EventTypes::EmergencySystemServiceData: // ignore
             case \BoschSHC\EventTypes::EmergencySupportServiceData: //ignore
+            case \BoschSHC\EventTypes::Client: //ignore
                 return;
             }
         $this->LogMessage("Data with unhandled EventTypes:\r\n" . print_r($Data, true), KL_ERROR);

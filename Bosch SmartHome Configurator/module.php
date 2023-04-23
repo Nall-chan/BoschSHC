@@ -49,9 +49,9 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $Systems = $this->GetSystems();
             $AutomationRules = $this->GetAutomationRules();
             $Scenarios = $this->GetScenarios();
-            //Add WaterAlarmSystem
-            //Add Messages
-            $Form['actions'][0]['values'] = array_merge($Systems, $Devices, $AutomationRules, $Scenarios);
+            $WaterAlarm = $this->GetWaterAlarm();
+            $Messages = $this->GetMessages();
+            $Form['actions'][0]['values'] = array_merge($Systems, $Devices, $AutomationRules, $Scenarios, $WaterAlarm, $Messages);
             $this->SendDebug('FORM', json_encode($Form), 0);
             $this->SendDebug('FORM', json_last_error_msg(), 0);
 
@@ -87,6 +87,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $this->SendDebug('GetRooms', $Result, 0);
             $Values = json_decode($Result, true);
         }
+
         private function GetSystems()
         {
             $Systems = $this->GetLists(\BoschSHC\ApiUrl::System . \BoschSHC\ApiUrl::Services);
@@ -157,6 +158,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             }
             return $Values;
         }
+
         private function GetScenarios()
         {
             $Scenarios = $this->GetLists(\BoschSHC\ApiUrl::Scenarios);
@@ -188,6 +190,82 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                     'deviceModel'      => 'AutomationRule',
                     'instanceID'       => $InstanceID,
                 ];
+            }
+            return $Values;
+        }
+        private function GetWaterAlarm()
+        {
+            $WaterAlarmSystemState = $this->GetLists(\BoschSHC\ApiUrl::WaterAlarm);
+            $Create = [];
+            if ($WaterAlarmSystemState['available']) {
+                $Create = [
+                    'create'           => [
+                        'moduleID'         => \BoschSHC\GUID::WaterAlarmSystem,
+                        'location'         => [$this->Translate('Bosch SmartHome Controller')],
+                        'configuration'    => new stdClass()
+                    ]
+                ];
+            }
+            $IPSDevices = array_flip($this->GetIPSInstances(\BoschSHC\GUID::WaterAlarmSystem));
+            $Values = [];
+            foreach ($IPSDevices as $InstanceID) {
+                $Values[] = array_merge(
+                    [
+                        'id'               => '',
+                        'name'             => IPS_GetName($InstanceID),
+                        'deviceModel'      => 'WaterAlarmSystem',
+                        'instanceID'       => $InstanceID
+                    ],
+                    $Create
+                );
+            }
+            if (!count($Values)) {
+                $Values[] = array_merge(
+                    [
+                        'id'               => '',
+                        'name'             => $this->Translate('Bosch SmartHome Water Alarm System'),
+                        'deviceModel'      => 'WaterAlarmSystem',
+                        'instanceID'       => 0
+                    ],
+                    $Create
+                );
+            }
+            return $Values;
+        }
+        private function GetMessages()
+        {
+            $Create = [];
+            $Create = [
+                'create'           => [
+                    'moduleID'         => \BoschSHC\GUID::Messages,
+                    'location'         => [$this->Translate('Bosch SmartHome Controller')],
+                    'configuration'    => new stdClass()
+                ]
+            ];
+
+            $IPSDevices = array_flip($this->GetIPSInstances(\BoschSHC\GUID::Messages));
+            $Values = [];
+            foreach ($IPSDevices as $InstanceID) {
+                $Values[] = array_merge(
+                    [
+                        'id'               => '',
+                        'name'             => IPS_GetName($InstanceID),
+                        'deviceModel'      => 'Bosch SmartHome Messages',
+                        'instanceID'       => $InstanceID
+                    ],
+                    $Create
+                );
+            }
+            if (!count($Values)) {
+                $Values[] = array_merge(
+                    [
+                        'id'               => '',
+                        'name'             => $this->Translate('Messages'),
+                        'deviceModel'      => 'Messages',
+                        'instanceID'       => 0
+                    ],
+                    $Create
+                );
             }
             return $Values;
         }
@@ -249,11 +327,13 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             return count($decoded) ? $decoded : [];
         }
 
-        private function GetIPSInstances(string $GUID, string $ConfigParam)
+        private function GetIPSInstances(string $GUID, string $ConfigParam = '')
         {
             $InstanceIDList = array_filter(IPS_GetInstanceListByModuleID($GUID), [$this, 'FilterInstances']);
             $InstanceIDList = array_flip(array_values($InstanceIDList));
-            array_walk($InstanceIDList, [$this, 'GetConfigParam'], $ConfigParam);
+            if ($ConfigParam) {
+                array_walk($InstanceIDList, [$this, 'GetConfigParam'], $ConfigParam);
+            }
             return $InstanceIDList;
         }
     }
