@@ -25,29 +25,6 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $IPSDevices = $this->GetIPSInstances();
             $this->SendDebug('IPSDevices', $IPSDevices, 0);
             $Values = [];
-            /*            foreach ($IPSDevices as $InstanceID => $Host) {
-                            $Values[] = [
-                                'host'               => $Host,
-                                'name'             => IPS_GetName($InstanceID),
-                                'instanceID'       => $InstanceID,
-                                'create'           => [
-                                    [
-                                        'moduleID'         => \BoschSHC\GUID::Configurator,
-                                        'configuration'    =>  new stdClass()
-                                    ],
-                                    [
-                                        'moduleID'         => \BoschSHC\GUID::IO,
-                                        'configuration'    =>  [
-                                        \BoschSHC\Property::IO_Property_Host  => $Host,
-                                        \BoschSHC\Property::IO_Property_Open  => true
-                                        ]
-                                    ]
-                                ]
-                            ];
-                        }
-                        return $Values;
-             */
-
             foreach ($Controllers as $Device) {
                 $InstanceID = false;
                 $Host = false;
@@ -61,7 +38,6 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                 if (!$Host) {
                     $Host = array_shift($Device['host']);
                 }
-                //$InstanceID = array_search($Device['id'], $IPSDevices);
                 $Values[] = [
                     'host'               => $Host,
                     'name'               => ($InstanceID ? IPS_GetName($InstanceID) : $Device['name']),

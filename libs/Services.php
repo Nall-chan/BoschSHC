@@ -1339,10 +1339,9 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['ALARM_OFF', 'ALARM_OFF', '', -1],
-                    ['WATER_ALARM', 'WATER_ALARM', '', -1],
-                    ['ALARM_OFF', 'ALARM_OFF', '', -1],
-                    ['ALARM_MUTED', 'ALARM_MUTED', '', -1]
+                    ['ALARM_OFF', 'Ok', '', -1],
+                    ['WATER_ALARM', 'Alarm', '', -1],
+                    ['ALARM_MUTED', 'Muted alarm', '', -1]
                 ]
             );
             $this->RegisterProfileIntegerEx(

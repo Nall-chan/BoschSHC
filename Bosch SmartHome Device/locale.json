@@ -1,8 +1,19 @@
 {
     "translations": {
         "de": {
-            "Translation 1": "Übersetzung 1",
-            "Translation 2": "Übersetzung 2"
+            "Device ID": "Geräte-ID",
+            "Show unsupported services": "Nicht unterstützte Dienste anzeigen",
+            "Device send following unsupported services": "Das Gerät sendet folgende nicht unterstützten Diensten",
+            "Services": "Dienste",
+            "Service id": "Dienst-ID",
+            "States which the service sends": "Zustände welcher der Dienst sendet",
+            "Property": "Eigenschaft",
+            "Value": "Wert",
+            "Request states": "Zustandsabfrage",
+            "Enabled": "Aktiviert",
+            "Invalid Ident": "Ungültiger Ident",
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:",
+            "Execute": "Ausführen"
         }
     }
 }

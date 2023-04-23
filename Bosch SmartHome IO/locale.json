@@ -1,8 +1,26 @@
 {
     "translations": {
         "de": {
-            "Translation 1": "Übersetzung 1",
-            "Translation 2": "Übersetzung 2"
+            "Open": "Aktiv",
+            "Check online & pair state": "Prüfe Online- und Kopplungsstatus",
+            "Abort": "Abbruch",
+            "Pair": "Koppeln",
+            "Please start paring with the Controller!": "Bitte starten Sie das Pairing mit dem Controller!",
+            "Press the Bosch Smart Home Controller's front-side button, until the LEDs begin flashing.\r\n\r\nEnter your Bosch Smart Home Controller password into the Textbox below\r\n and then click the \"Pair\" button.": "Drücken Sie die Taste auf der Vorderseite des Bosch Smart Home Controllers, bis die LEDs zu blinken beginnen.\r\n\r\nGeben Sie Ihr Bosch Smart Home Controller-Passwort in das Textfeld unten ein\r\n und klicken Sie dann auf die Schaltfläche \"Koppeln\".",
+            "Password": "Passwort",
+            "Cannot connect to SHC": "Kann keine Verbindung zum SHC herstellen",
+            "Unauthorized": "Nicht autorisiert",
+            "Symcon is not paired with SHC": "Symcon ist nicht mit SHC gekoppelt",
+            "No certificate available": "Kein Zertifikat vorhanden",
+            "Connection lost": "Verbindung unterbrochen",
+            "Connection closed": "Verbindung geschlossen",
+            "Connection established": "Verbindung hergestellt",
+            "Controller not reachable.": "Controller nicht erreichbar.",
+            "Instance is inactive": "Instanz ist inaktiv",
+            "Instance is in error state": "Instanz befindet sich im Fehlerzustand",
+            "Paring with SHC complete.": "Kopplung mit SHC abgeschlossen.",
+            "Paring error! Button pressed? Password correct?": "Paring-Fehler! Knopf gedrückt? Passwort korrekt?",
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }
 }

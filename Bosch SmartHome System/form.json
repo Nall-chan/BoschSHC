@@ -33,7 +33,7 @@
                                 "width": "auto"
                             },
                             {
-                                "caption": "States that service sends",
+                                "caption": "States which the service sends",
                                 "name": "States",
                                 "visible": false,
                                 "edit": {

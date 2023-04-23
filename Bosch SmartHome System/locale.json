@@ -1,8 +1,25 @@
 {
     "translations": {
         "de": {
-            "Translation 1": "Übersetzung 1",
-            "Translation 2": "Übersetzung 2"
+            "System MAC": "System-MAC",
+            "Show unsupported services": "Nicht unterstützte Dienste anzeigen",
+            "Device send following unsupported services": "Das Gerät sendet folgende nicht unterstützten Diensten",
+            "Services": "Dienste",
+            "Service id": "Dienst-ID",
+            "States which the service sends": "Zustände welcher der Dienst sendet",
+            "Property": "Eigenschaft",
+            "Value": "Wert",
+            "Request states": "Zustandsabfrage",
+            "Software update state": "Status der Softwareaktualisierung",
+            "Software update last result": "Letztes Ergebnis der Softwareaktualisierung",
+            "Available software version": "Verfügbare Softwareversion",
+            "Installed software version": "Installierte Softwareversion",
+            "Automatic updates enabled": "Automatische Updates aktiviert",
+            "Remote access": "Fernzugriff",
+            "Remote push notification": "Remote-Push-Benachrichtigung",
+            "Invalid Ident": "Ungültiger Ident",
+            "Execute": "Ausführen",
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }
 }
