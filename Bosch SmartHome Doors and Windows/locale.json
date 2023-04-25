@@ -3,6 +3,18 @@
         "de": {
             "Request states": "Zustandsabfrage",
             "Invalid Ident": "Ungültiger Ident",
+            "All Doors": "Alle Türen",
+            "Open Doors": "Offene Türen",
+            "Bypassed Doors": "Abgeschaltete Türen",
+            "Unknown Doors": "unbekannte Türen",
+            "All Windows": "Alle Fenster",
+            "Open Windows": "Offene Fenster",
+            "Unknown Windows": "unbekannte Fenster",
+            "bypassedWindows": "Abgeschaltete Fenster",
+            "All Others": "Alle Sonstige",
+            "Open Others": "Offene Sonstige",
+            "Unknown Others": "Unbekannte Sonstige",
+            "bypassedOthers": "Abgeschaltete Sonstige",
             "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }

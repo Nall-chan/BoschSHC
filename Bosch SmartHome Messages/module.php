@@ -45,14 +45,13 @@ class BoschSmartHomeMessages extends BSHBasicClass
     {
         return $this->Multi_Messages;
     }
-    /* todo / URL/Method unknown
     public function DeleteMessage(string $MessageId)
     {
-        $Messages = $this->SendData(\BoschSHC\ApiUrl::Messages);
+        $Messages = $this->SendData(\BoschSHC\ApiUrl::Messages . '/' . $MessageId, \BoschSHC\HTTP::DELETE);
         if (!$Messages) {
             return false;
         }
-    }*/
+    }
     protected function DecodeServiceData($Message)
     {
         $Messages = $this->Multi_Messages;

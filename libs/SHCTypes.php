@@ -26,6 +26,7 @@ class HTTP
     const GET = 'GET';
     const PUT = 'PUT';
     const POST = 'POST';
+    const DELETE = 'DELETE';
 }
 
 class GUID

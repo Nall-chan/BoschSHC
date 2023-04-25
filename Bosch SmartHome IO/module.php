@@ -577,7 +577,7 @@ class BoschSmartHomeIO extends IPSModule
                     $Result = false;
                 break;
                 case 204:
-                    if ($RequestMethod == \BoschSHC\HTTP::PUT) {
+                    if (($RequestMethod == \BoschSHC\HTTP::PUT) || ($RequestMethod == \BoschSHC\HTTP::DELETE)) {
                         $Result = true;
                     }
                 break;
