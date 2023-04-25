@@ -56,11 +56,14 @@ namespace BoschSHC
         const RemoteAccess = 'RemoteAccess';
         const RemotePushNotification = 'RemotePushNotification';
         const ArmDisarmPushNotification = 'ArmDisarmPushNotification';
-
-        //todo
+        const DisplayConfiguration = 'DisplayConfiguration';
+        const TemperatureOffset = 'TemperatureOffset';
+        const Linking = 'Linking';
+        const TerminalConfiguration = 'TerminalConfiguration';
         const Thermostat = 'Thermostat';
-        const VibrationSensor = 'VibrationSensor';
         const Bypass = 'Bypass';
+        const VibrationSensor = 'VibrationSensor';
+        //todo
         const IntrusionDetectionControl = 'IntrusionDetectionControl';
         /*
             intrusionDetectionControlState: {
@@ -128,6 +131,13 @@ namespace BoschSHC
             self::RemoteAccess,
             self::RemotePushNotification,
             self::ArmDisarmPushNotification,
+            self::DisplayConfiguration,
+            self::TemperatureOffset,
+            self::Linking,
+            self::TerminalConfiguration,
+            self::Thermostat,
+            self::Bypass,
+            self::VibrationSensor,
         ];
 
         public static function ServiceIsValid(string $Service)
@@ -159,7 +169,7 @@ namespace BoschSHC\Services
     const IPSVarValue = 'VarValue';
     const IPSVarAction = 'VarAction';
     const IPSVarIdent = 'VarIdent';
-
+    const OverrideSendServiceState = 'SendService';
     abstract class ServiceBasics
     {
         protected static $properties = [];
@@ -194,8 +204,10 @@ namespace BoschSHC\Services
             if (static::$properties[$Property]['type'] == 'string') {
                 $Request[$Property] = (string) $Request[$Property];
             }
-            $Request['@type'] = static::getServiceState();
-            return json_encode($Request);
+            $Request['@type'] = (isset(static::$properties[$Property][OverrideSendServiceState])) ?
+                                static::$properties[$Property][OverrideSendServiceState] :
+                                static::getServiceState();
+            return json_encode($Request, JSON_PRESERVE_ZERO_FRACTION);
         }
         public static function getIPSVariable(string $Property, $Value)
         {
@@ -1022,6 +1034,99 @@ namespace BoschSHC\Services
             ]
         ];
     }
+    class DisplayConfiguration extends ServiceBasics
+    {
+        protected static $properties = [
+            'displayBrightness' => [
+                'type'       => 'number',
+                IPSProfile   => 'BSH.DisplayConfiguration.displayBrightness',
+                IPSVarType   => VARIABLETYPE_INTEGER,
+                IPSVarAction => true,
+                IPSVarName   => 'Display brightness'
+            ],
+            'displayOnTime' => [
+                'type'       => 'number',
+                IPSProfile   => 'BSH.DisplayConfiguration.displayOnTime',
+                IPSVarType   => VARIABLETYPE_INTEGER,
+                IPSVarAction => true,
+                IPSVarName   => 'Display on time'
+            ]
+        ];
+    }
+    class TemperatureOffset extends ServiceBasics
+    {
+        protected static $properties = [
+            'offset' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.TemperatureOffset.offset',
+                IPSVarType   => VARIABLETYPE_FLOAT,
+                IPSVarAction => true,
+                IPSVarName   => 'Temperature offset'
+            ]
+        ];
+    }
+    class Linking extends ServiceBasics // ignore
+    {
+    }
+    class TerminalConfiguration extends ServiceBasics
+    {
+        protected static $properties = [
+            'type' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.TerminalConfiguration.type',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Terminal configuration'
+            ]
+        ];
+    }
+    class Thermostat extends ServiceBasics
+    {
+        protected static $properties = [
+            'childLock' => [
+                'type' => 'string',
+                'enum' => [
+                    true   => 'ON',
+                    false  => 'OFF',
+                ],
+                IPSProfile              => '~Switch',
+                IPSVarType              => VARIABLETYPE_BOOLEAN,
+                IPSVarAction            => true,
+                IPSVarName              => 'child lock',
+                OverrideSendServiceState=> 'childLockState'
+            ]
+        ];
+    }
+    class Bypass extends ServiceBasics
+    {
+        protected static $properties = [
+            'state' => [
+                'type' => 'string',
+                'enum' => [
+                    true   => 'BYPASS_ACTIVE',
+                    false  => 'BYPASS_INACTIVE',
+                ],
+                IPSProfile              => '~Switch',
+                IPSVarType              => VARIABLETYPE_BOOLEAN,
+                IPSVarAction            => true,
+                IPSVarName              => 'Bypass'
+            ]
+        ];
+    }
+    class VibrationSensor extends ServiceBasics
+    {
+        protected static $properties = [
+            'state' => [
+                'type' => 'string',
+                'enum' => [
+                    true   => 'VIBRATION',
+                    false  => 'NO_VIBRATION',
+                ],
+                IPSProfile              => '~Alert',
+                IPSVarType              => VARIABLETYPE_BOOLEAN,
+                IPSVarName              => 'Vibration sensor'
+            ]
+        ];
+    }
     trait IPSProfile
     {
         protected function RegisterProfiles()
@@ -1362,6 +1467,46 @@ namespace BoschSHC\Services
                     [0, 'Execute', '', -1]
                 ]
             );
+            $this->RegisterProfileInteger(
+                \BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayBrightness'),
+                '',
+                '',
+                ' %',
+                10,
+                100,
+                10
+            );
+            $this->RegisterProfileInteger(
+                \BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayOnTime'),
+                '',
+                '',
+                ' sec',
+                5,
+                30,
+                5
+            );
+            $this->RegisterProfileFloat(
+                \BoschSHC\Services\TemperatureOffset::getIPSProfile('offset'),
+                '',
+                '',
+                '',
+                -5,
+                5,
+                0.1,
+                1
+            );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\TerminalConfiguration::getIPSProfile('type'),
+                '',
+                '',
+                '',
+                [
+                    ['OUTDOOR_SENSOR_CONNECTED', 'outdoor sensor connected', '', -1],
+                    ['FLOOR_SENSOR_DISPLAYED_AND_USED_FOR_REGULATION', 'floor sensor (displayed & used)', '', -1],
+                    ['FLOOR_SENSOR_DISPLAYED', 'floor sensor displayed', '', -1],
+                    ['NOT_CONNECTED', 'not connected', '', -1]
+                ]
+            );
         }
         protected function UnregisterProfiles()
         {
@@ -1392,6 +1537,8 @@ namespace BoschSHC\Services
             $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'));
             $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'));
             $this->UnregisterProfile('BSH.Scenario.Trigger');
+            $this->UnregisterProfile(\BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayBrightness'));
+            $this->UnregisterProfile(\BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayOnTime'));
         }
     }
 

@@ -72,7 +72,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
 
         private function GetSHCs()
         {
-            $mDNSInstanceIDs = IPS_GetInstanceListByModuleID('{780B2D48-916C-4D59-AD35-5A429B2355A5}');
+            $mDNSInstanceIDs = IPS_GetInstanceListByModuleID(\BoschSHC\GUID::DDNS);
             $resultServiceTypes = ZC_QueryServiceType($mDNSInstanceIDs[0], '_http._tcp', '');
             $this->SendDebug('mDNS resultServiceTypes', $resultServiceTypes, 0);
             $SHCs = [];

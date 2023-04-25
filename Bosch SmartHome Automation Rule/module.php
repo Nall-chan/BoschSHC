@@ -20,17 +20,13 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
     }
     public function ApplyChanges()
     {
-        //Never delete this line!
-        parent::ApplyChanges();
         $RuleId = $this->ReadPropertyString(\BoschSHC\Property::AutomationRule_Property_RuleId);
         $this->RuleId = $RuleId;
         if ($RuleId != '') {
             $this->SetReceiveDataFilter('.*"' . \BoschSHC\FlowToAutomationRule::RuleId . '":"' . $RuleId . '".*');
         }
-
-        if (IPS_GetKernelRunlevel() != KR_READY) {
-            return;
-        }
+        //Never delete this line!
+        parent::ApplyChanges();
         $VariableValues = \BoschSHC\Services\AutomationRule::getIPSVariable('enabled', 0);
         $this->MaintainVariable(
             $VariableValues[\BoschSHC\Services\IPSVarIdent],
@@ -41,6 +37,9 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
             true
         );
         $this->EnableAction($VariableValues[\BoschSHC\Services\IPSVarIdent]);
+        if (IPS_GetKernelRunlevel() != KR_READY) {
+            return;
+        }
         if (($this->RuleId != '') && ($this->HasActiveParent())) {
             $this->GetState();
         }

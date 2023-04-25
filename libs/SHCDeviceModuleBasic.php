@@ -78,4 +78,13 @@ abstract class BSHBasicClass extends IPSModule
         }
         return json_decode($Result, true);
     }
+    protected function camelCase2Separator($str, $separator = ' ')
+    {
+        if (empty($str)) {
+            return $str;
+        }
+        $str = lcfirst($str);
+        $str = preg_replace('/[A-Z]/', $separator . '$0', $str);
+        return $str;
+    }
 }

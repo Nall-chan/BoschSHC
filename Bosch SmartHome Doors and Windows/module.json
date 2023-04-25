@@ -1,0 +1,16 @@
+{
+    "id": "{1080892A-31C2-4234-A1FB-D88E6C14118C}",
+    "name": "Bosch SmartHome Doors and Windows",
+    "type": 3,
+    "vendor": "Bosch",
+    "aliases": [],
+    "parentRequirements": [
+        "{FCC91718-B5E6-FD03-A393-7BAF6E4A7EEF}"
+    ],
+    "childRequirements": [],
+    "implemented": [
+        "{18F26C0E-B5E8-4BAF-9539-674B4A6FF841}"
+    ],
+    "prefix": "BSH",
+    "url": "https://github.com/Nall-chan/BoschSHC/Bosch%20SmartHome%20Doors%20and%20Windows"
+}

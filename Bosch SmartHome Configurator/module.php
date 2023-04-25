@@ -23,9 +23,9 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
 
         public function ApplyChanges()
         {
+            $this->SetReceiveDataFilter('.*"DeviceId":"NOTHING".*');
             //Never delete this line!
             parent::ApplyChanges();
-            $this->SetReceiveDataFilter('.*"DeviceId":"NOTHING".*');
         }
 
         public function GetConfigurationForm()
@@ -51,7 +51,8 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
             $Scenarios = $this->GetScenarios();
             $WaterAlarm = $this->GetWaterAlarm();
             $Messages = $this->GetMessages();
-            $Form['actions'][0]['values'] = array_merge($Systems, $Devices, $AutomationRules, $Scenarios, $WaterAlarm, $Messages);
+            $DoorsWindows = $this->GetDoorsWindows();
+            $Form['actions'][0]['values'] = array_merge($Systems, $Devices, $AutomationRules, $Scenarios, $WaterAlarm, $Messages, $DoorsWindows);
             $this->SendDebug('FORM', json_encode($Form), 0);
             $this->SendDebug('FORM', json_last_error_msg(), 0);
 
@@ -262,6 +263,43 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
                         'id'               => '',
                         'name'             => $this->Translate('Messages'),
                         'deviceModel'      => 'Messages',
+                        'instanceID'       => 0
+                    ],
+                    $Create
+                );
+            }
+            return $Values;
+        }
+        private function GetDoorsWindows()
+        {
+            $Create = [];
+            $Create = [
+                'create'           => [
+                    'moduleID'         => \BoschSHC\GUID::DoorsWindows,
+                    'location'         => [$this->Translate('Bosch SmartHome Controller')],
+                    'configuration'    => new stdClass()
+                ]
+            ];
+
+            $IPSDevices = array_flip($this->GetIPSInstances(\BoschSHC\GUID::DoorsWindows));
+            $Values = [];
+            foreach ($IPSDevices as $InstanceID) {
+                $Values[] = array_merge(
+                    [
+                        'id'               => '',
+                        'name'             => IPS_GetName($InstanceID),
+                        'deviceModel'      => 'Doors and Windows',
+                        'instanceID'       => $InstanceID
+                    ],
+                    $Create
+                );
+            }
+            if (!count($Values)) {
+                $Values[] = array_merge(
+                    [
+                        'id'               => '',
+                        'name'             => $this->Translate('Doors and Windows'),
+                        'deviceModel'      => 'Doors and Windows',
                         'instanceID'       => 0
                     ],
                     $Create

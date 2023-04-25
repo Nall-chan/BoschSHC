@@ -20,17 +20,13 @@ class BoschSmartHomeScenarios extends BSHBasicClass
     }
     public function ApplyChanges()
     {
-        //Never delete this line!
-        parent::ApplyChanges();
         $ScenarioId = $this->ReadPropertyString(\BoschSHC\Property::Scenario_Property_ScenarioId);
         $this->ScenarioId = $ScenarioId;
         if ($ScenarioId != '') {
             $this->SetReceiveDataFilter('.*"' . \BoschSHC\FlowToScenarios::ScenarioId . '":"' . $ScenarioId . '".*');
         }
-
-        if (IPS_GetKernelRunlevel() != KR_READY) {
-            return;
-        }
+        //Never delete this line!
+        parent::ApplyChanges();
         $this->MaintainVariable(
             'trigger',
             $this->Translate('Start scenario'),

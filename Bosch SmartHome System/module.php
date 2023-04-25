@@ -24,14 +24,14 @@ class BoschSmartHomeSystem extends BSHBasicClass
     public function ApplyChanges()
     {
         $this->Multi_UnsupportedServices = [];
-        //Never delete this line!
-        parent::ApplyChanges();
         $DeviceId = $this->ReadPropertyString(\BoschSHC\Property::System_Property_SystemMAC);
         $GetAllServices = ($this->DeviceId != $DeviceId);
         $this->DeviceId = $DeviceId;
         if ($DeviceId != '') {
             $this->SetReceiveDataFilter('.*"' . \BoschSHC\FlowToDevice::DeviceId . '":"' . $DeviceId . '".*');
         }
+        //Never delete this line!
+        parent::ApplyChanges();
         if (IPS_GetKernelRunlevel() != KR_READY) {
             return;
         }
