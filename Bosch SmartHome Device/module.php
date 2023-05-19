@@ -44,6 +44,9 @@ class BoschSmartHomeDevice extends BSHBasicClass
     public function GetConfigurationForm()
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        if ($this->GetStatus() == IS_CREATING) {
+            return json_encode($Form);
+        }
         $UnsupportedServices = $this->Multi_UnsupportedServices;
         if (count($UnsupportedServices)) {
             $Form['actions'][0]['visible'] = true;

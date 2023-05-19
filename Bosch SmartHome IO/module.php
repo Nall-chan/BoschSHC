@@ -13,6 +13,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
  * @property string $SHCPollId
  * @property string $TempFilecert
  * @property string $TempFileprivatekey
+ * @method bool SendDebug(string $Message, mixed $Data, int $Format)
  */
 class BoschSmartHomeIO extends IPSModule
 {
@@ -191,6 +192,9 @@ class BoschSmartHomeIO extends IPSModule
     public function GetConfigurationForm()
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        if ($this->GetStatus() == IS_CREATING) {
+            return json_encode($Form);
+        }
         if ($this->GetStatus() == self::IS_NotPaired) {
             $Form['actions'][1]['visible'] = true;
         }

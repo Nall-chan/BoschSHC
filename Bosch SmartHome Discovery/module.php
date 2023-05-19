@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 eval('declare(strict_types=1);namespace BoschSmartHomeDiscovery {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/DebugHelper.php') . '}');
 require_once dirname(__DIR__) . '/libs/SHCTypes.php';
+/**
+ * @method bool SendDebug(string $Message, mixed $Data, int $Format)
+ */
     class BoschSmartHomeDiscovery extends IPSModule
     {
         use \BoschSmartHomeDiscovery\DebugHelper;
@@ -11,6 +14,9 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
         public function GetConfigurationForm()
         {
             $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+            if ($this->GetStatus() == IS_CREATING) {
+                return json_encode($Form);
+            }
             $Form['actions'][0]['values'] = $this->GetDevices();
             $this->SendDebug('FORM', json_encode($Form), 0);
             $this->SendDebug('FORM', json_last_error_msg(), 0);

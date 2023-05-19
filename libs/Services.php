@@ -66,7 +66,7 @@ namespace BoschSHC
         //todo
         const IntrusionDetectionControl = 'IntrusionDetectionControl';
         /*
-            intrusionDetectionControlState: {
+            armingState: {
         value: {
             'SYSTEM_ARMING': 'SYSTEM_ARMING',
             'SYSTEM_ARMED': 'SYSTEM_ARMED',
@@ -75,7 +75,7 @@ namespace BoschSHC
         }*/
         const SurveillanceAlarm = 'SurveillanceAlarm';
         /*
-            surveillanceAlarmState: {
+            alarmState: {
         value: {
             'ALARM_ON': 'ALARM_ON',
             'ALARM_OFF': 'ALARM_OFF',
@@ -83,7 +83,14 @@ namespace BoschSHC
             'PRE_ALARM': 'PRE_ALARM',
             'UNKNOWN': 'UNKNOWN'
         }
-    },*/
+    },
+        "@type": "systemState",
+    "systemAvailability": {
+        "@type": "systemAvailabilityState",
+        "available": false,
+        "deleted": false
+    },
+    */
         protected static $Services = [
             self::PowerMeter,
             self::PowerSwitch,

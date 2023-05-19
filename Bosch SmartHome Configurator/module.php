@@ -31,6 +31,9 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
         public function GetConfigurationForm()
         {
             $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+            if ($this->GetStatus() == IS_CREATING) {
+                return json_encode($Form);
+            }
             if (!$this->HasActiveParent() || (IPS_GetInstance($this->InstanceID)['ConnectionID'] == 0)) {
                 $Form['actions'][] = [
                     'type'  => 'PopupAlert',
