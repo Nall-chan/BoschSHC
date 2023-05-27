@@ -34,6 +34,14 @@ class LibraryTest extends TestCaseSymconValidation
     {
         $this->validateModule(__DIR__ . '/../Bosch SmartHome Device');
     }
+    public function testValidateDoorsAndWindows(): void
+    {
+        $this->validateModule(__DIR__ . '/../Bosch SmartHome Doors and Windows');
+    }
+    public function testValidateMessages(): void
+    {
+        $this->validateModule(__DIR__ . '/../Bosch SmartHome Messages');
+    }
     public function testValidateScenarios(): void
     {
         $this->validateModule(__DIR__ . '/../Bosch SmartHome Scenarios');

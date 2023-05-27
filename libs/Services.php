@@ -90,7 +90,7 @@ namespace BoschSHC
         "available": false,
         "deleted": false
     },
-    */
+         */
         protected static $Services = [
             self::PowerMeter,
             self::PowerSwitch,

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-eval('declare(strict_types=1);namespace BoschSmartHomeMessages {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/BufferHelper.php') . '}');
+eval('declare(strict_types=1);namespace BoschSmartHomeDoorsandWindows {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/BufferHelper.php') . '}');
 require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
 /**
  * @property array $Multi_States
  */
 class BoschSmartHomeDoorsandWindows extends BSHBasicClass
 {
-    use \BoschSmartHomeMessages\BufferHelper;
+    use \BoschSmartHomeDoorsandWindows\BufferHelper;
 
     public function Create()
     {
