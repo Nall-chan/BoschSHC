@@ -11,14 +11,14 @@ class BoschSmartHomeDoorsandWindows extends BSHBasicClass
 {
     use \BoschSmartHomeDoorsandWindows\BufferHelper;
 
-    public function Create()
+    public function Create(): void
     {
         $this->Multi_States = [];
         //Never delete this line!
         parent::Create();
     }
 
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         //Never delete this line!
         parent::ApplyChanges();
@@ -30,18 +30,18 @@ class BoschSmartHomeDoorsandWindows extends BSHBasicClass
         }
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value): void
     {
         set_error_handler([$this, 'ModulErrorHandler']);
         trigger_error($this->Translate('Invalid Ident'), E_USER_NOTICE);
         restore_error_handler();
-        return false;
+        return;
     }
-    public function RequestState()
+    public function RequestState(): bool
     {
         return $this->GetState();
     }
-    public function ReadData()
+    public function ReadData(): array
     {
         return $this->Multi_States;
     }
@@ -53,7 +53,7 @@ class BoschSmartHomeDoorsandWindows extends BSHBasicClass
             return false;
         }
     }*/
-    protected function DecodeServiceData($Message)
+    protected function DecodeServiceData(array $Message): void
     {
         $OpenWindows = $this->Multi_States;
         //todo
@@ -74,7 +74,7 @@ class BoschSmartHomeDoorsandWindows extends BSHBasicClass
         $this->Multi_States = $OpenWindows;
         $this->UpdateVariables();
     }
-    private function GetState()
+    private function GetState(): bool
     {
         $OpenWindows = $this->SendData(\BoschSHC\ApiUrl::OpenWindows);
         if (!$OpenWindows) {
@@ -85,7 +85,7 @@ class BoschSmartHomeDoorsandWindows extends BSHBasicClass
         $this->UpdateVariables();
         return true;
     }
-    private function UpdateVariables()
+    private function UpdateVariables(): void
     {
         $OpenWindows = $this->Multi_States;
 

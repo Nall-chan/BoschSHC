@@ -11,14 +11,14 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
 {
     use \BoschSmartHomeAutomationRule\BufferHelper;
 
-    public function Create()
+    public function Create(): void
     {
         $this->RegisterPropertyString(\BoschSHC\Property::AutomationRule_Property_RuleId, '');
         $this->RuleId = '';
         //Never delete this line!
         parent::Create();
     }
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         $RuleId = $this->ReadPropertyString(\BoschSHC\Property::AutomationRule_Property_RuleId);
         $this->RuleId = $RuleId;
@@ -45,15 +45,15 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
         }
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value): void
     {
         if ($Ident != \BoschSHC\Services::AutomationRule . '_enabled') {
             set_error_handler([$this, 'ModulErrorHandler']);
             trigger_error($this->Translate('Invalid Ident'), E_USER_NOTICE);
             restore_error_handler();
-            return false;
+            return;
         }
-        return $this->SendData(
+        $this->SendData(
             \BoschSHC\ApiUrl::AutomationRules .
                 '/' . $this->RuleId .
                 \BoschSHC\ApiUrl::Enabled,
@@ -62,15 +62,15 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
         );
     }
 
-    public function RequestState()
+    public function RequestState(): bool
     {
         return $this->GetState();
     }
 
-    protected function DecodeServiceData($AutomationRule)
+    protected function DecodeServiceData(array $AutomationRule): void
     {
         if ($AutomationRule['@type'] = !lcfirst(\BoschSHC\Services::AutomationRule)) {
-            return false;
+            return;
         }
         $VariableValues = \BoschSHC\Services\AutomationRule::getIPSVariable('enabled', $AutomationRule['enabled']);
         $this->MaintainVariable(
@@ -84,7 +84,7 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
         $this->SetValue($VariableValues[\BoschSHC\Services\IPSVarIdent], $VariableValues[\BoschSHC\Services\IPSVarValue]);
     }
 
-    private function GetState()
+    private function GetState(): bool
     {
         $AutomationRule = $this->SendData(\BoschSHC\ApiUrl::AutomationRules . '/' . $this->RuleId);
         if (!$AutomationRule) {

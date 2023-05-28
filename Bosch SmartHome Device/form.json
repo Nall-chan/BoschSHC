@@ -68,7 +68,7 @@
             "type": "Button",
             "name": "ReloadServices",
             "caption": "Request states",
-            "onClick": "BSH_RequestState($id);"
+            "onClick": "BSHC_RequestState($id);"
         },
         {
             "type": "TestCenter"

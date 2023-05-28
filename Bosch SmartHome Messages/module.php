@@ -11,14 +11,14 @@ class BoschSmartHomeMessages extends BSHBasicClass
 {
     use \BoschSmartHomeMessages\BufferHelper;
 
-    public function Create()
+    public function Create(): void
     {
         $this->Multi_Messages = [];
         //Never delete this line!
         parent::Create();
     }
 
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         //Never delete this line!
         parent::ApplyChanges();
@@ -30,29 +30,30 @@ class BoschSmartHomeMessages extends BSHBasicClass
         }
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value): void
     {
         set_error_handler([$this, 'ModulErrorHandler']);
         trigger_error($this->Translate('Invalid Ident'), E_USER_NOTICE);
         restore_error_handler();
-        return false;
+        return;
     }
-    public function RequestState()
+    public function RequestState(): bool
     {
         return $this->GetState();
     }
-    public function ReadMessages()
+    public function ReadMessages(): array
     {
         return $this->Multi_Messages;
     }
-    public function DeleteMessage(string $MessageId)
+    public function DeleteMessage(string $MessageId): bool
     {
         $Messages = $this->SendData(\BoschSHC\ApiUrl::Messages . '/' . $MessageId, \BoschSHC\HTTP::DELETE);
         if (!$Messages) {
             return false;
         }
+        return true;
     }
-    protected function DecodeServiceData($Message)
+    protected function DecodeServiceData(array $Message): void
     {
         $Messages = $this->Multi_Messages;
         $IDs = array_column($Messages, 'id');
@@ -71,7 +72,7 @@ class BoschSmartHomeMessages extends BSHBasicClass
         $this->Multi_Messages = $Messages;
         $this->UpdateVariables();
     }
-    private function GetState()
+    private function GetState(): bool
     {
         $Messages = $this->SendData(\BoschSHC\ApiUrl::Messages);
         if (!$Messages) {
@@ -82,7 +83,7 @@ class BoschSmartHomeMessages extends BSHBasicClass
         $this->UpdateVariables();
         return true;
     }
-    private function UpdateVariables()
+    private function UpdateVariables(): void
     {
         $Messages = $this->Multi_Messages;
         $EmptyTypes = [

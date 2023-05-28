@@ -11,14 +11,14 @@ class BoschSmartHomeScenarios extends BSHBasicClass
 {
     use \BoschSmartHomeScenarios\BufferHelper;
 
-    public function Create()
+    public function Create(): void
     {
         $this->RegisterPropertyString(\BoschSHC\Property::Scenario_Property_ScenarioId, '');
         $this->ScenarioId = '';
         //Never delete this line!
         parent::Create();
     }
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         $ScenarioId = $this->ReadPropertyString(\BoschSHC\Property::Scenario_Property_ScenarioId);
         $this->ScenarioId = $ScenarioId;
@@ -46,26 +46,26 @@ class BoschSmartHomeScenarios extends BSHBasicClass
         );
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value): void
     {
         if ($Ident != 'trigger') {
             set_error_handler([$this, 'ModulErrorHandler']);
             trigger_error($this->Translate('Invalid Ident'), E_USER_NOTICE);
             restore_error_handler();
-            return false;
+            return;
         }
-        return $this->SendData(
+        $this->SendData(
             \BoschSHC\ApiUrl::Scenarios .
                 '/' . $this->ScenarioId .
                 \BoschSHC\ApiUrl::Trigger,
             \BoschSHC\HTTP::POST
         );
     }
-    public function RequestState()
+    public function RequestState(): bool
     {
         return false;
     }
-    protected function DecodeServiceData($ScenarioState)
+    protected function DecodeServiceData(array $ScenarioState): void
     {
         $this->SetValue('lastExecute', (int) substr($ScenarioState['lastTimeTriggered'], 0, -3));
     }

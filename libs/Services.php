@@ -4,67 +4,66 @@ declare(strict_types=1);
 
 namespace BoschSHC
 {
-
     class Services
     {
-        const PowerMeter = 'PowerMeter';
-        const PowerSwitch = 'PowerSwitch';
-        const PowerSwitchProgram = 'PowerSwitchProgram';
-        const RoomClimateControl = 'RoomClimateControl';
-        const TemperatureLevel = 'TemperatureLevel';
-        const ShutterContact = 'ShutterContact';
-        const LatestMotion = 'LatestMotion';
-        const HCWasher = 'HCWasher';
-        const HCDishwasher = 'HCDishwasher';
-        const HCOven = 'HCOven';
-        const PrivacyMode = 'PrivacyMode';
-        const ShutterControl = 'ShutterControl';
-        const SmokeDetectorCheck = 'SmokeDetectorCheck';
-        const SmokeSensitivity = 'SmokeSensitivity';
-        const ValveTappet = 'ValveTappet';
-        const AirQualityLevel = 'AirQualityLevel';
-        const Keypad = 'Keypad';
-        const HumidityLevel = 'HumidityLevel';
-        const CameraLight = 'CameraLight';
-        const BatteryLevel = 'BatteryLevel';
-        const MultiLevelSwitch = 'MultiLevelSwitch';
-        const PresenceSimulationConfiguration = 'PresenceSimulationConfiguration';
-        const PresenceSimulationScheduling = 'PresenceSimulationScheduling';
-        const VentilationDelay = 'VentilationDelay';
-        const BlindsControl = 'BlindsControl';
-        const BlindsSceneControl = 'BlindsSceneControl';
-        const ChildLock = 'ChildLock';
-        const SilentMode = 'SilentMode';
-        const Routing = 'Routing';
-        const HueBlinking = 'HueBlinking';
-        const HueBridgeSearcher = 'HueBridgeSearcher';
-        const HueBridgeConnector = 'HueBridgeConnector'; //todo
-        const CommunicationQuality = 'CommunicationQuality';
-        const MultiswitchConfiguration = 'MultiswitchConfiguration';
-        const WalkTest = 'WalkTest';
-        const ClimateControl = 'ClimateControl';
-        const DoorSensor = 'DoorSensor';
-        const LockActuator = 'LockActuator';
-        const CameraNotification = 'CameraNotification';
-        const ColorActuator = 'ColorActuator';
-        const WaterLeakageSensor = 'WaterLeakageSensor';
-        const WaterLeakageSensorCheck = 'WaterLeakageSensorCheck';
-        const WaterLeakageSensorTilt = 'WaterLeakageSensorTilt';
-        const WaterAlarmSystem = 'WaterAlarmSystem';
-        const AutomationRule = 'AutomationRule';
-        const SoftwareUpdate = 'SoftwareUpdate';
-        const RemoteAccess = 'RemoteAccess';
-        const RemotePushNotification = 'RemotePushNotification';
-        const ArmDisarmPushNotification = 'ArmDisarmPushNotification';
-        const DisplayConfiguration = 'DisplayConfiguration';
-        const TemperatureOffset = 'TemperatureOffset';
-        const Linking = 'Linking';
-        const TerminalConfiguration = 'TerminalConfiguration';
-        const Thermostat = 'Thermostat';
-        const Bypass = 'Bypass';
-        const VibrationSensor = 'VibrationSensor';
+        public const PowerMeter = 'PowerMeter';
+        public const PowerSwitch = 'PowerSwitch';
+        public const PowerSwitchProgram = 'PowerSwitchProgram';
+        public const RoomClimateControl = 'RoomClimateControl';
+        public const TemperatureLevel = 'TemperatureLevel';
+        public const ShutterContact = 'ShutterContact';
+        public const LatestMotion = 'LatestMotion';
+        public const HCWasher = 'HCWasher';
+        public const HCDishwasher = 'HCDishwasher';
+        public const HCOven = 'HCOven';
+        public const PrivacyMode = 'PrivacyMode';
+        public const ShutterControl = 'ShutterControl';
+        public const SmokeDetectorCheck = 'SmokeDetectorCheck';
+        public const SmokeSensitivity = 'SmokeSensitivity';
+        public const ValveTappet = 'ValveTappet';
+        public const AirQualityLevel = 'AirQualityLevel';
+        public const Keypad = 'Keypad';
+        public const HumidityLevel = 'HumidityLevel';
+        public const CameraLight = 'CameraLight';
+        public const BatteryLevel = 'BatteryLevel';
+        public const MultiLevelSwitch = 'MultiLevelSwitch';
+        public const PresenceSimulationConfiguration = 'PresenceSimulationConfiguration';
+        public const PresenceSimulationScheduling = 'PresenceSimulationScheduling';
+        public const VentilationDelay = 'VentilationDelay';
+        public const BlindsControl = 'BlindsControl';
+        public const BlindsSceneControl = 'BlindsSceneControl';
+        public const ChildLock = 'ChildLock';
+        public const SilentMode = 'SilentMode';
+        public const Routing = 'Routing';
+        public const HueBlinking = 'HueBlinking';
+        public const HueBridgeSearcher = 'HueBridgeSearcher';
+        public const HueBridgeConnector = 'HueBridgeConnector'; //todo
+        public const CommunicationQuality = 'CommunicationQuality';
+        public const MultiswitchConfiguration = 'MultiswitchConfiguration';
+        public const WalkTest = 'WalkTest';
+        public const ClimateControl = 'ClimateControl';
+        public const DoorSensor = 'DoorSensor';
+        public const LockActuator = 'LockActuator';
+        public const CameraNotification = 'CameraNotification';
+        public const ColorActuator = 'ColorActuator';
+        public const WaterLeakageSensor = 'WaterLeakageSensor';
+        public const WaterLeakageSensorCheck = 'WaterLeakageSensorCheck';
+        public const WaterLeakageSensorTilt = 'WaterLeakageSensorTilt';
+        public const WaterAlarmSystem = 'WaterAlarmSystem';
+        public const AutomationRule = 'AutomationRule';
+        public const SoftwareUpdate = 'SoftwareUpdate';
+        public const RemoteAccess = 'RemoteAccess';
+        public const RemotePushNotification = 'RemotePushNotification';
+        public const ArmDisarmPushNotification = 'ArmDisarmPushNotification';
+        public const DisplayConfiguration = 'DisplayConfiguration';
+        public const TemperatureOffset = 'TemperatureOffset';
+        public const Linking = 'Linking';
+        public const TerminalConfiguration = 'TerminalConfiguration';
+        public const Thermostat = 'Thermostat';
+        public const Bypass = 'Bypass';
+        public const VibrationSensor = 'VibrationSensor';
         //todo
-        const IntrusionDetectionControl = 'IntrusionDetectionControl';
+        public const IntrusionDetectionControl = 'IntrusionDetectionControl';
         /*
             armingState: {
         value: {
@@ -73,7 +72,7 @@ namespace BoschSHC
             'SYSTEM_DISARMED': 'SYSTEM_DISARMED',
             'MUTE_ALARM': 'MUTE_ALARM'
         }*/
-        const SurveillanceAlarm = 'SurveillanceAlarm';
+        public const SurveillanceAlarm = 'SurveillanceAlarm';
         /*
             alarmState: {
         value: {
@@ -147,12 +146,12 @@ namespace BoschSHC
             self::VibrationSensor,
         ];
 
-        public static function ServiceIsValid(string $Service)
+        public static function ServiceIsValid(string $Service): bool
         {
             return in_array($Service, self::$Services);
         }
 
-        public static function getServiceIdByProperty(string $Property)
+        public static function getServiceIdByProperty(string $Property): false|string
         {
             foreach (self::$Services as $ServiceId) {
                 if (
@@ -181,15 +180,15 @@ namespace BoschSHC\Services
     {
         protected static $properties = [];
         protected static $state = 'State';
-        public static function PropertyIsValid(string $Property)
+        public static function PropertyIsValid(string $Property): bool
         {
             return isset(static::$properties[$Property]);
         }
-        public static function PropertyHasAction(string $Property)
+        public static function PropertyHasAction(string $Property): bool
         {
             return static::getIPSAction($Property);
         }
-        public static function getServiceStateRequest(string $Property, $Value)
+        public static function getServiceStateRequest(string $Property, mixed $Value): string
         {
             $VarType = static::getIPSVarType($Property);
             $Factor = isset(static::$properties[$Property][IPSVarFactor]) ?
@@ -216,7 +215,7 @@ namespace BoschSHC\Services
                                 static::getServiceState();
             return json_encode($Request, JSON_PRESERVE_ZERO_FRACTION);
         }
-        public static function getIPSVariable(string $Property, $Value)
+        public static function getIPSVariable(string $Property, mixed $Value): array
         {
             $Result[IPSVarType] = static::getIPSVarType($Property);
             $Factor = isset(static::$properties[$Property][IPSVarFactor]) ?
@@ -243,32 +242,32 @@ namespace BoschSHC\Services
             $Result[IPSVarIdent] = explode('\\', get_called_class())[2] . '_' . $Property;
             return $Result;
         }
-        public static function getIPSProfile(string $Property)
+        public static function getIPSProfile(string $Property): string
         {
             return
                 isset(static::$properties[$Property][IPSProfile]) ?
                 static::$properties[$Property][IPSProfile] :
                 '';
         }
-        protected static function getServiceState()
+        protected static function getServiceState(): string
         {
             return lcfirst(explode('\\', get_called_class())[2]) . static::$state;
         }
-        private static function getIPSName(string $Property)
+        private static function getIPSName(string $Property): string
         {
             return
                 isset(static::$properties[$Property][IPSVarName]) ?
                 static::$properties[$Property][IPSVarName] :
                 $Property;
         }
-        private static function getIPSVarType(string $Property)
+        private static function getIPSVarType(string $Property): int
         {
             return
                 isset(static::$properties[$Property][IPSVarType]) ?
                 static::$properties[$Property][IPSVarType] :
                 VARIABLETYPE_STRING;
         }
-        private static function getIPSAction(string $Property)
+        private static function getIPSAction(string $Property): bool
         {
             return
                 isset(static::$properties[$Property][IPSVarAction]) ?
@@ -1548,5 +1547,4 @@ namespace BoschSHC\Services
             $this->UnregisterProfile(\BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayOnTime'));
         }
     }
-
 }

@@ -6,50 +6,54 @@ eval('declare(strict_types=1);namespace BoschSHCDevice {?>' . file_get_contents(
 eval('declare(strict_types=1);namespace BoschSHCDevice {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/VariableProfileHelper.php') . '}');
 require_once dirname(__DIR__) . '/libs/SHCTypes.php';
 require_once dirname(__DIR__) . '/libs/Services.php';
-
-abstract class BSHBasicClass extends IPSModule
+/**
+ * @method bool SendDebug(string $Message, mixed $Data, int $Format)
+ */
+abstract class BSHBasicClass extends IPSModuleStrict
 {
     use \BoschSHCDevice\DebugHelper;
     use \BoschSHCDevice\VariableProfileHelper;
     use \BoschSHC\Services\IPSProfile;
 
-    public function Create()
+    public function Create(): void
     {
         //Never delete this line!
         parent::Create();
         $this->ConnectParent(\BoschSHC\GUID::IO);
     }
 
-    public function Destroy()
+    public function Destroy(): void
     {
         //Never delete this line!
         $this->UnregisterProfiles();
         parent::Destroy();
     }
 
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         //Never delete this line!
         $this->RegisterProfiles();
         parent::ApplyChanges();
     }
 
-    public function ReceiveData($JSONString)
+    public function ReceiveData(string $JSONString): string
     {
         $Data = json_decode($JSONString, true);
         $this->SendDebug('Event Data', $Data['Event'], 0);
         $this->DecodeServiceData($Data['Event']);
+        return '';
     }
 
-    abstract public function RequestState();
+    abstract public function RequestState(): bool;
 
-    protected function ModulErrorHandler($errno, $errstr)
+    protected function ModulErrorHandler(int $errno, string $errstr): bool
     {
         echo $errstr . PHP_EOL;
+        return true;
     }
-    abstract protected function DecodeServiceData($ServiceData);
+    abstract protected function DecodeServiceData(array $ServiceData): void;
 
-    protected function SendData(string $ApiCall, string $Method = \BoschSHC\HTTP::GET, string $Payload = '')
+    protected function SendData(string $ApiCall, string $Method = \BoschSHC\HTTP::GET, string $Payload = ''): bool|array
     {
         $this->SendDebug('Send Method', $Method, 0);
         $this->SendDebug('Send ApiCall', $ApiCall, 0);
@@ -78,7 +82,8 @@ abstract class BSHBasicClass extends IPSModule
         }
         return json_decode($Result, true);
     }
-    protected function camelCase2Separator($str, $separator = ' ')
+
+    protected function camelCase2Separator(string $str, string $separator = ' '): string
     {
         if (empty($str)) {
             return $str;

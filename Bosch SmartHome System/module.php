@@ -12,7 +12,7 @@ class BoschSmartHomeSystem extends BSHBasicClass
 {
     use \BoschSmartHomeSystem\BufferHelper;
 
-    public function Create()
+    public function Create(): void
     {
         $this->RegisterPropertyString(\BoschSHC\Property::System_Property_SystemMAC, '');
         $this->DeviceId = '';
@@ -21,7 +21,7 @@ class BoschSmartHomeSystem extends BSHBasicClass
         parent::Create();
     }
 
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         $this->Multi_UnsupportedServices = [];
         $DeviceId = $this->ReadPropertyString(\BoschSHC\Property::System_Property_SystemMAC);
@@ -41,7 +41,7 @@ class BoschSmartHomeSystem extends BSHBasicClass
         }
     }
 
-    public function GetConfigurationForm()
+    public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
         if ($this->GetStatus() == IS_CREATING) {
@@ -74,7 +74,7 @@ class BoschSmartHomeSystem extends BSHBasicClass
         return json_encode($Form);
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value): void
     {
         list($ServiceId, $Property) = explode('_', $Ident);
         $Service = '\\BoschSHC\\Services\\' . $ServiceId;
@@ -82,27 +82,28 @@ class BoschSmartHomeSystem extends BSHBasicClass
             /** @var \BoschSHC\Services\ServiceBasics $Service */
             if ($Service::PropertyIsValid($Property)) {
                 $Payload = $Service::getServiceStateRequest($Property, $Value);
-                return $this->SendData(
+                $this->SendData(
                     \BoschSHC\ApiUrl::System .
                         \BoschSHC\ApiUrl::Services . '/' . $ServiceId .
                         \BoschSHC\ApiUrl::State,
                     \BoschSHC\HTTP::PUT,
                     $Payload
                 );
+                return;
             }
         }
         set_error_handler([$this, 'ModulErrorHandler']);
         trigger_error($this->Translate('Invalid Ident'), E_USER_NOTICE);
         restore_error_handler();
-        return false;
+        return;
     }
 
-    public function RequestState()
+    public function RequestState(): bool
     {
         return $this->GetServices();
     }
 
-    protected function DecodeServiceData($ServiceData)
+    protected function DecodeServiceData(array $ServiceData): void
     {
         if (!\BoschSHC\Services::ServiceIsValid($ServiceData['id'])) {
             //Merken das ServiceId Aktuell nicht unterstützt wird.
@@ -117,7 +118,7 @@ class BoschSmartHomeSystem extends BSHBasicClass
                 ];
             }
             $this->Multi_UnsupportedServices = $Services;
-            return false;
+            return;
         }
         if ($ServiceData['id'] == \BoschSHC\Services::BatteryLevel) {
             if (!array_key_exists('state', $ServiceData)) {
@@ -151,7 +152,7 @@ class BoschSmartHomeSystem extends BSHBasicClass
         }
     }
 
-    private function GetServices()
+    private function GetServices(): bool
     {
         $Services = $this->SendData(\BoschSHC\ApiUrl::System . \BoschSHC\ApiUrl::Services);
         if (!$Services) {

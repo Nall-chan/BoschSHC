@@ -15,26 +15,26 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
  * @property string $TempFileprivatekey
  * @method bool SendDebug(string $Message, mixed $Data, int $Format)
  */
-class BoschSmartHomeIO extends IPSModule
+class BoschSmartHomeIO extends IPSModuleStrict
 {
     use \BoschSHCIO\BufferHelper;
     use \BoschSHCIO\DebugHelper;
 
-    const IS_NotReachable = IS_EBASE + 1;
-    const IS_Unauthorized = IS_EBASE + 2;
-    const IS_NotPaired = IS_EBASE + 3;
-    const IS_NoCert = IS_EBASE + 4;
-    const IS_ConnectionLost = IS_EBASE + 5;
-    const SHC_Info = ':8446/smarthome/public/information';
-    const SHC_Client = ':8443/smarthome/clients';
-    const SHC_Poll = ':8444/remote/json-rpc';
-    const SHC_Api = ':8444/smarthome';
-    const IPS_ClientID_Prefix = 'oss_Nall-chan_';
-    const IPS_ClientName_Prefix = 'OSS ';
-    const TIMER_LongPoll = 'LongPulling';
-    const Attribute_PrivateKey = 'privatekey';
-    const Attribute_PublicKey = 'publickey';
-    const Attribute_MyCert = 'cert';
+    public const IS_NotReachable = IS_EBASE + 1;
+    public const IS_Unauthorized = IS_EBASE + 2;
+    public const IS_NotPaired = IS_EBASE + 3;
+    public const IS_NoCert = IS_EBASE + 4;
+    public const IS_ConnectionLost = IS_EBASE + 5;
+    public const SHC_Info = ':8446/smarthome/public/information';
+    public const SHC_Client = ':8443/smarthome/clients';
+    public const SHC_Poll = ':8444/remote/json-rpc';
+    public const SHC_Api = ':8444/smarthome';
+    public const IPS_ClientID_Prefix = 'oss_Nall-chan_';
+    public const IPS_ClientName_Prefix = 'OSS ';
+    public const TIMER_LongPoll = 'LongPulling';
+    public const Attribute_PrivateKey = 'privatekey';
+    public const Attribute_PublicKey = 'publickey';
+    public const Attribute_MyCert = 'cert';
 
     private static $CURL_error_codes = [
         0  => 'UNKNOWN ERROR',
@@ -127,7 +127,7 @@ class BoschSmartHomeIO extends IPSModule
             500 => 'Server error'
         ];
 
-    public function Create()
+    public function Create(): void
     {
         //Never delete this line!
         parent::Create();
@@ -146,7 +146,7 @@ class BoschSmartHomeIO extends IPSModule
         $this->TempFileprivatekey = '';
     }
 
-    public function Destroy()
+    public function Destroy(): void
     {
         // Todo -> Buffer schon weg, somit kein Unsubscribe möglich :(
         /*if ($this->SHCPollId != '') {
@@ -156,7 +156,7 @@ class BoschSmartHomeIO extends IPSModule
         parent::Destroy();
     }
 
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         if ($this->SHCPollId != '') {
             $this->Unsubscribe();
@@ -189,7 +189,7 @@ class BoschSmartHomeIO extends IPSModule
         }
     }
 
-    public function GetConfigurationForm()
+    public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
         if ($this->GetStatus() == IS_CREATING) {
@@ -203,25 +203,25 @@ class BoschSmartHomeIO extends IPSModule
         return json_encode($Form);
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value): void
     {
         switch ($Ident) {
-                case 'CheckSHC':
-                    $this->UpdateFormField('CheckSHCResult', 'caption', ($this->CheckSHC() ? 'OK' : $this->Translate('Controller not reachable.')));
-                    $this->UpdateFormField('NoConnectPopup', 'visible', true);
-                    return;
-                case 'PollLong':
-                    $this->PollLong();
-                    return;
-                case 'RequestAllStates':
-                   $this->RequestAllStates();
-                   $this->RequestAllAutomationRules();
-                   $this->RequestWaterAlarmSystemState();
-                    return;
-                }
+            case 'CheckSHC':
+                $this->UpdateFormField('CheckSHCResult', 'caption', ($this->CheckSHC() ? 'OK' : $this->Translate('Controller not reachable.')));
+                $this->UpdateFormField('NoConnectPopup', 'visible', true);
+                return;
+            case 'PollLong':
+                $this->PollLong();
+                return;
+            case 'RequestAllStates':
+                $this->RequestAllStates();
+                $this->RequestAllAutomationRules();
+                $this->RequestWaterAlarmSystemState();
+                return;
+        }
     }
 
-    public function ForwardData($JSONString)
+    public function ForwardData(string $JSONString): string
     {
         switch ($this->GetStatus()) {
             case IS_ACTIVE:
@@ -243,10 +243,10 @@ class BoschSmartHomeIO extends IPSModule
             $Data[\BoschSHC\FlowToParent::Method],
             $Data[\BoschSHC\FlowToParent::Payload]
         );
-        return ($Result !== false) ? serialize($Result) : null;
+        return serialize($Result);
     }
 
-    public function StartPairing(string $Password)
+    public function StartPairing(string $Password): string
     {
         $Header = ['Systempassword: ' . base64_encode($Password)];
         $cert = str_replace(
@@ -284,11 +284,13 @@ class BoschSmartHomeIO extends IPSModule
         return $this->Translate('Paring error! Button pressed? Password correct?');
     }
 
-    protected function ModulErrorHandler($errno, $errstr)
+    protected function ModulErrorHandler(int $errno, string $errstr): bool
     {
         echo $errstr . PHP_EOL;
+        return true;
     }
-    private function DecodeAndSendToChildren(string $Type, array $Data)
+
+    private function DecodeAndSendToChildren(string $Type, array $Data): void
     {
         switch ($Type) {
             case \BoschSHC\EventTypes::DeviceServiceData:
@@ -369,40 +371,43 @@ class BoschSmartHomeIO extends IPSModule
             case \BoschSHC\EventTypes::EmergencySupportServiceData: //ignore
             case \BoschSHC\EventTypes::Client: //ignore
                 return;
-            }
+        }
         $this->LogMessage("Data with unhandled EventTypes:\r\n" . print_r($Data, true), KL_ERROR);
         $this->SendDebug('Event with unknown Data', $Data, 0);
     }
-    private function RequestAllStates()
+
+    private function RequestAllStates(): void
     {
         $Services = $this->SendRequest(self::SHC_Api . \BoschSHC\ApiUrl::Services);
         if (!$Services) {
-            return false;
+            return;
         }
         foreach (json_decode($Services, true) as $Service) {
             $this->DecodeAndSendToChildren(\BoschSHC\EventTypes::DeviceServiceData, $Service);
         }
     }
 
-    private function RequestAllAutomationRules()
+    private function RequestAllAutomationRules(): void
     {
         $Rules = $this->SendRequest(self::SHC_Api . \BoschSHC\ApiUrl::AutomationRules);
         if (!$Rules) {
-            return false;
+            return;
         }
         foreach (json_decode($Rules, true) as $Rule) {
             $this->DecodeAndSendToChildren(\BoschSHC\EventTypes::AutomationRule, $Rule);
         }
     }
-    private function RequestWaterAlarmSystemState()
+
+    private function RequestWaterAlarmSystemState(): void
     {
         $WaterAlarmSystemState = $this->SendRequest(self::SHC_Api . \BoschSHC\ApiUrl::WaterAlarm);
         if (!$WaterAlarmSystemState) {
-            return false;
+            return;
         }
         $this->DecodeAndSendToChildren(\BoschSHC\EventTypes::WaterAlarmSystemState, json_decode($WaterAlarmSystemState, true));
     }
-    private function Subscribe()
+
+    private function Subscribe(): bool
     {
         // send subscribe
         $Payload = json_encode([
@@ -416,12 +421,12 @@ class BoschSmartHomeIO extends IPSModule
             $SHCPollId = json_decode($Result, true)['result'];
             $this->SendDebug('Subscribe successfully', $SHCPollId, 0);
             $this->SHCPollId = $SHCPollId;  //set  PollingId
-                IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"PollLong",true);'); // start long polling loop
+            IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"PollLong",true);'); // start long polling loop
         }
         return $Result ? true : false;
     }
 
-    private function PollLong()
+    private function PollLong(): void
     {
         if ($this->SHCPollId == '') {
             return; // not more subscribed -> exit IPS_RunScriptText PollLong loop
@@ -457,7 +462,7 @@ class BoschSmartHomeIO extends IPSModule
         IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"PollLong",true);');
     }
 
-    private function Unsubscribe()
+    private function Unsubscribe(): bool
     {
         // send unsubscribe
         $Payload = json_encode([
@@ -471,7 +476,7 @@ class BoschSmartHomeIO extends IPSModule
         return $Result ? true : false;
     }
 
-    private function CheckSHC()
+    private function CheckSHC(): bool
     {
         if ($this->Host == '') {
             return false;
@@ -493,7 +498,7 @@ class BoschSmartHomeIO extends IPSModule
         return true;
     }
 
-    private function StartConnection()
+    private function StartConnection(): void
     {
         $this->SetStatus(IS_ACTIVE);
         $this->LogMessage($this->Translate('Connection established'), KL_MESSAGE);
@@ -501,7 +506,7 @@ class BoschSmartHomeIO extends IPSModule
         IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"RequestAllStates",true);');
     }
 
-    private function GetTempFile(string $Type)
+    private function GetTempFile(string $Type): string
     {
         if ($this->{'TempFile' . $Type} != '') {
             if (file_exists($this->{'TempFile' . $Type})) {
@@ -517,7 +522,7 @@ class BoschSmartHomeIO extends IPSModule
         return $TmpFileName;
     }
 
-    private function SendRequest(string $RequestURL, string $RequestMethod = \BoschSHC\HTTP::GET, string $Payload = '', int $Timeout = 5000, array $RequestHeader = [])
+    private function SendRequest(string $RequestURL, string $RequestMethod = \BoschSHC\HTTP::GET, string $Payload = '', int $Timeout = 5000, array $RequestHeader = []): bool|string
     {
         if (!$this->Host) {
             return false;
@@ -575,32 +580,32 @@ class BoschSmartHomeIO extends IPSModule
         $this->SendDebug('Result Body', $Result, 0);
         set_error_handler([$this, 'ModulErrorHandler']);
         switch ($HttpCode) {
-                case 0:
-                    $this->SendDebug('CURL ERROR', self::$CURL_error_codes[$curl_errno], 0);
-                    trigger_error(self::$CURL_error_codes[$curl_errno], E_USER_WARNING);
-                    $Result = false;
+            case 0:
+                $this->SendDebug('CURL ERROR', self::$CURL_error_codes[$curl_errno], 0);
+                trigger_error(self::$CURL_error_codes[$curl_errno], E_USER_WARNING);
+                $Result = false;
                 break;
-                case 204:
-                    if (($RequestMethod == \BoschSHC\HTTP::PUT) || ($RequestMethod == \BoschSHC\HTTP::DELETE)) {
-                        $Result = true;
-                    }
+            case 204:
+                if (($RequestMethod == \BoschSHC\HTTP::PUT) || ($RequestMethod == \BoschSHC\HTTP::DELETE)) {
+                    $Result = true;
+                }
                 break;
-                case 400:
-                case 401:
-                case 403:
-                case 404:
-                case 405:
-                case 500:
-                    $this->SendDebug(self::$http_error[$HttpCode], $HttpCode, 0);
-                    trigger_error(self::$http_error[$HttpCode], E_USER_WARNING);
-                    $Result = false;
+            case 400:
+            case 401:
+            case 403:
+            case 404:
+            case 405:
+            case 500:
+                $this->SendDebug(self::$http_error[$HttpCode], $HttpCode, 0);
+                trigger_error(self::$http_error[$HttpCode], E_USER_WARNING);
+                $Result = false;
                 break;
-            }
+        }
         restore_error_handler();
         return $Result;
     }
 
-    private function CreateNewCert()
+    private function CreateNewCert(): bool
     {
         $this->SendDebug('CreateNewCert', 'start', 0);
         $basedir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->InstanceID;
