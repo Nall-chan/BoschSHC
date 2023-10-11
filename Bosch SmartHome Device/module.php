@@ -26,7 +26,7 @@ class BoschSmartHomeDevice extends BSHBasicClass
         $this->Multi_UnsupportedServices = [];
         $DeviceId = $this->ReadPropertyString(\BoschSHC\Property::Device_Property_DeviceId);
         $GetAllServices = ($this->DeviceId != $DeviceId);
-        $this->DeviceId = $DeviceId;
+        $this->DeviceId = str_replace('#','%23',$DeviceId);
         if ($DeviceId != '') {
             $this->SetReceiveDataFilter('.*"' . \BoschSHC\FlowToDevice::DeviceId . '":"' . $DeviceId . '".*');
         }

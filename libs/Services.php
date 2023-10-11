@@ -964,7 +964,7 @@ namespace BoschSHC\Services
         protected static $properties = [
             'swUpdateState' => [
                 'type'       => 'string',
-                //NO_UPDATE_AVAILABLE
+                IPSProfile   => 'BSH.SoftwareUpdate.swUpdateState',
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Software update state'
             ],
@@ -1001,7 +1001,8 @@ namespace BoschSHC\Services
                 'enum' => [
                     true   => 'ENABLED',
                     false  => 'DISABLED',
-                ],                IPSProfile   => '~Switch',
+                ],
+                IPSProfile   => '~Switch',
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Remote access'
@@ -1133,6 +1134,13 @@ namespace BoschSHC\Services
             ]
         ];
     }
+    /**
+     * @method void RegisterProfileStringEx(string $Name, string $Icon, string $Prefix, string $Suffix, array $Associations)
+     * @method void RegisterProfileFloat(string $Name, string $Icon, string $Prefix, string $Suffix, float $MinValue, float $MaxValue, float $StepSize, int $Digits)
+     * @method void RegisterProfileInteger(string $Name, string $Icon, string $Prefix, string $Suffix, int $MinValue, int $MaxValue, int $StepSize)
+     * @method void RegisterProfileIntegerEx(string $Name, string $Icon, string $Prefix, string $Suffix, array $Associations, int $MaxValue = -1, float $StepSize = 0)
+     * @method string TranslateProfile(string $Text)
+     */
     trait IPSProfile
     {
         protected function RegisterProfiles()
@@ -1143,8 +1151,8 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['MANUAL', 'manual', '', -1],
-                    ['SCHEDULE', 'schedule', '', -1]
+                    ['MANUAL', $this->TranslateProfile('manual'), '', -1],
+                    ['SCHEDULE', $this->TranslateProfile('schedule'), '', -1]
                 ]
             );
             $this->RegisterProfileFloat(
@@ -1438,10 +1446,10 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['UNLOCKED', 'UNLOCKED', '', -1],
-                    ['LOCKED', 'LOCKED', '', -1],
-                    ['LOCKING', 'LOCKING', '', -1],
-                    ['UNLOCKING', 'UNLOCKING', '', -1],
+                    ['UNLOCKED', $this->TranslateProfile('unlocked'), '', -1],
+                    ['LOCKED', $this->TranslateProfile('locked'), '', -1],
+                    ['LOCKING', $this->TranslateProfile('locking'), '', -1],
+                    ['UNLOCKING', $this->TranslateProfile('unlocking'), '', -1],
                 ]
             );
             $this->RegisterProfileStringEx(
@@ -1452,7 +1460,7 @@ namespace BoschSHC\Services
                 [
                     ['ALARM_OFF', 'Ok', '', -1],
                     ['WATER_ALARM', 'Alarm', '', -1],
-                    ['ALARM_MUTED', 'Muted alarm', '', -1]
+                    ['ALARM_MUTED', $this->TranslateProfile('Muted alarm'), '', -1]
                 ]
             );
             $this->RegisterProfileIntegerEx(
@@ -1507,10 +1515,21 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['OUTDOOR_SENSOR_CONNECTED', 'outdoor sensor connected', '', -1],
-                    ['FLOOR_SENSOR_DISPLAYED_AND_USED_FOR_REGULATION', 'floor sensor (displayed & used)', '', -1],
-                    ['FLOOR_SENSOR_DISPLAYED', 'floor sensor displayed', '', -1],
-                    ['NOT_CONNECTED', 'not connected', '', -1]
+                    ['OUTDOOR_SENSOR_CONNECTED', $this->TranslateProfile('outdoor sensor connected'), '', -1],
+                    ['FLOOR_SENSOR_DISPLAYED_AND_USED_FOR_REGULATION', $this->TranslateProfile('floor sensor (displayed & used)'), '', -1],
+                    ['FLOOR_SENSOR_DISPLAYED', $this->TranslateProfile('floor sensor displayed'), '', -1],
+                    ['NOT_CONNECTED', $this->TranslateProfile('not connected'), '', -1]
+                ]
+            );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\SoftwareUpdate::getIPSProfile('swUpdateState'),
+                '',
+                '',
+                '',
+                [
+                    ['NO_UPDATE_AVAILABLE', $this->TranslateProfile('no update available'), '', -1],
+                    ['UPDATE_IN_PROGRESS', $this->TranslateProfile('update in progress'), '', -1],
+                    ['UPDATE_AVAILABLE', $this->TranslateProfile('update available'), '', -1],
                 ]
             );
         }
@@ -1545,6 +1564,9 @@ namespace BoschSHC\Services
             $this->UnregisterProfile('BSH.Scenario.Trigger');
             $this->UnregisterProfile(\BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayBrightness'));
             $this->UnregisterProfile(\BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayOnTime'));
+            $this->UnregisterProfile(\BoschSHC\Services\TemperatureOffset::getIPSProfile('offset'));
+            $this->UnregisterProfile(\BoschSHC\Services\TerminalConfiguration::getIPSProfile('type'));
+            $this->UnregisterProfile(\BoschSHC\Services\SoftwareUpdate::getIPSProfile('swUpdateState'));
         }
     }
 }

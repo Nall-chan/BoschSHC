@@ -1,0 +1,18 @@
+{
+    "translations": {
+        "de": {
+            "no update available": "Kein Update verfügbar",
+            "update available": "Update Verfügbar",
+            "update in progress": "Update wird durchgeführt",
+            "outdoor sensor connected": "Außensensor verbunden",
+            "floor sensor (displayed & used)": "Innensensor benutzt",
+            "floor sensor displayed": "Innensensor verbunden",
+            "not connected": "nicht verbunden",
+            "Muted alarm": "Alarm stumm",
+            "unlocked": "unverschlossen",
+            "locked": "verschlossen",
+            "locking": "schließt",
+            "unlocking": "öffnet"
+        }
+    }
+}

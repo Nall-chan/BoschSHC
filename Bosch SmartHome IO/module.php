@@ -13,6 +13,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
  * @property string $SHCPollId
  * @property string $TempFilecert
  * @property string $TempFileprivatekey
+ * @property int $PollingTimout
  * @method bool SendDebug(string $Message, mixed $Data, int $Format)
  */
 class BoschSmartHomeIO extends IPSModuleStrict
@@ -31,7 +32,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
     public const SHC_Api = ':8444/smarthome';
     public const IPS_ClientID_Prefix = 'oss_Nall-chan_';
     public const IPS_ClientName_Prefix = 'OSS ';
-    public const TIMER_LongPoll = 'LongPulling';
+    public const TIMER_LongPoll = 'LongPullingTimeout';
     public const Attribute_PrivateKey = 'privatekey';
     public const Attribute_PublicKey = 'publickey';
     public const Attribute_MyCert = 'cert';
@@ -136,7 +137,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
         $this->RegisterAttributeString(self::Attribute_MyCert, '');
         $this->RegisterPropertyBoolean(\BoschSHC\Property::IO_Property_Open, false);
         $this->RegisterPropertyString(\BoschSHC\Property::IO_Property_Host, '');
-        $this->RegisterTimer(self::TIMER_LongPoll, 0, 'IPS_RequestAction(' . $this->InstanceID . ',"PollLong",true);');
+        $this->RegisterTimer(self::TIMER_LongPoll, 0, 'IPS_RequestAction(' . $this->InstanceID . ',"Subscribe",true);');
         $this->Host = '';
         $this->ClientId = '';
         $this->ClientName = '';
@@ -144,6 +145,11 @@ class BoschSmartHomeIO extends IPSModuleStrict
         $this->SHCPollId = '';
         $this->TempFilecert = '';
         $this->TempFileprivatekey = '';
+        $this->PollingTimout = 0;
+
+        if (IPS_GetKernelRunlevel() != KR_READY) {
+            $this->RegisterMessage(0, IPS_KERNELSTARTED);
+        }
     }
 
     public function Destroy(): void
@@ -171,6 +177,9 @@ class BoschSmartHomeIO extends IPSModuleStrict
         $this->SetSummary($this->ReadPropertyString(\BoschSHC\Property::IO_Property_Host));
         //Never delete this line!
         parent::ApplyChanges();
+        if (IPS_GetKernelRunlevel() != KR_READY) {
+            return;
+        }
         if (!$this->ReadPropertyBoolean(\BoschSHC\Property::IO_Property_Open)) {
             $this->LogMessage($this->Translate('Connection closed'), KL_MESSAGE);
             return;
@@ -186,6 +195,18 @@ class BoschSmartHomeIO extends IPSModuleStrict
             if ($this->isPaired) {
                 $this->StartConnection();
             }
+        }
+    }
+
+    /**
+     * Interne Funktion des SDK.
+     */
+    public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
+    {
+        switch ($Message) {
+            case IPS_KERNELSTARTED:
+                $this->KernelReady();
+                break;
         }
     }
 
@@ -209,6 +230,9 @@ class BoschSmartHomeIO extends IPSModuleStrict
             case 'CheckSHC':
                 $this->UpdateFormField('CheckSHCResult', 'caption', ($this->CheckSHC() ? 'OK' : $this->Translate('Controller not reachable.')));
                 $this->UpdateFormField('NoConnectPopup', 'visible', true);
+                return;
+            case 'Subscribe':
+                $this->Subscribe();
                 return;
             case 'PollLong':
                 $this->PollLong();
@@ -282,6 +306,15 @@ class BoschSmartHomeIO extends IPSModuleStrict
             return 'MESSAGE:' . $this->Translate('Paring with SHC complete.');
         }
         return $this->Translate('Paring error! Button pressed? Password correct?');
+    }
+
+    /**
+     * Wird ausgeführt wenn der Kernel hochgefahren wurde.
+     */
+    protected function KernelReady(): void
+    {
+        $this->UnregisterMessage(0, IPS_KERNELSTARTED);
+        $this->ApplyChanges();
     }
 
     protected function ModulErrorHandler(int $errno, string $errstr): bool
@@ -428,10 +461,12 @@ class BoschSmartHomeIO extends IPSModuleStrict
 
     private function PollLong(): void
     {
+        $this->SetTimerInterval(self::TIMER_LongPoll, 0);
         if ($this->SHCPollId == '') {
             return; // not more subscribed -> exit IPS_RunScriptText PollLong loop
         }
         $this->SendDebug('START PollLong', '', 0);
+        $this->SetTimerInterval(self::TIMER_LongPoll, 60000); //60 seconds timeout for Resubscribe
         $Payload = json_encode([
             'jsonrpc' => '2.0',
             'method'  => 'RE/longPoll',
