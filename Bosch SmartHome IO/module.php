@@ -485,9 +485,22 @@ class BoschSmartHomeIO extends IPSModuleStrict
             $this->SetStatus(self::IS_ConnectionLost);
             return;
         }
-        $Events = json_decode($Result, true)['result'];
+        $Data = json_decode($Result, true);
+        if (array_key_exists('error', $Data)) {
+            $this->LogMessage($Data['error']['message'], KL_ERROR);
+            $this->SendDebug('ERROR PollLong -> Resubscribe', $Data['error']['message'], 0);
+            if ($this->Subscribe()) { // new loop start in Subscribe()
+                return;
+            } //No Subscribe possible -> Connection lost :(
+            $this->LogMessage($this->Translate('Connection lost'), KL_ERROR);
+            $this->SendDebug('Connection lost', '', 0);
+            $this->SendDebug('END PollLong', $Result, 0);
+            $this->SHCPollId = '';
+            $this->SetStatus(self::IS_ConnectionLost);
+            return;
+        }
         try {
-            foreach ($Events as $Event) {
+            foreach ($Data['result'] as $Event) {
                 $this->DecodeAndSendToChildren($Event['@type'], $Event);
             }
         } catch (\Throwable $th) {
