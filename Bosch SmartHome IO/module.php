@@ -6,6 +6,8 @@ eval('declare(strict_types=1);namespace BoschSHCIO {?>' . file_get_contents(dirn
 eval('declare(strict_types=1);namespace BoschSHCIO {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/DebugHelper.php') . '}');
 require_once dirname(__DIR__) . '/libs/SHCTypes.php';
 /**
+ * @method bool SendDebug(string $Message, mixed $Data, int $Format)
+ *
  * @property string $Host
  * @property string $ClientId
  * @property string $ClientName
@@ -14,7 +16,7 @@ require_once dirname(__DIR__) . '/libs/SHCTypes.php';
  * @property string $TempFilecert
  * @property string $TempFileprivatekey
  * @property int $PollingTimout
- * @method bool SendDebug(string $Message, mixed $Data, int $Format)
+ *
  */
 class BoschSmartHomeIO extends IPSModuleStrict
 {
@@ -150,6 +152,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
         if (IPS_GetKernelRunlevel() != KR_READY) {
             $this->RegisterMessage(0, IPS_KERNELSTARTED);
         }
+        $this->RegisterMessage(0, IPS_KERNELSHUTDOWN);
     }
 
     public function Destroy(): void
@@ -205,7 +208,14 @@ class BoschSmartHomeIO extends IPSModuleStrict
     {
         switch ($Message) {
             case IPS_KERNELSTARTED:
+                $this->UnregisterMessage(0, IPS_KERNELSTARTED);
                 $this->KernelReady();
+                break;
+            case IPS_KERNELSHUTDOWN:
+                if ($this->SHCPollId != '') {
+                    $this->Unsubscribe();
+                    $this->SetStatus(IS_INACTIVE);
+                }
                 break;
         }
     }
@@ -313,7 +323,6 @@ class BoschSmartHomeIO extends IPSModuleStrict
      */
     protected function KernelReady(): void
     {
-        $this->UnregisterMessage(0, IPS_KERNELSTARTED);
         $this->ApplyChanges();
     }
 
@@ -507,7 +516,9 @@ class BoschSmartHomeIO extends IPSModuleStrict
             $this->LogMessage($th->getMessage(), KL_ERROR);
         }
         $this->SendDebug('END PollLong', $Result, 0);
-        IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"PollLong",true);');
+        if (IPS_GetKernelRunlevel() == KR_READY) {
+            IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"PollLong",true);');
+        }
     }
 
     private function Unsubscribe(): bool

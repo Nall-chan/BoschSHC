@@ -470,7 +470,7 @@ namespace BoschSHC\Services
             ]
         ];
     }
-        //smoke
+    //smoke
     // IDLE_OFF,PRIMARY_ALARM, SECONDARY_ALARM and INTRUSION_ALARM,
     class SmokeSensitivity extends ServiceBasics
     {
