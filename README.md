@@ -39,34 +39,34 @@ Einbinden von Bosch SmartHome Geräten und Dienstes über den Bosch SmartHome Co
 
   ## 4. Enthaltende Module
 
-- __Bosch SmartHome Discovery__ ([Dokumentation](Bosch%20SmartHome%20Discovery))  
+- __Bosch SmartHome Discovery__ ([Dokumentation](Bosch%20SmartHome%20Discovery/README.md))  
 	Kurze Beschreibung des Moduls.
 
-- __Bosch SmartHome Configurator__ ([Dokumentation](Bosch%20SmartHome%20Configurator))  
+- __Bosch SmartHome Configurator__ ([Dokumentation](Bosch%20SmartHome%20Configurator/README.md))  
 	Kurze Beschreibung des Moduls.
 
-- __Bosch SmartHome IO__ ([Dokumentation](Bosch%20SmartHome%20IO))  
+- __Bosch SmartHome IO__ ([Dokumentation](Bosch%20SmartHome%20IO/README.md))  
 	Kurze Beschreibung des Moduls.
 
-- __Bosch SmartHome Device__ ([Dokumentation](Bosch%20SmartHome%20Device))  
+- __Bosch SmartHome Device__ ([Dokumentation](Bosch%20SmartHome%20Device/README.md))  
 	Kurze Beschreibung des Moduls.
 
-- __Bosch SmartHome Automation Rule__ ([Dokumentation](Bosch%20SmartHome%20Automation%20Rule))  
+- __Bosch SmartHome Automation Rule__ ([Dokumentation](Bosch%20SmartHome%20Automation%20Rule/README.md))  
 	Kurze Beschreibung des Moduls.
 
-- __Bosch SmartHome Doors and Windows__ ([Dokumentation](Bosch%20SmartHome%20Doors%20and%20Windows))  
+- __Bosch SmartHome Doors and Windows__ ([Dokumentation](Bosch%20SmartHome%20Doors%20and%20Windows/README.md))  
 	Kurze Beschreibung des Moduls.
 
-- __Bosch SmartHome Messages__ ([Dokumentation](Bosch%20SmartHome%20Messages))  
+- __Bosch SmartHome Messages__ ([Dokumentation](Bosch%20SmartHome%20Messages/README.md))  
 	Kurze Beschreibung des Moduls.
 
-- __Bosch SmartHome Scenarios__ ([Dokumentation](Bosch%20SmartHome%20Scenarios))  
+- __Bosch SmartHome Scenarios__ ([Dokumentation](Bosch%20SmartHome%20Scenarios/README.md))  
 	Kurze Beschreibung des Moduls.
 
-- __Bosch SmartHome  System__ ([Dokumentation](Bosch%20SmartHome%20System))  
+- __Bosch SmartHome  System__ ([Dokumentation](Bosch%20SmartHome%20System/README.md))  
 	Kurze Beschreibung des Moduls.
 
-- __Bosch SmartHome Wateralarm System__ ([Dokumentation](Bosch%20SmartHome%20Wateralarm%20System))  
+- __Bosch SmartHome Wateralarm System__ ([Dokumentation](Bosch%20SmartHome%20Wateralarm%20System/README.md))  
 	Kurze Beschreibung des Moduls.
 
 ## 5. Anhang

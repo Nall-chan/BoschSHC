@@ -80,6 +80,9 @@ class BoschSmartHomeDiscovery extends IPSModuleStrict
     {
         $mDNSInstanceIDs = IPS_GetInstanceListByModuleID(\BoschSHC\GUID::DDNS);
         $resultServiceTypes = ZC_QueryServiceType($mDNSInstanceIDs[0], '_http._tcp', '');
+        if (!$resultServiceTypes) {
+            die;
+        }
         $this->SendDebug('mDNS resultServiceTypes', $resultServiceTypes, 0);
         $SHCs = [];
         foreach ($resultServiceTypes as $device) {
