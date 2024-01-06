@@ -10,6 +10,7 @@ namespace BoschSHC
         public const PowerSwitch = 'PowerSwitch';
         public const PowerSwitchProgram = 'PowerSwitchProgram';
         public const RoomClimateControl = 'RoomClimateControl';
+        public const ClimateControl = 'ClimateControl';
         public const TemperatureLevel = 'TemperatureLevel';
         public const ShutterContact = 'ShutterContact';
         public const LatestMotion = 'LatestMotion';
@@ -41,7 +42,6 @@ namespace BoschSHC
         public const CommunicationQuality = 'CommunicationQuality';
         public const MultiswitchConfiguration = 'MultiswitchConfiguration';
         public const WalkTest = 'WalkTest';
-        public const ClimateControl = 'ClimateControl';
         public const DoorSensor = 'DoorSensor';
         public const LockActuator = 'LockActuator';
         public const CameraNotification = 'CameraNotification';
@@ -62,6 +62,9 @@ namespace BoschSHC
         public const Thermostat = 'Thermostat';
         public const Bypass = 'Bypass';
         public const VibrationSensor = 'VibrationSensor';
+        public const ThermostatSupportedControlMode = 'ThermostatSupportedControlMode';
+        //skipped Services
+        public const TemperatureLevelConfiguration = 'TemperatureLevelConfiguration';
         //todo
         public const IntrusionDetectionControl = 'IntrusionDetectionControl';
         /*
@@ -95,6 +98,7 @@ namespace BoschSHC
             self::PowerSwitch,
             self::PowerSwitchProgram,
             self::RoomClimateControl,
+            self::ClimateControl,
             self::TemperatureLevel,
             self::ShutterContact,
             self::LatestMotion,
@@ -125,7 +129,6 @@ namespace BoschSHC
             self::CommunicationQuality,
             self::MultiswitchConfiguration,
             self::WalkTest,
-            self::ClimateControl,
             self::DoorSensor,
             self::LockActuator,
             self::CameraNotification,
@@ -144,6 +147,8 @@ namespace BoschSHC
             self::Thermostat,
             self::Bypass,
             self::VibrationSensor,
+            self::ThermostatSupportedControlMode,
+            self::TemperatureLevelConfiguration,
         ];
 
         public static function ServiceIsValid(string $Service): bool
@@ -188,8 +193,9 @@ namespace BoschSHC\Services
         {
             return static::getIPSAction($Property);
         }
-        public static function getServiceStateRequest(string $Property, mixed $Value): string
+        public static function getServiceStateRequest(string $Property, mixed $Value): array
         {
+            $ServiceType = explode('\\', get_called_class())[2];
             $VarType = static::getIPSVarType($Property);
             $Factor = isset(static::$properties[$Property][IPSVarFactor]) ?
                       static::$properties[$Property][IPSVarFactor] :
@@ -213,7 +219,10 @@ namespace BoschSHC\Services
             $Request['@type'] = (isset(static::$properties[$Property][OverrideSendServiceState])) ?
                                 static::$properties[$Property][OverrideSendServiceState] :
                                 static::getServiceState();
-            return json_encode($Request, JSON_PRESERVE_ZERO_FRACTION);
+            return [
+                json_encode($Request, JSON_PRESERVE_ZERO_FRACTION),
+                $ServiceType
+            ];
         }
         public static function getIPSVariable(string $Property, mixed $Value): array
         {
@@ -308,6 +317,9 @@ namespace BoschSHC\Services
                 IPSVarAction => true,
                 IPSVarName   => 'Switch'
             ]
+            //todo
+            //'automaticPowerOffTime' INTEGER
+
         ];
     }
     class PowerSwitchProgram extends ServiceBasics
@@ -325,12 +337,91 @@ namespace BoschSHC\Services
     class RoomClimateControl extends ServiceBasics
     {
         protected static $properties = [
-            'setpointTemperature' => [
+            'operationMode' => [
                 'type'       => 'string',
-                IPSProfile   => 'BSH.PowerSwitchProgram.setpointTemperature',
-                IPSVarType   => VARIABLETYPE_FLOAT,
+                IPSProfile   => 'BSH.RoomClimateControl.operationMode',
+                IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarAction => true,
-                IPSVarName   => 'Setpoint temperature'
+                IPSVarName   => 'Operation mode'
+            ],
+            'setpointTemperature' => [
+                'type'                   => 'string',
+                IPSProfile               => 'BSH.RoomClimateControl.setpointTemperature',
+                IPSVarType               => VARIABLETYPE_FLOAT,
+                IPSVarAction             => true,
+                IPSVarName               => 'Setpoint temperature',
+                OverrideSendServiceState => 'climateControlState'
+            ],
+            'setpointTemperatureForLevelEco' => [
+                'type'                   => 'string',
+                IPSProfile               => 'BSH.RoomClimateControl.setpointTemperature',
+                IPSVarType               => VARIABLETYPE_FLOAT,
+                IPSVarAction             => true,
+                IPSVarName               => 'Setpoint temperature eco',
+                OverrideSendServiceState => 'climateControlState'
+            ],
+            'setpointTemperatureForLevelComfort' => [
+                'type'                   => 'string',
+                IPSProfile               => 'BSH.RoomClimateControl.setpointTemperature',
+                IPSVarType               => VARIABLETYPE_FLOAT,
+                IPSVarAction             => true,
+                IPSVarName               => 'Setpoint temperature comfort',
+                OverrideSendServiceState => 'climateControlState',
+                OverrideSendServiceState => 'climateControlState'
+            ],
+            'ventilationMode' => [
+                'type'                   => 'bool',
+                IPSProfile               => '~Switch',
+                IPSVarType               => VARIABLETYPE_BOOLEAN,
+                IPSVarAction             => true,
+                IPSVarName               => 'Ventilation mode active',
+                OverrideSendServiceState => 'climateControlState'
+            ],
+            //low
+            'boostMode' => [
+                'type'                   => 'bool',
+                IPSProfile               => '~Switch',
+                IPSVarType               => VARIABLETYPE_BOOLEAN,
+                IPSVarAction             => true,
+                IPSVarName               => 'Boost mode active',
+                OverrideSendServiceState => 'climateControlState'
+            ],
+            'summerMode' => [
+                'type'                   => 'bool',
+                IPSProfile               => '~Switch',
+                IPSVarType               => VARIABLETYPE_BOOLEAN,
+                IPSVarAction             => true,
+                IPSVarName               => 'Summer mode active',
+                OverrideSendServiceState => 'climateControlState'
+            ],
+            //supportsBoostMode
+            'roomControlMode' => [
+                'type'                   => 'string',
+                IPSProfile               => 'BSH.RoomClimateControl.roomControlMode',
+                IPSVarType               => VARIABLETYPE_STRING,
+                IPSVarAction             => true,
+                IPSVarName               => 'Room control mode',
+                OverrideSendServiceState => 'climateControlState'
+            ],
+
+        ];
+    }
+    class ClimateControl extends ServiceBasics
+    {
+        protected static $properties = [
+            'operationMode' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.RoomClimateControl.operationMode',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarAction => true,
+                IPSVarName   => 'Operation mode'
+            ],
+            'roomControlMode' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.RoomClimateControl.roomControlMode',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarAction => true,
+                IPSVarName   => 'Room control mode'
             ]
         ];
     }
@@ -536,8 +627,11 @@ namespace BoschSHC\Services
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Humidity rating'
             ],
-            'purity' => [ //todo
-                'type' => 'number',
+            'purity' => [ //todo profile
+                'type'       => 'number',
+                IPSProfile   => '',
+                IPSVarType   => VARIABLETYPE_INTEGER,
+                IPSVarName   => 'Purity'
             ],
             'purityRating' => [
                 'type'       => 'string',
@@ -559,18 +653,18 @@ namespace BoschSHC\Services
                 'type'       => 'string',
                 IPSProfile   => 'BSH.Keypad.keyName',
                 IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'Keycode'
+                IPSVarName   => 'Key name'
             ],
             'eventType' => [
                 'type'       => 'string',
                 IPSProfile   => 'BSH.Keypad.eventType',
                 IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'Keycode'
+                IPSVarName   => 'Event'
             ],
             'eventTimestamp' => [
                 'type'       => 'integer',
                 IPSVarType   => VARIABLETYPE_INTEGER,
-                IPSVarName   => 'Timestamp'
+                IPSVarName   => 'Event time'
             ],
         ];
     }
@@ -597,7 +691,7 @@ namespace BoschSHC\Services
                 IPSProfile   => '~Switch',
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
-                IPSVarName   => 'Camera light state'
+                IPSVarName   => 'Camera light'
             ]
         ];
     }
@@ -608,7 +702,7 @@ namespace BoschSHC\Services
                 'type'       => 'string',
                 IPSProfile   => 'BSH.BatteryLevel.batteryLevel',
                 IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'Battery level'
+                IPSVarName   => 'Battery state'
             ]
         ];
     }
@@ -631,17 +725,17 @@ namespace BoschSHC\Services
                 IPSProfile   => '~Switch',
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
-                IPSVarName   => 'State'
+                IPSVarName   => 'Enabled'
             ],
             'runningStartTime' => [
                 'type'       => 'string',
                 IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'Running start time'
+                IPSVarName   => 'Start time'
             ],
             'runningEndTime' => [
                 'type'       => 'string',
                 IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'Running end time'
+                IPSVarName   => 'End time'
             ]
         ];
     }
@@ -766,7 +860,7 @@ namespace BoschSHC\Services
                 'type'       => 'string',
                 IPSProfile   => 'BSH.HueBridgeSearcher.searcherState',
                 IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'Searcher value'
+                IPSVarName   => 'Search result'
             ]
         ];
     }
@@ -788,7 +882,7 @@ namespace BoschSHC\Services
                 'type'       => 'string',
                 IPSProfile   => 'BSH.MultiswitchConfiguration.updateState',
                 IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'Update state'
+                IPSVarName   => 'Update'
             ]
         ];
     }
@@ -799,38 +893,16 @@ namespace BoschSHC\Services
                 'type'       => 'string',
                 IPSProfile   => 'BSH.WalkTest.walkState',
                 IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'Walk state'
+                IPSVarName   => 'Walktest'
             ],
             'petImmunityState' => [
                 'type'       => 'string',
                 IPSProfile   => 'BSH.WalkTest.walkState',
                 IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'Pet immunity state'
+                IPSVarName   => 'Pet immunity'
             ]
         ];
     }
-    class ClimateControl extends ServiceBasics
-    {
-        protected static $properties = [
-            'operationMode' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.ClimateControl.operationMode',
-                IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarAction => true,
-                IPSVarName   => 'Operation mode'
-            ],
-            'roomControlMode' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.ClimateControl.roomControlMode',
-                IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarAction => true,
-                IPSVarName   => 'Operation mode'
-            ]
-        ];
-    }
-    // todo roomClimateControl_hz_xy
-    // Yes, right, you can only set the temperature for the entire room and not for individual devices.
-    // If you want to do this, you have to separate them into individual rooms.
     class DoorSensor extends ServiceBasics
     {
         protected static $properties = [
@@ -1095,11 +1167,11 @@ namespace BoschSHC\Services
                     true   => 'ON',
                     false  => 'OFF',
                 ],
-                IPSProfile              => '~Switch',
-                IPSVarType              => VARIABLETYPE_BOOLEAN,
-                IPSVarAction            => true,
-                IPSVarName              => 'child lock',
-                OverrideSendServiceState=> 'childLockState'
+                IPSProfile               => '~Switch',
+                IPSVarType               => VARIABLETYPE_BOOLEAN,
+                IPSVarAction             => true,
+                IPSVarName               => 'Child lock',
+                OverrideSendServiceState => 'childLockState'
             ]
         ];
     }
@@ -1135,6 +1207,22 @@ namespace BoschSHC\Services
         ];
     }
     /**
+     * ThermostatSupportedControlMode
+     *
+     * empty, noting to do
+     */
+    class ThermostatSupportedControlMode extends ServiceBasics
+    {
+    }
+    /**
+     * TemperatureLevelConfiguration
+     *
+     * empty, noting to do
+     */
+    class TemperatureLevelConfiguration extends ServiceBasics
+    {
+    }
+    /**
      * @method void RegisterProfileStringEx(string $Name, string $Icon, string $Prefix, string $Suffix, array $Associations)
      * @method void RegisterProfileFloat(string $Name, string $Icon, string $Prefix, string $Suffix, float $MinValue, float $MaxValue, float $StepSize, int $Digits)
      * @method void RegisterProfileInteger(string $Name, string $Icon, string $Prefix, string $Suffix, int $MinValue, int $MaxValue, int $StepSize)
@@ -1159,11 +1247,35 @@ namespace BoschSHC\Services
                 \BoschSHC\Services\RoomClimateControl::getIPSProfile('setpointTemperature'),
                 'Temperature',
                 '',
-                '',
+                ' °C',
                 5,
                 30,
                 0.5,
                 1
+            );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\RoomClimateControl::getIPSProfile('operationMode'),
+                '',
+                '',
+                '',
+                [
+                    ['MANUAL', $this->TranslateProfile('manual'), '', -1],
+                    ['AUTOMATIC', $this->TranslateProfile('automatic'), '', -1],
+                    ['OFF', $this->TranslateProfile('off'), '', -1],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
+                ]
+            );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\RoomClimateControl::getIPSProfile('roomControlMode'),
+                '',
+                '',
+                '',
+                [
+                    ['OFF', $this->TranslateProfile('off'), '', -1],
+                    ['HEATING', $this->TranslateProfile('heating'), '', -1],
+                    ['COOLING', $this->TranslateProfile('cooling'), '', -1],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
+                ]
             );
             $this->RegisterProfileStringEx(
                 \BoschSHC\Services\HCWasher::getIPSProfile('operationState'),
@@ -1171,9 +1283,9 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['RUNNING', 'running', '', -1],
-                    ['END', 'end', '', -1],
-                    ['UNKNOWN', 'unknown', '', -1],
+                    ['RUNNING', $this->TranslateProfile('running'), '', -1],
+                    ['END', $this->TranslateProfile('end'), '', -1],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
                 ]
             );
             $this->RegisterProfileStringEx(
@@ -1182,10 +1294,10 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['RUNNING', 'running', '', -1],
-                    ['END', 'end', '', -1],
-                    ['STANDBY', 'standby', '', -1],
-                    ['UNKNOWN', 'unknown', '', -1],
+                    ['RUNNING', $this->TranslateProfile('running'), '', -1],
+                    ['END', $this->TranslateProfile('end'), '', -1],
+                    ['STANDBY',  $this->TranslateProfile('standby'), '', -1],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
                 ]
             );
             $this->RegisterProfileStringEx(
@@ -1194,10 +1306,10 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['RUNNING', 'running', '', -1],
-                    ['END', 'end', '', -1],
-                    ['STANDBY', 'standby', '', -1],
-                    ['UNKNOWN', 'unknown', '', -1],
+                    ['RUNNING', $this->TranslateProfile('running'), '', -1],
+                    ['END', $this->TranslateProfile('end'), '', -1],
+                    ['STANDBY',  $this->TranslateProfile('standby'), '', -1],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
                 ]
             );
             $this->RegisterProfileStringEx(
@@ -1206,37 +1318,37 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['STOPPED', 'stopped', '', -1],
-                    ['MOVING', 'moving', '', -1]
+                    ['STOPPED', $this->TranslateProfile('stopped'), '', -1],
+                    ['MOVING', $this->TranslateProfile('moving'), '', -1]
                 ]
             );
 
-            $this->RegisterProfileStringEx( //todo
+            $this->RegisterProfileStringEx(
                 \BoschSHC\Services\SmokeDetectorCheck::getIPSProfile('value'),
                 'Alert',
                 '',
                 '',
                 [
-                    ['NONE', 'none', '', -1],
-                    ['SMOKE_TEST_REQUESTED', 'test requested', '', -1],
-                    ['SMOKE_TEST_OK', 'test ok', '', -1],
-                    ['SMOKE_TEST_FAILED', 'test failed', '', -1],
-                    ['COMMUNICATION_TEST_SENT', 'COMMUNICATION_TEST_SENT', '', -1],
-                    ['COMMUNICATION_TEST_OK', 'COMMUNICATION_TEST_OK', '', -1],
-                    ['COMMUNICATION_TEST_REQUESTED', 'COMMUNICATION_TEST_REQUESTED', '', -1]
+                    ['NONE', $this->TranslateProfile('no test'), '', -1],
+                    ['SMOKE_TEST_REQUESTED', $this->TranslateProfile('test requested'), '', -1],
+                    ['SMOKE_TEST_OK', $this->TranslateProfile('test ok'), '', -1],
+                    ['SMOKE_TEST_FAILED', $this->TranslateProfile('test failed'), '', -1],
+                    ['COMMUNICATION_TEST_SENT', $this->TranslateProfile('communication test sent'), '', -1],
+                    ['COMMUNICATION_TEST_OK', $this->TranslateProfile('communication test ok'), '', -1],
+                    ['COMMUNICATION_TEST_REQUESTED', $this->TranslateProfile('communication test requested'), '', -1]
                 ]
             );
 
-            $this->RegisterProfileStringEx( //todo
+            $this->RegisterProfileStringEx(
                 \BoschSHC\Services\SmokeSensitivity::getIPSProfile('smokeSensitivity'),
                 'Alert',
                 '',
                 '',
                 [
-                    ['HIGH', 'HIGH', '', -1],
-                    ['MIDDLE', 'MIDDLE', '', -1],
-                    ['LOW', 'LOW', '', -1],
-                    ['UNKNOWN', 'UNKNOWN', '', -1]
+                    ['HIGH', $this->TranslateProfile('high'), '', -1],
+                    ['MIDDLE', $this->TranslateProfile('middle'), '', -1],
+                    ['LOW', $this->TranslateProfile('low'), '', -1],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
                 ]
             );
             $this->RegisterProfileStringEx( //todo
@@ -1406,30 +1518,6 @@ namespace BoschSHC\Services
                 ]
             );
             $this->RegisterProfileStringEx( //todo
-                \BoschSHC\Services\ClimateControl::getIPSProfile('operationMode'),
-                '',
-                '',
-                '',
-                [
-                    ['MANUAL', 'MANUAL', '', -1],
-                    ['AUTOMATIC', 'AUTOMATIC', '', -1],
-                    ['OFF', 'OFF', '', -1],
-                    ['UNKNOWN', 'UNKNOWN', '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx( //todo
-                \BoschSHC\Services\ClimateControl::getIPSProfile('roomControlMode'),
-                '',
-                '',
-                '',
-                [
-                    ['OFF', 'OFF', '', -1],
-                    ['HEATING', 'HEATING', '', -1],
-                    ['COOLING', 'COOLING', '', -1],
-                    ['UNKNOWN', 'UNKNOWN', '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx( //todo
                 \BoschSHC\Services\DoorSensor::getIPSProfile('doorState'),
                 '',
                 '',
@@ -1536,7 +1624,9 @@ namespace BoschSHC\Services
         protected function UnregisterProfiles()
         {
             $this->UnregisterProfile(\BoschSHC\Services\PowerSwitchProgram::getIPSProfile('operationMode'));
+            $this->UnregisterProfile(\BoschSHC\Services\RoomClimateControl::getIPSProfile('roomControlMode'));
             $this->UnregisterProfile(\BoschSHC\Services\RoomClimateControl::getIPSProfile('setpointTemperature'));
+            $this->UnregisterProfile(\BoschSHC\Services\RoomClimateControl::getIPSProfile('operationMode'));
             $this->UnregisterProfile(\BoschSHC\Services\HCWasher::getIPSProfile('operationState'));
             $this->UnregisterProfile(\BoschSHC\Services\HCDishwasher::getIPSProfile('operationState'));
             $this->UnregisterProfile(\BoschSHC\Services\HCOven::getIPSProfile('operationState'));
@@ -1555,8 +1645,6 @@ namespace BoschSHC\Services
             $this->UnregisterProfile(\BoschSHC\Services\CommunicationQuality::getIPSProfile('quality'));
             $this->UnregisterProfile(\BoschSHC\Services\MultiswitchConfiguration::getIPSProfile('updateState'));
             $this->UnregisterProfile(\BoschSHC\Services\WalkTest::getIPSProfile('walkState'));
-            $this->UnregisterProfile(\BoschSHC\Services\ClimateControl::getIPSProfile('operationMode'));
-            $this->UnregisterProfile(\BoschSHC\Services\ClimateControl::getIPSProfile('roomControlMode'));
             $this->UnregisterProfile(\BoschSHC\Services\DoorSensor::getIPSProfile('doorState'));
             $this->UnregisterProfile(\BoschSHC\Services\LockActuator::getIPSProfile('lockState'));
             $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'));

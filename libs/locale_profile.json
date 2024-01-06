@@ -12,7 +12,29 @@
             "unlocked": "unverschlossen",
             "locked": "verschlossen",
             "locking": "schließt",
-            "unlocking": "öffnet"
+            "unlocking": "öffnet",
+            "schedule": "Zeitplan",
+            "manual": "Manuell",
+            "automatic": "Automatisch",
+            "off": "Aus",
+            "unknown": "Unbekannt",
+            "heating": "Heizen",
+            "cooling": "Kühlen",
+            "running": "Läuft",
+            "end": "Ende",
+            "standby": "Standby",
+            "stopped": "Gestoppt",
+            "moving": "Bewegung",
+            "no test": "kein Test",
+            "test requested": "Test angefordert",
+            "test ok": "Test OK",
+            "test failed": "Test fehlgeschlagen",
+            "communication test sent": "Kommunikationstest gesendet",
+            "communication test ok": "Kommunikationstest OK",
+            "communication test requested": "Kommunikationstest angefordert",
+            "high": "Hoch",
+            "middle": "Mittel",
+            "low": "Niedrig"
         }
     }
 }
