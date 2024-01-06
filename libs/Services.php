@@ -8,6 +8,7 @@ namespace BoschSHC
     {
         public const PowerMeter = 'PowerMeter';
         public const PowerSwitch = 'PowerSwitch';
+        public const PowerSwitchConfiguration = 'PowerSwitchConfiguration';
         public const PowerSwitchProgram = 'PowerSwitchProgram';
         public const RoomClimateControl = 'RoomClimateControl';
         public const ClimateControl = 'ClimateControl';
@@ -38,7 +39,7 @@ namespace BoschSHC
         public const Routing = 'Routing';
         public const HueBlinking = 'HueBlinking';
         public const HueBridgeSearcher = 'HueBridgeSearcher';
-        public const HueBridgeConnector = 'HueBridgeConnector'; //todo
+        public const HueBridgeConnector = 'HueBridgeConnector';
         public const CommunicationQuality = 'CommunicationQuality';
         public const MultiswitchConfiguration = 'MultiswitchConfiguration';
         public const WalkTest = 'WalkTest';
@@ -96,6 +97,7 @@ namespace BoschSHC
         protected static $Services = [
             self::PowerMeter,
             self::PowerSwitch,
+            self::PowerSwitchConfiguration,
             self::PowerSwitchProgram,
             self::RoomClimateControl,
             self::ClimateControl,
@@ -126,6 +128,7 @@ namespace BoschSHC
             self::Routing,
             self::HueBlinking,
             self::HueBridgeSearcher,
+            self::HueBridgeConnector,
             self::CommunicationQuality,
             self::MultiswitchConfiguration,
             self::WalkTest,
@@ -193,9 +196,8 @@ namespace BoschSHC\Services
         {
             return static::getIPSAction($Property);
         }
-        public static function getServiceStateRequest(string $Property, mixed $Value): array
+        public static function getServiceStateRequest(string $Property, mixed $Value): string
         {
-            $ServiceType = explode('\\', get_called_class())[2];
             $VarType = static::getIPSVarType($Property);
             $Factor = isset(static::$properties[$Property][IPSVarFactor]) ?
                       static::$properties[$Property][IPSVarFactor] :
@@ -219,10 +221,7 @@ namespace BoschSHC\Services
             $Request['@type'] = (isset(static::$properties[$Property][OverrideSendServiceState])) ?
                                 static::$properties[$Property][OverrideSendServiceState] :
                                 static::getServiceState();
-            return [
-                json_encode($Request, JSON_PRESERVE_ZERO_FRACTION),
-                $ServiceType
-            ];
+            return json_encode($Request, JSON_PRESERVE_ZERO_FRACTION);
         }
         public static function getIPSVariable(string $Property, mixed $Value): array
         {
@@ -320,6 +319,18 @@ namespace BoschSHC\Services
             //todo
             //'automaticPowerOffTime' INTEGER
 
+        ];
+    }
+    class PowerSwitchConfiguration extends ServiceBasics
+    {
+        protected static $properties = [
+            'stateAfterPowerOutage' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.PowerSwitchConfiguration.stateAfterPowerOutage',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarAction => true,
+                IPSVarName   => 'State after power outage'
+            ]
         ];
     }
     class PowerSwitchProgram extends ServiceBasics
@@ -864,6 +875,17 @@ namespace BoschSHC\Services
             ]
         ];
     }
+    class HueBridgeConnector extends ServiceBasics
+    {
+        protected static $properties = [
+            'hueBridgeConnectorState' => [ //todo Profile kein VALUE bekannt
+                'type'       => 'string',
+                IPSProfile   => '',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Connector state'
+            ]
+        ];
+    }
     class CommunicationQuality extends ServiceBasics
     {
         protected static $properties = [
@@ -968,7 +990,7 @@ namespace BoschSHC\Services
     class WaterLeakageSensorCheck extends ServiceBasics
     {
         protected static $properties = [
-            'result' => [
+            'result' => [  //todo Profile
                 'type'       => 'string',
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Water leakage sensor check'
@@ -1234,6 +1256,17 @@ namespace BoschSHC\Services
         protected function RegisterProfiles()
         {
             $this->RegisterProfileStringEx(
+                \BoschSHC\Services\PowerSwitchConfiguration::getIPSProfile('stateAfterPowerOutage'),
+                '',
+                '',
+                '',
+                [
+                    ['OFF', $this->TranslateProfile('off'), '', -1],
+                    ['LAST_STATE', $this->TranslateProfile('laste state'), '', -1],
+                    ['ON', $this->TranslateProfile('on'), '', -1]
+                ]
+            );
+            $this->RegisterProfileStringEx(
                 \BoschSHC\Services\PowerSwitchProgram::getIPSProfile('operationMode'),
                 'Clock',
                 '',
@@ -1368,10 +1401,10 @@ namespace BoschSHC\Services
                     ['RANGE_TOO_BIG', 'RANGE_TOO_BIG', '', -1],
                     ['RANGE_TOO_SMALL', 'RANGE_TOO_SMALL', '', -1],
                     ['ERROR', 'ERROR', '', -1],
-                    ['UNKNOWN', 'UNKNOWN', '', -1]
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
                 ]
             );
-            $this->RegisterProfileStringEx(
+            $this->RegisterProfileStringEx( //todo
                 \BoschSHC\Services\AirQualityLevel::getIPSProfile('combinedRating'),
                 '',
                 '',
@@ -1400,7 +1433,7 @@ namespace BoschSHC\Services
                     ['WARM_STUFFY', 'WARM_STUFFY', '', -1],
                     ['WARM_HUMID_STUFFY', 'WARM_HUMID_STUFFY', '', -1],
                     ['WARM_DRY_STUFFY', 'WARM_DRY_STUFFY', '', -1],
-                    ['UNKNOWN', 'unknown', '', -1],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
                 ]
             );
             $this->RegisterProfileStringEx(
@@ -1409,10 +1442,10 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['GOOD', 'good', '', -1],
-                    ['MEDIUM', 'medium', '', -1],
-                    ['BAD', 'bad', '', -1],
-                    ['UNKNOWN', 'unknown', '', -1],
+                    ['GOOD', $this->TranslateProfile('good'), '', -1],
+                    ['MEDIUM', $this->TranslateProfile('medium'), '', -1],
+                    ['BAD', $this->TranslateProfile('bad'), '', -1],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
                 ]
             );
             $this->RegisterProfileStringEx(
@@ -1421,8 +1454,8 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['LOWER_BUTTON', 'Lower button', '', -1],
-                    ['UPPER_BUTTON', 'Upper button', '', -1],
+                    ['LOWER_BUTTON', $this->TranslateProfile('Lower button'), '', -1],
+                    ['UPPER_BUTTON', $this->TranslateProfile('Upper button'), '', -1],
                 ]
             );
             $this->RegisterProfileStringEx(
@@ -1431,8 +1464,8 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['PRESS_SHORT', 'Short press', '', -1],
-                    ['PRESS_LONG', 'Long press', '', -1],
+                    ['PRESS_SHORT', $this->TranslateProfile('short'), '', -1],
+                    ['PRESS_LONG', $this->TranslateProfile('long'), '', -1],
                 ]
             );
             $this->RegisterProfileStringEx(
@@ -1441,18 +1474,18 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['OK', 'ok', '', -1],
-                    ['LOW_BATTERY', 'low battery', '', -1],
-                    ['CRITICAL_LOW', 'critically low', '', -1],
-                    ['CRITICALLY_LOW_BATTERY', 'critically low battery', '', -1],
-                    ['NOT_AVAILABLE', 'not available', '', -1],
+                    ['OK', $this->TranslateProfile('ok'), '', -1],
+                    ['LOW_BATTERY', $this->TranslateProfile('low battery'), '', -1],
+                    ['CRITICAL_LOW', $this->TranslateProfile('critically low'), '', -1],
+                    ['CRITICALLY_LOW_BATTERY', $this->TranslateProfile('critically low battery'), '', -1],
+                    ['NOT_AVAILABLE', $this->TranslateProfile('not available'), '', -1],
                 ]
             );
             $this->RegisterProfileInteger(
                 \BoschSHC\Services\VentilationDelay::getIPSProfile('delay'),
                 'Clock',
                 '',
-                ' seconds',
+                $this->TranslateProfile(' seconds'),
                 0,
                 3600,
                 1
@@ -1463,9 +1496,9 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['OFF', 'off', '', -1],
-                    ['ON', 'on', '', -1],
-                    ['UNKNOWN', 'unknown', '', -1]
+                    ['OFF', $this->TranslateProfile('off'), '', -1],
+                    ['ON', $this->TranslateProfile('on'), '', -1],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
                 ]
             );
             $this->RegisterProfileStringEx( //todo
@@ -1479,7 +1512,7 @@ namespace BoschSHC\Services
                     ['BRIDGES_FOUND', 'BRIDGES_FOUND', '', -1],
                     ['NO_BRIDGE_FOUND', 'NO_BRIDGE_FOUND', '', -1],
                     ['ERROR', 'ERROR', '', -1],
-                    ['UNKNOWN', 'UNKNOWN', '', -1]
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
                 ]
             );
             $this->RegisterProfileStringEx(
@@ -1488,47 +1521,47 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    ['GOOD', 'GOOD', '', -1],
-                    ['BAD', 'BAD', '', -1],
-                    ['NORMAL', 'NORMAL', '', -1],
-                    ['UNKNOWN', 'UNKNOWN', '', -1],
-                    ['FETCHING', 'FETCHING', '', -1]
+                    ['GOOD', $this->TranslateProfile('good'), '', -1],
+                    ['BAD', $this->TranslateProfile('bad'), '', -1],
+                    ['NORMAL', $this->TranslateProfile('normal'), '', -1],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
+                    ['FETCHING', $this->TranslateProfile('fetching'), '', -1]
                 ]
             );
-            $this->RegisterProfileStringEx( //todo
+            $this->RegisterProfileStringEx(
                 \BoschSHC\Services\MultiswitchConfiguration::getIPSProfile('updateState'),
                 '',
                 '',
                 '',
                 [
-                    ['UPDATING', 'UPDATING', '', -1],
-                    ['UP_TO_DATE', 'UP_TO_DATE', '', -1],
-                    ['UNKNOWN', 'UNKNOWN', '', -1]
+                    ['UPDATING', $this->TranslateProfile('updating'), '', -1],
+                    ['UP_TO_DATE', $this->TranslateProfile('up to date'), '', -1],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
                 ]
             );
-            $this->RegisterProfileStringEx( //todo
+            $this->RegisterProfileStringEx(
                 \BoschSHC\Services\WalkTest::getIPSProfile('walkState'),
                 '',
                 '',
                 '',
                 [
-                    ['WALK_TEST_STARTED', 'WALK_TEST_STARTED', '', -1],
-                    ['WALK_TEST_STOPPED', 'WALK_TEST_STOPPED', '', -1],
-                    ['WALK_TEST_UNKNOWN', 'WALK_TEST_UNKNOWN', '', -1]
+                    ['WALK_TEST_STARTED', $this->TranslateProfile('started'), '', -1],
+                    ['WALK_TEST_STOPPED', $this->TranslateProfile('stopped'), '', -1],
+                    ['WALK_TEST_UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
                 ]
             );
-            $this->RegisterProfileStringEx( //todo
+            $this->RegisterProfileStringEx(
                 \BoschSHC\Services\DoorSensor::getIPSProfile('doorState'),
                 '',
                 '',
                 '',
                 [
-                    ['DOOR_CLOSED', 'DOOR_CLOSED', '', -1],
-                    ['DOOR_OPEN', 'DOOR_OPEN', '', -1],
-                    ['DOOR_UNKNOWN', 'DOOR_UNKNOWN', '', -1]
+                    ['DOOR_CLOSED', $this->TranslateProfile('closed'), '', -1],
+                    ['DOOR_OPEN', $this->TranslateProfile('open'), '', -1],
+                    ['DOOR_UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
                 ]
             );
-            $this->RegisterProfileStringEx( //todo
+            $this->RegisterProfileStringEx(
                 \BoschSHC\Services\LockActuator::getIPSProfile('lockState'),
                 '',
                 '',
@@ -1542,13 +1575,13 @@ namespace BoschSHC\Services
             );
             $this->RegisterProfileStringEx(
                 \BoschSHC\Services\WaterAlarmSystem::getIPSProfile('state'),
-                '',
+                'Alert',
                 '',
                 '',
                 [
-                    ['ALARM_OFF', 'Ok', '', -1],
-                    ['WATER_ALARM', 'Alarm', '', -1],
-                    ['ALARM_MUTED', $this->TranslateProfile('Muted alarm'), '', -1]
+                    ['ALARM_OFF', $this->TranslateProfile('off'), '', -1],
+                    ['WATER_ALARM', $this->TranslateProfile('alarm'), '', -1],
+                    ['ALARM_MUTED', $this->TranslateProfile('muted'), '', -1]
                 ]
             );
             $this->RegisterProfileIntegerEx(
@@ -1557,7 +1590,7 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    [0, 'Execute', '', -1]
+                    [0, $this->TranslateProfile('Execute'), '', -1]
                 ]
             );
             $this->RegisterProfileIntegerEx(
@@ -1566,7 +1599,7 @@ namespace BoschSHC\Services
                 '',
                 '',
                 [
-                    [0, 'Execute', '', -1]
+                    [0, $this->TranslateProfile('Execute'), '', -1]
                 ]
             );
             $this->RegisterProfileInteger(
@@ -1582,7 +1615,7 @@ namespace BoschSHC\Services
                 \BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayOnTime'),
                 '',
                 '',
-                ' sec',
+                $this->TranslateProfile(' seconds'),
                 5,
                 30,
                 5
@@ -1623,10 +1656,11 @@ namespace BoschSHC\Services
         }
         protected function UnregisterProfiles()
         {
+            $this->UnregisterProfile(\BoschSHC\Services\PowerSwitchConfiguration::getIPSProfile('stateAfterPowerOutage'));
             $this->UnregisterProfile(\BoschSHC\Services\PowerSwitchProgram::getIPSProfile('operationMode'));
-            $this->UnregisterProfile(\BoschSHC\Services\RoomClimateControl::getIPSProfile('roomControlMode'));
             $this->UnregisterProfile(\BoschSHC\Services\RoomClimateControl::getIPSProfile('setpointTemperature'));
             $this->UnregisterProfile(\BoschSHC\Services\RoomClimateControl::getIPSProfile('operationMode'));
+            $this->UnregisterProfile(\BoschSHC\Services\RoomClimateControl::getIPSProfile('roomControlMode'));
             $this->UnregisterProfile(\BoschSHC\Services\HCWasher::getIPSProfile('operationState'));
             $this->UnregisterProfile(\BoschSHC\Services\HCDishwasher::getIPSProfile('operationState'));
             $this->UnregisterProfile(\BoschSHC\Services\HCOven::getIPSProfile('operationState'));
@@ -1647,7 +1681,7 @@ namespace BoschSHC\Services
             $this->UnregisterProfile(\BoschSHC\Services\WalkTest::getIPSProfile('walkState'));
             $this->UnregisterProfile(\BoschSHC\Services\DoorSensor::getIPSProfile('doorState'));
             $this->UnregisterProfile(\BoschSHC\Services\LockActuator::getIPSProfile('lockState'));
-            $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'));
+            $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('state'));
             $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'));
             $this->UnregisterProfile('BSH.Scenario.Trigger');
             $this->UnregisterProfile(\BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayBrightness'));

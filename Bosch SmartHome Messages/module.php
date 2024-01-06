@@ -5,6 +5,10 @@ declare(strict_types=1);
 eval('declare(strict_types=1);namespace BoschSmartHomeMessages {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/BufferHelper.php') . '}');
 require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
 /**
+ *
+ * @todo Nachrichten als Tabelle darstellen
+ * @todo Nachrichten als Textboxen darstellen
+ *
  * @property array $Multi_Messages
  */
 class BoschSmartHomeMessages extends BSHBasicClass
