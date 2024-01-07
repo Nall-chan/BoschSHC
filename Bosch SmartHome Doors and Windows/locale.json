@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Bosch SmartHome Doors and Windows": "Bosch SmartHome Türen und Fenster",
             "Request states": "Zustandsabfrage",
             "Invalid Ident": "Ungültiger Ident",
             "All Doors": "alle Türen",

@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Bosch SmartHome Automation Rule": "Bosch SmartHome Automatisierungsregel",
             "Automation rule ID": "Automation ID",
             "Request states": "Zustandsabfrage",
             "Enabled": "Aktiviert",

@@ -227,6 +227,14 @@ class BoschSmartHomeIO extends IPSModuleStrict
             return json_encode($Form);
         }
         if ($this->GetStatus() == self::IS_NotPaired) {
+            $ImageFile = __DIR__ . '/imgs/SHC2.png';
+            $SHCButton = 1;
+            $ButtonText = $this->Translate('Show Controller I');
+            $Image = 'data:image/png;base64,' . base64_encode(file_get_contents($ImageFile));
+            $Form['actions'][1]['popup']['items'][1]['items'][0]['image'] = $Image;
+            $Form['actions'][1]['popup']['items'][1]['items'][1]['caption'] = $ButtonText;
+            $Form['actions'][1]['popup']['items'][1]['items'][1]['onClick'] = 'IPS_RequestAction($id, \'DisplaySHC\', ' . $SHCButton . ');';
+            $Form['actions'][1]['popup']['items'][2]['caption'] = sprintf($this->Translate("Press the Bosch Smart Home Controller's front-side button number %d, until the LED begin flashing.\r\n\r\nEnter your Bosch Smart Home Controller system password into the Textbox below\r\n and then click the \"Pair\" button."), $SHCButton);
             $Form['actions'][1]['visible'] = true;
         }
         $this->SendDebug('FORM', json_encode($Form), 0);
@@ -237,6 +245,9 @@ class BoschSmartHomeIO extends IPSModuleStrict
     public function RequestAction(string $Ident, mixed $Value): void
     {
         switch ($Ident) {
+            case 'DisplaySHC':
+                $this->UpdatePairingPopup($Value);
+                break;
             case 'CheckSHC':
                 $this->UpdateFormField('CheckSHCResult', 'caption', ($this->CheckSHC() ? 'OK' : $this->Translate('Controller not reachable.')));
                 $this->UpdateFormField('NoConnectPopup', 'visible', true);
@@ -551,12 +562,33 @@ class BoschSmartHomeIO extends IPSModuleStrict
         $this->isPaired = $isPaired;
         $this->SendDebug('PairState', $isPaired, 0);
         if (!$isPaired) {
-            $this->UpdateFormField('PairingPopup', 'visible', true);
+            $this->UpdatePairingPopup(2);
             $this->SetStatus(self::IS_NotPaired);
+            return false;
         }
         return true;
     }
-
+    private function UpdatePairingPopup(int $SHCModel)
+    {
+        switch ($SHCModel) {
+            case 1:
+                $ImageFile = __DIR__ . '/imgs/SHC1.png';
+                $SHCButton = 2;
+                $ButtonText = $this->Translate('Show Controller II');
+                break;
+            case 2:
+                $ImageFile = __DIR__ . '/imgs/SHC2.png';
+                $SHCButton = 1;
+                $ButtonText = $this->Translate('Show Controller I');
+                break;
+        }
+        $Image = 'data:image/png;base64,' . base64_encode(file_get_contents($ImageFile));
+        $this->UpdateFormField('ImageSHC', 'image', $Image);
+        $this->UpdateFormField('PopupText', 'caption', sprintf($this->Translate("Press the Bosch Smart Home Controller's front-side button number %d, until the LED begin flashing.\r\n\r\nEnter your Bosch Smart Home Controller system password into the Textbox below\r\n and then click the \"Pair\" button."), $SHCButton));
+        $this->UpdateFormField('ChangeSHC', 'caption', $ButtonText);
+        $this->UpdateFormField('ChangeSHC', 'onClick', 'IPS_RequestAction($id, \'DisplaySHC\', ' . $SHCButton . ');');
+        $this->UpdateFormField('PairingPopup', 'visible', true);
+    }
     private function StartConnection(): void
     {
         $this->SetStatus(IS_ACTIVE);

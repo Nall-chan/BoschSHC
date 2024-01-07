@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Bosch SmartHome Scenarios": "Bosch SmartHome Szenarien",
             "Scenario ID": "Szenario ID",
             "Request states": "Zustandsabfrage",
             "Start scenario": "Szenario starten",

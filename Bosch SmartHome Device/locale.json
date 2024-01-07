@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Bosch SmartHome Device": "Bosch SmartHome Gerät",
             "Device ID": "Geräte-ID",
             "Show unsupported services": "Nicht unterstützte Dienste anzeigen",
             "Device send following unsupported services": "Das Gerät sendet folgende nicht unterstützten Diensten",

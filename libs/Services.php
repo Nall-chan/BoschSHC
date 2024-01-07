@@ -63,8 +63,8 @@ namespace BoschSHC
         public const Thermostat = 'Thermostat';
         public const Bypass = 'Bypass';
         public const VibrationSensor = 'VibrationSensor';
-        public const ThermostatSupportedControlMode = 'ThermostatSupportedControlMode';
         //skipped Services
+        public const ThermostatSupportedControlMode = 'ThermostatSupportedControlMode';
         public const TemperatureLevelConfiguration = 'TemperatureLevelConfiguration';
         //todo
         public const IntrusionDetectionControl = 'IntrusionDetectionControl';

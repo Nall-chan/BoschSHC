@@ -34,12 +34,29 @@
                     {
                         "name": "PopupTitle",
                         "type": "Label",
+                        "bold": true,
                         "caption": "Please start paring with the Controller!"
+                    },
+                    {
+                        "type": "RowLayout",
+                        "items": [
+                            {
+                                "name": "ImageSHC",
+                                "type": "Image",
+                                "image": ""
+                            },
+                            {
+                                "name": "ChangeSHC",
+                                "type": "Button",
+                                "caption": "Show SHC",
+                                "onClick": ""
+                            }
+                        ]
                     },
                     {
                         "name": "PopupText",
                         "type": "Label",
-                        "caption": "Press the Bosch Smart Home Controller's front-side button, until the LEDs begin flashing.\r\n\r\nEnter your Bosch Smart Home Controller password into the Textbox below\r\n and then click the \"Pair\" button."
+                        "caption": ""
                     },
                     {
                         "type": "PasswordTextBox",

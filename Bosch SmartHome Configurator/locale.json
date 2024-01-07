@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Bosch SmartHome Configurator": "Bosch SmartHome Konfigurator",
             "Device-ID": "Geräte-ID",
             "Type": "Typ",
             "Bosch SmartHome Automation Rules": "Bosch SmartHome Automationen",

@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Bosch SmartHome Wateralarm System": "Bosch SmartHome Wasseralarm-System",
             "Request states": "Zustandsabfrage",
             "Water alarm system state": "Zustand des Wasseralarmsystems",
             "Set muted": "Stumm stellen",

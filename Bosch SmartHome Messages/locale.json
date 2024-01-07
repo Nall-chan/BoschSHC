@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Bosch SmartHome Messages": "Bosch SmartHome Meldungen",
             "Request states": "Zustandsabfrage",
             "Error messages": "Fehlermeldungen",
             "Warning messages": "Warnmeldungen",
