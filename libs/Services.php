@@ -63,30 +63,14 @@ namespace BoschSHC
         public const Thermostat = 'Thermostat';
         public const Bypass = 'Bypass';
         public const VibrationSensor = 'VibrationSensor';
+        public const SurveillanceAlarm = 'SurveillanceAlarm';
+        public const IntrusionDetectionControl = 'IntrusionDetectionControl';
         //skipped Services
         public const ThermostatSupportedControlMode = 'ThermostatSupportedControlMode';
         public const TemperatureLevelConfiguration = 'TemperatureLevelConfiguration';
+
         //todo
-        public const IntrusionDetectionControl = 'IntrusionDetectionControl';
         /*
-            armingState: {
-        value: {
-            'SYSTEM_ARMING': 'SYSTEM_ARMING',
-            'SYSTEM_ARMED': 'SYSTEM_ARMED',
-            'SYSTEM_DISARMED': 'SYSTEM_DISARMED',
-            'MUTE_ALARM': 'MUTE_ALARM'
-        }*/
-        public const SurveillanceAlarm = 'SurveillanceAlarm';
-        /*
-            alarmState: {
-        value: {
-            'ALARM_ON': 'ALARM_ON',
-            'ALARM_OFF': 'ALARM_OFF',
-            'ALARM_MUTED': 'ALARM_MUTED',
-            'PRE_ALARM': 'PRE_ALARM',
-            'UNKNOWN': 'UNKNOWN'
-        }
-    },
         "@type": "systemState",
     "systemAvailability": {
         "@type": "systemAvailabilityState",
@@ -152,6 +136,8 @@ namespace BoschSHC
             self::VibrationSensor,
             self::ThermostatSupportedControlMode,
             self::TemperatureLevelConfiguration,
+            self::SurveillanceAlarm,
+            self::IntrusionDetectionControl
         ];
 
         public static function ServiceIsValid(string $Service): bool
@@ -1228,6 +1214,50 @@ namespace BoschSHC\Services
             ]
         ];
     }
+    class SurveillanceAlarm extends ServiceBasics
+    {
+        protected static $properties = [
+            'value' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.SurveillanceAlarm.value',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarName   => 'Surveillance alarm status'
+            ]
+        ];
+    }
+    class IntrusionDetectionControl extends ServiceBasics
+    {
+        protected static $properties = [
+            'value' => [
+                'type'       => 'string',
+                IPSProfile   => 'BSH.IntrusionDetectionControl.value',
+                IPSVarType   => VARIABLETYPE_STRING,
+                IPSVarAction => true,
+                IPSVarName   => 'Control'
+            ],
+            'activeProfile'           => [
+                'type'       => 'number',
+                IPSProfile   => 'BSH.IntrusionDetectionControl.activeProfile',
+                IPSVarType   => VARIABLETYPE_INTEGER,
+                IPSVarAction => true,
+                IPSVarName   => 'Active profile'
+            ],
+            'armActivationDelayTime'  => [
+                'type'       => 'number',
+                IPSProfile   => 'BSH.IntrusionDetectionControl.DelayTime',
+                IPSVarType   => VARIABLETYPE_INTEGER,
+                IPSVarAction => true,
+                IPSVarName   => 'Activation delay time'
+            ],
+            'alarmActivationDelayTime'=> [
+                'type'       => 'number',
+                IPSProfile   => 'BSH.IntrusionDetectionControl.DelayTime',
+                IPSVarType   => VARIABLETYPE_INTEGER,
+                IPSVarAction => true,
+                IPSVarName   => 'Alarm delay time'
+            ]
+        ];
+    }
     /**
      * ThermostatSupportedControlMode
      *
@@ -1653,6 +1683,51 @@ namespace BoschSHC\Services
                     ['UPDATE_AVAILABLE', $this->TranslateProfile('update available'), '', -1],
                 ]
             );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\SurveillanceAlarm::getIPSProfile('value'),
+                '',
+                '',
+                '',
+                [
+                    ['ALARM_ON', $this->TranslateProfile('on'), '', 0xff0000],
+                    ['ALARM_OFF', $this->TranslateProfile('off'), '', 0x00ff00],
+                    ['ALARM_MUTED', $this->TranslateProfile('muted'), '', 0x0000ff],
+                    ['PRE_ALARM', $this->TranslateProfile('Pre-alarm'), '', 0x900000],
+                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
+                ]
+            );
+            $this->RegisterProfileStringEx(
+                \BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('value'),
+                '',
+                '',
+                '',
+                [
+                    ['SYSTEM_ARMING', $this->TranslateProfile('is arming'), '', 0x900000],
+                    ['SYSTEM_ARMED', $this->TranslateProfile('armed'), '', 0xff0000],
+                    ['SYSTEM_DISARMED', $this->TranslateProfile('disarmed'), '', 0x00ff00],
+                    ['MUTE_ALARM', $this->TranslateProfile('muted'), '', 0x0000ff]
+                ]
+            );
+            $this->RegisterProfileIntegerEx(
+                \BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('activeProfile'),
+                '',
+                '',
+                '',
+                [
+                    [0, $this->TranslateProfile('full protection'), '', -1],
+                    [1, $this->TranslateProfile('partial protection'), '', -1],
+                    [2, $this->TranslateProfile('customized protection'), '', -1]
+                ]
+            );
+            $this->RegisterProfileInteger(
+                \BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('DelayTime'),
+                'Clock',
+                '',
+                $this->TranslateProfile(' seconds'),
+                0,
+                600,
+                1
+            );
         }
         protected function UnregisterProfiles()
         {
@@ -1689,6 +1764,10 @@ namespace BoschSHC\Services
             $this->UnregisterProfile(\BoschSHC\Services\TemperatureOffset::getIPSProfile('offset'));
             $this->UnregisterProfile(\BoschSHC\Services\TerminalConfiguration::getIPSProfile('type'));
             $this->UnregisterProfile(\BoschSHC\Services\SoftwareUpdate::getIPSProfile('swUpdateState'));
+            $this->UnregisterProfile(\BoschSHC\Services\SurveillanceAlarm::getIPSProfile('value'));
+            $this->UnregisterProfile(\BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('value'));
+            $this->UnregisterProfile(\BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('activeProfile'));
+            $this->UnregisterProfile(\BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('DelayTime'));
         }
     }
 }

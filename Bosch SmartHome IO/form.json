@@ -61,7 +61,7 @@
                     {
                         "type": "PasswordTextBox",
                         "name": "Password",
-                        "caption": "Password"
+                        "caption": "System password"
                     }
                 ]
             }

@@ -91,7 +91,7 @@ Einbinden von Bosch SmartHome Geräten und Dienstes über den Bosch SmartHome Co
 ### 2. Changelog
 
 ---  
-**Version 0.60:**  
+**Version 0.70:**  
 - Beta Release für Symcon 7.0  
 
 ----------

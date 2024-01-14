@@ -58,7 +58,11 @@
             "not connected": "nicht verbunden",
             "no update available": "Kein Update verfügbar",
             "update in progress": "Update wird durchgeführt",
-            "update available": "Update Verfügbar"
+            "update available": "Update Verfügbar",
+            "Pre-alarm": "Voralarm",
+            "disarmed": "Unscharf",
+            "armed": "Scharf",
+            "is arming": "wird scharf"
         }
     }
 }

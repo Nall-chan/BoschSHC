@@ -80,7 +80,12 @@
             "Temperature offset": "Temperaturoffset",
             "Terminal configuration": "Terminalkonfiguration",
             "Bypass": "Umgangen",
-            "Vibration sensor": "Vibrationssensor"
+            "Vibration sensor": "Vibrationssensor",
+            "Surveillance alarm status": "Alarmstatus",
+            "Control": "Steuerung",
+            "Active profile": "Aktives Profil",
+            "Activation delay time": "Aktivierungsverzögerungszeit",
+            "Alarm delay time": "Alarmverzögerungszeit"
         }
     }
 }

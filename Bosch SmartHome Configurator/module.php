@@ -191,12 +191,13 @@ class BoschSmartHomeConfigurator extends IPSModuleStrict
             $Values[] = [
                 'id'               => $ScenarioId,
                 'name'             => IPS_GetName($InstanceID),
-                'deviceModel'      => 'AutomationRule',
+                'deviceModel'      => 'Scenario',
                 'instanceID'       => $InstanceID,
             ];
         }
         return $Values;
     }
+
     private function GetWaterAlarm(): array
     {
         $WaterAlarmSystemState = $this->GetLists(\BoschSHC\ApiUrl::WaterAlarm);
@@ -236,6 +237,7 @@ class BoschSmartHomeConfigurator extends IPSModuleStrict
         }
         return $Values;
     }
+
     private function GetMessages(): array
     {
         $Create = [];
@@ -254,7 +256,7 @@ class BoschSmartHomeConfigurator extends IPSModuleStrict
                 [
                     'id'               => '',
                     'name'             => IPS_GetName($InstanceID),
-                    'deviceModel'      => 'Bosch SmartHome Messages',
+                    'deviceModel'      => 'Messages',
                     'instanceID'       => $InstanceID
                 ],
                 $Create
@@ -273,6 +275,7 @@ class BoschSmartHomeConfigurator extends IPSModuleStrict
         }
         return $Values;
     }
+
     private function GetDoorsWindows(): array
     {
         $Create = [];
@@ -310,6 +313,7 @@ class BoschSmartHomeConfigurator extends IPSModuleStrict
         }
         return $Values;
     }
+
     private function GetDevices(): array
     {
         $RoomList = $this->GetLists(\BoschSHC\ApiUrl::Rooms);
@@ -321,7 +325,7 @@ class BoschSmartHomeConfigurator extends IPSModuleStrict
             $InstanceID = array_search($Device['id'], $IPSDevices);
             $Values[] = [
                 'id'               => $Device['id'],
-                'name'             => ($InstanceID ? IPS_GetName($InstanceID) : $Device['name']),
+                'name'             => ($InstanceID ? IPS_GetName($InstanceID) : ($Device['name'][0] == '-' ? $this->Translate($Device['name']) : $Device['name'])),
                 'deviceModel'      => $Device['deviceModel'],
                 'instanceID'       => ($InstanceID ? $InstanceID : 0),
                 'create'           => [
@@ -340,7 +344,7 @@ class BoschSmartHomeConfigurator extends IPSModuleStrict
             $Values[] = [
                 'id'               => $DeviceId,
                 'name'             => IPS_GetName($InstanceID),
-                'deviceModel'      => '',
+                'deviceModel'      => 'unknown',
                 'instanceID'       => $InstanceID,
             ];
         }
