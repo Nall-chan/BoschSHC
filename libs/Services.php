@@ -1720,7 +1720,7 @@ namespace BoschSHC\Services
                 ]
             );
             $this->RegisterProfileInteger(
-                \BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('DelayTime'),
+                \BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('alarmActivationDelayTime'),
                 'Clock',
                 '',
                 $this->TranslateProfile(' seconds'),
@@ -1767,7 +1767,7 @@ namespace BoschSHC\Services
             $this->UnregisterProfile(\BoschSHC\Services\SurveillanceAlarm::getIPSProfile('value'));
             $this->UnregisterProfile(\BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('value'));
             $this->UnregisterProfile(\BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('activeProfile'));
-            $this->UnregisterProfile(\BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('DelayTime'));
+            $this->UnregisterProfile(\BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('alarmActivationDelayTime'));
         }
     }
 }
