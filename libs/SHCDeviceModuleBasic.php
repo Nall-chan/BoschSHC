@@ -39,8 +39,8 @@ abstract class BSHBasicClass extends IPSModuleStrict
     public function ReceiveData(string $JSONString): string
     {
         $Data = json_decode($JSONString, true);
-        $this->SendDebug('Event Data', $Data['Event'], 0);
-        $this->DecodeServiceData($Data['Event']);
+        $this->SendDebug('Event Data', $Data[\BoschSHC\FlowToDevice::Event], 0);
+        $this->DecodeServiceData($Data[\BoschSHC\FlowToDevice::Event]);
         return '';
     }
 

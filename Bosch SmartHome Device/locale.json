@@ -85,7 +85,8 @@
             "Control": "Steuerung",
             "Active profile": "Aktives Profil",
             "Activation delay time": "Aktivierungsverzögerungszeit",
-            "Alarm delay time": "Alarmverzögerungszeit"
+            "Alarm delay time": "Alarmverzögerungszeit",
+            "Remaining until armed": "Verbleibend bis scharf"
         }
     }
 }

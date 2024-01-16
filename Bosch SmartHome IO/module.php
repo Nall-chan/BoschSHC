@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 eval('declare(strict_types=1);namespace BoschSHCIO {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/BufferHelper.php') . '}');
 eval('declare(strict_types=1);namespace BoschSHCIO {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/DebugHelper.php') . '}');
+eval('declare(strict_types=1);namespace BoschSHCIO {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/SemaphoreHelper.php') . '}');
 require_once dirname(__DIR__) . '/libs/SHCTypes.php';
 /**
  * @method bool SendDebug(string $Message, mixed $Data, int $Format)
+ * @method bool lock(string $ident)
+ * @method void unlock(string $ident)
  *
  * @property string $Host
  * @property string $ClientId
@@ -22,6 +25,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
 {
     use \BoschSHCIO\BufferHelper;
     use \BoschSHCIO\DebugHelper;
+    use \BoschSHCIO\Semaphore;
 
     public const IS_NotReachable = IS_EBASE + 1;
     public const IS_Unauthorized = IS_EBASE + 2;
@@ -417,6 +421,14 @@ class BoschSmartHomeIO extends IPSModuleStrict
                 );
                 $this->SendDataToChildren($JSON);
                 return;
+            case \BoschSHC\EventTypes::ArmingState: // todo
+                /*
+                 deleted | FALSE
+                 remainingTimeUntilArmed | 28997
+                 @type | armingState
+                state | SYSTEM_ARMING
+                 */
+                return;
             case \BoschSHC\EventTypes::Room: //ignore
             case \BoschSHC\EventTypes::Device: //ignore
             case \BoschSHC\EventTypes::WaterAlarmSystemConfiguration: //ignore
@@ -481,6 +493,11 @@ class BoschSmartHomeIO extends IPSModuleStrict
 
     private function PollLong(): void
     {
+        if (!$this->lock('PollLong')) {
+            // doublicated Thread :(
+            return;
+        }
+        $this->unlock('PollLong');
         $this->SetTimerInterval(self::TIMER_LongPoll, 0);
         if ($this->SHCPollId == '') {
             return; // not more subscribed -> exit IPS_RunScriptText PollLong loop
@@ -490,9 +507,9 @@ class BoschSmartHomeIO extends IPSModuleStrict
         $Payload = json_encode([
             'jsonrpc' => '2.0',
             'method'  => 'RE/longPoll',
-            'params'  => [$this->SHCPollId, 5] //Long poll for 5 seconds
+            'params'  => [$this->SHCPollId, 50] //Long poll for 50 seconds
         ]);
-        $Result = $this->SendRequest(self::SHC_Poll, \BoschSHC\HTTP::POST, $Payload, 6000); //6 seconds timeout
+        $Result = $this->SendRequest(self::SHC_Poll, \BoschSHC\HTTP::POST, $Payload, 51000); //51 seconds timeout
         if (!$Result) {
             $this->SendDebug('ABORT PollLong -> Resubscribe', $Result, 0);
             if ($this->Subscribe()) { // new loop start in Subscribe()
@@ -619,10 +636,10 @@ class BoschSmartHomeIO extends IPSModuleStrict
             return false;
         }
         $CurlURL = $this->Host . $RequestURL;
-        $this->SendDebug('RequestMethod', $RequestMethod, 0);
-        $this->SendDebug('RequestURL', $CurlURL, 0);
-        $this->SendDebug('RequestHeader', $RequestHeader, 0);
-        $this->SendDebug('RequestData', $Payload, 0);
+        $this->SendDebug('RequestMethod:' . $_IPS['THREAD'], $RequestMethod, 0);
+        $this->SendDebug('RequestURL:' . $_IPS['THREAD'], $CurlURL, 0);
+        $this->SendDebug('RequestHeader:' . $_IPS['THREAD'], $RequestHeader, 0);
+        $this->SendDebug('RequestData:' . $_IPS['THREAD'], $Payload, 0);
 
         $Headers = array_merge([
             'Method: ' . $RequestMethod,
@@ -644,20 +661,21 @@ class BoschSmartHomeIO extends IPSModuleStrict
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $Payload);
         }
+        curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $Headers);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $RequestMethod);
-
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+        @curl_setopt($ch, CURLOPT_TCP_KEEPIDLE, true);
+        @curl_setopt($ch, CURLOPT_TCP_KEEPALIVE, 10);
         curl_setopt($ch, CURLOPT_TIMEOUT_MS, $Timeout);
         $response = curl_exec($ch);
 
         $HttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($HttpCode != 0) {
-            $this->SendDebug('Request Headers', curl_getinfo($ch)['request_header'], 0);
+            $this->SendDebug('Request Headers:' . $_IPS['THREAD'], curl_getinfo($ch)['request_header'], 0);
         }
-        $this->SendDebug('RAW Response', $response, 0);
         $curl_errno = curl_errno($ch);
         curl_close($ch);
         $Header = '';
@@ -666,9 +684,12 @@ class BoschSmartHomeIO extends IPSModuleStrict
             $Parts = explode("\r\n\r\n", $response);
             $Header = array_shift($Parts);
             $Result = implode("\r\n\r\n", $Parts);
+            if (is_null($Result)) {
+                $Result = '';
+            }
         }
-        $this->SendDebug('Result Headers', $Header, 0);
-        $this->SendDebug('Result Body', $Result, 0);
+        $this->SendDebug('Result Headers:' . $_IPS['THREAD'], $Header, 0);
+        $this->SendDebug('Result Body:' . $_IPS['THREAD'], $Result, 0);
         set_error_handler([$this, 'ModulErrorHandler']);
         switch ($HttpCode) {
             case 0:
@@ -676,6 +697,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
                 trigger_error(self::$CURL_error_codes[$curl_errno], E_USER_WARNING);
                 $Result = false;
                 break;
+            case 202:
             case 204:
                 if (($RequestMethod == \BoschSHC\HTTP::PUT) || ($RequestMethod == \BoschSHC\HTTP::DELETE)) {
                     $Result = true;

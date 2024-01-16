@@ -112,4 +112,5 @@ class EventTypes
     public const ScenarioTriggered = 'scenarioTriggered';
     public const EmergencySystemServiceData = 'EmergencySystemServiceData';
     public const EmergencySupportServiceData = 'emergencySupportServiceData';
+    public const ArmingState = 'armingState';
 }

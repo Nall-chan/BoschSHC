@@ -76,7 +76,43 @@ namespace BoschSHC
         "@type": "systemAvailabilityState",
         "available": false,
         "deleted": false
-    },
+    }
+
+    {
+  "systemAvailability": {
+    "available": true,
+    "deleted": true,
+    "id": "string"
+  },
+  "armingState": {
+    "remainingTimeUntilArmed": 0,
+    "state": "SYSTEM_ARMING",
+    "deleted": true,
+    "id": "string"
+  },
+  "alarmState": {
+    "value": "ALARM_OFF",
+    "incidents": [
+      {
+        "id": "string",
+        "triggerName": "string",
+        "type": "SYSTEM_ARMED",
+        "time": 0,
+        "location": "string",
+        "locationId": "string"
+      }
+    ],
+    "deleted": true,
+    "id": "string"
+  },
+  "activeConfigurationProfile": {
+    "profileId": "string",
+    "deleted": true,
+    "id": "string"
+  },
+  "deleted": true,
+  "id": "string"
+}
          */
         protected static $Services = [
             self::PowerMeter,
@@ -1255,7 +1291,15 @@ namespace BoschSHC\Services
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Alarm delay time'
-            ]
+            ],
+            'remainingTimeUntilArmed'=> [
+                'type'       => 'number',
+                IPSVarFactor => 1000,
+                IPSProfile   => 'BSH.IntrusionDetectionControl.DelayTime',
+                IPSVarType   => VARIABLETYPE_INTEGER,
+                IPSVarAction => false,
+                IPSVarName   => 'Remaining until armed'
+            ],
         ];
     }
     /**
