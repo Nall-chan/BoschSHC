@@ -239,8 +239,8 @@ class BoschSmartHomeIO extends IPSModuleStrict
             $Form['actions'][1]['popup']['items'][2]['caption'] = sprintf($this->Translate("Press the Bosch Smart Home Controller's front-side button number %d, until the LED begin flashing.\r\n\r\nEnter your Bosch Smart Home Controller system password into the Textbox below\r\n and then click the \"Pair\" button."), $SHCButton);
             $Form['actions'][1]['visible'] = true;
         } else {
-            if ($this->ReadAttributeString(self::Attribute_License) != IPS_GetLicensee()){
-                $Form['actions'][3]['popup']['items'][0]['caption']=$this->Translate("Your Symcon license has changed.\r\nPlease delete the old connection in Symcon and your Bosch Smart Home App,\r\n and start re-pairing with Symcon.");
+            if ($this->ReadAttributeString(self::Attribute_License) != IPS_GetLicensee()) {
+                $Form['actions'][3]['popup']['items'][0]['caption'] = $this->Translate("Your Symcon license has changed.\r\nPlease delete the old connection in Symcon and your Bosch Smart Home App,\r\n and start re-pairing with Symcon.");
                 $Form['actions'][3]['visible'] = true;
             }
         }
@@ -336,18 +336,18 @@ class BoschSmartHomeIO extends IPSModuleStrict
         return $this->Translate('Pairing error! Button pressed? Password correct?');
     }
 
-    public function ResetPairing():string
+    public function ResetPairing(): string
     {
         if ($this->SHCPollId != '') {
             $this->Unsubscribe();
         }
-                    if ($this->CreateNewCert()){
-                $this->isPaired=false;
-                $this->SetStatus(self::IS_NotPaired);
-                return 'MESSAGE:' . $this->Translate('Pairing deleted.');
-            }
-            $this->SetStatus(self::IS_NoCert);
-            return $this->Translate('No certificate available');
+        if ($this->CreateNewCert()) {
+            $this->isPaired = false;
+            $this->SetStatus(self::IS_NotPaired);
+            return 'MESSAGE:' . $this->Translate('Pairing deleted.');
+        }
+        $this->SetStatus(self::IS_NoCert);
+        return $this->Translate('No certificate available');
 
     }
     /**
@@ -676,13 +676,13 @@ class BoschSmartHomeIO extends IPSModuleStrict
         return $TmpFileName;
     }
 
-    private function DeleteTempFile(string $Type):void
+    private function DeleteTempFile(string $Type): void
     {
         if ($this->{'TempFile' . $Type} != '') {
             if (file_exists($this->{'TempFile' . $Type})) {
                 @unlink($this->{'TempFile' . $Type});
             }
-        }       
+        }
     }
 
     private function SendRequest(string $RequestURL, string $RequestMethod = \BoschSHC\HTTP::GET, string $Payload = '', int $Timeout = 5000, array $RequestHeader = []): bool|string
@@ -690,7 +690,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
         if (!$this->Host) {
             return false;
         }
-        $CurlURL = $this->Host . $RequestURL;        
+        $CurlURL = $this->Host . $RequestURL;
         /** @var array $_IPS */
         $this->SendDebug('RequestMethod:' . $_IPS['THREAD'], $RequestMethod, 0);
         $this->SendDebug('RequestURL:' . $_IPS['THREAD'], $CurlURL, 0);
@@ -778,7 +778,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
     {
         $this->SendDebug('CreateNewCert', 'start', 0);
         $this->DeleteTempFile(self::Attribute_MyCert);
-        $this->DeleteTempFile(self::Attribute_PrivateKey);        
+        $this->DeleteTempFile(self::Attribute_PrivateKey);
         $basedir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->InstanceID;
         $configfile = $basedir . '.cnf';
         $newLine = "\r\n";
