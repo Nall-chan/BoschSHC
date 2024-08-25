@@ -101,7 +101,13 @@ Wurde der Bosch SmartHome Controller im Netzwerk gefunden, so wird er in der [Bo
 ----------
 ### 2. Changelog
 
----  
+**Version 1.00:**  
+- Diverse Rückmeldungen von Funktionen ergänzt  
+- Dokumentation erstellt  
+- Umrechnung Leistung war um den Faktor 1000 falsch  
+- Bei Lizenzwechsel war keine Verbindung mit dem Controller mehr möglich  
+- Neu Koppel Funktion ergänzt, nach Lizenzwechsel  
+
 **Version 0.70:**  
 - Beta Release für Symcon 7.0  
 
