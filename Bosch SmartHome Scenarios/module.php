@@ -7,7 +7,7 @@ require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
 /**
  * @property string $ScenarioId
  */
-class BoschSmartHomeScenarios extends BSHBasicClass
+class BoschSmartHomeScenarios extends BSHCBasicClass
 {
     use \BoschSmartHomeScenarios\BufferHelper;
 
@@ -18,6 +18,7 @@ class BoschSmartHomeScenarios extends BSHBasicClass
         //Never delete this line!
         parent::Create();
     }
+
     public function ApplyChanges(): void
     {
         $ScenarioId = $this->ReadPropertyString(\BoschSHC\Property::Scenario_Property_ScenarioId);
@@ -54,17 +55,25 @@ class BoschSmartHomeScenarios extends BSHBasicClass
             restore_error_handler();
             return;
         }
-        $this->SendData(
-            \BoschSHC\ApiUrl::Scenarios .
-                '/' . $this->ScenarioId .
-                \BoschSHC\ApiUrl::Trigger,
-            \BoschSHC\HTTP::POST
-        );
+        $this->ExecuteScenario();
     }
+
     public function RequestState(): bool
     {
         return false;
     }
+
+    public function ExecuteScenario(): bool
+    {
+        return $this->SendData(
+            \BoschSHC\ApiUrl::Scenarios .
+            '/' . $this->ScenarioId .
+            \BoschSHC\ApiUrl::Trigger,
+            \BoschSHC\HTTP::POST
+        );
+        $this->SendDebug('Scenario', $Scenario, 0);
+    }
+
     protected function DecodeServiceData(array $ScenarioState): void
     {
         $this->SetValue('lastExecute', (int) substr($ScenarioState['lastTimeTriggered'], 0, -3));

@@ -1,67 +1,94 @@
-# Bosch SHC
-Beschreibung des Moduls.
+[![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+[![Version](https://img.shields.io/badge/Modul%20Version-1.00-blue.svg)](https://community.symcon.de/t/modul-bosch-smarthome-system-beta/138205)
+[![Version](https://img.shields.io/badge/Symcon%20Version-7.0%20%3E-green.svg)](https://www.symcon.de/service/dokumentation/installation/migrationen/v60-v61-q1-2022/)  
+[![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![Check Style](https://github.com/Nall-chan/BoschSHC/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/BoschSHC/actions)
+[![Run Tests](https://github.com/Nall-chan/BoschSHC/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/BoschSHC/actions)  
+[![Spenden](https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_SM.gif)](#2-spenden)[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)  
 
-### Inhaltsverzeichnis
+# Bosch SmartHome IO <!-- omit in toc -->
+Kommunikationsmodul für den Bosch SmartHome Controller  
 
-1. [Funktionsumfang](#1-funktionsumfang)
-2. [Voraussetzungen](#2-voraussetzungen)
-3. [Software-Installation](#3-software-installation)
-4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
-5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
-6. [WebFront](#6-webfront)
-7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+## Inhaltsverzeichnis <!-- omit in toc -->
 
-### 1. Funktionsumfang
+- [1. Funktionsumfang](#1-funktionsumfang)
+- [2. Voraussetzungen](#2-voraussetzungen)
+- [3. Software-Installation](#3-software-installation)
+- [4. Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
+- [5. Statusvariablen](#5-statusvariablen)
+- [6. PHP-Funktionsreferenz](#6-php-funktionsreferenz)
+- [7. Aktionen](#7-aktionen)
+- [8. Anhang](#8-anhang)
+  - [1. Changelog](#1-changelog)
+  - [2. Spenden](#2-spenden)
+- [9. Lizenz](#9-lizenz)
 
-*
+## 1. Funktionsumfang
 
-### 2. Voraussetzungen
+* Koppel von Symcon mit einem Controller  
+* Überwachen der Verbindung zum Controller  
+* Steuerung und Abfragen an einem Controller senden  
+* Empfang von Events  
 
-- IP-Symcon ab Version 6.0
+## 2. Voraussetzungen
 
-### 3. Software-Installation
+* IP-Symcon ab Version 7.0
+* Bosch SmartHome Controller I oder II.
 
-* Über den Module Store das 'Bosch SHC'-Modul installieren.
-* Alternativ über das Module Control folgende URL hinzufügen
+## 3. Software-Installation
 
-### 4. Einrichten der Instanzen in IP-Symcon
+* Dieses Modul ist Bestandteil der [Bosch SmartHome-Library](../README.md#4-software-installation).  
 
- Unter 'Instanz hinzufügen' kann das 'Bosch SHC'-Modul mithilfe des Schnellfilters gefunden werden.  
-	- Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)
+## 4. Einrichten der Instanzen in IP-Symcon
 
-__Konfigurationsseite__:
+ Unter 'Instanz hinzufügen' kann das 'Bosch SmartHome IO'-Modul mithilfe des Schnellfilters gefunden werden.   
+ - Die Einrichtung sollte durch das anlegen einer [Bosch SmartHome Konfigurator](../Bosch%20SmartHome%20Configurator/README.md)-Instanz erfolgen.  
+ - Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)  
+  
+### Koppeln von Symcon mit einem Controller: <!-- omit in toc -->
 
-Name     | Beschreibung
--------- | ------------------
-         |
-         |
+Sind Symcon und der Controller noch nicht gekoppelt worden, so wird folgender Dialog geöffnet:  
+![Pairing](imgs/pairing1.png)  
+Zum erfolgreichen Koppeln muss die jeweilige Taste am Controller betätigt und das Systempasswort im Dialog eingeben und mit `Koppeln` bestätigt werden.  
+![Pairing](imgs/pairing2.png)  
 
-### 5. Statusvariablen und Profile
+### Konfigurationsseite: <!-- omit in toc -->
 
-Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
+![Config](imgs/config.png)  
 
-#### Statusvariablen
+| Name | Text  | Typ    | Beschreibung                                   |
+| ---- | ----- | ------ | ---------------------------------------------- |
+| Open | Aktiv | bool   | Öffnet/Aktiviert die Verbindung zum Controller |
+| Host | Host  | string | Adresse vom Controller                         |
 
-Name   | Typ     | Beschreibung
------- | ------- | ------------
-       |         |
-       |         |
+## 5. Statusvariablen
 
-#### Profile
+Dieses Modul erzeugt keine Statusvariablen.  
 
-Name   | Typ
------- | -------
-       |
-       |
 
-### 6. WebFront
+## 6. PHP-Funktionsreferenz
 
-Die Funktionalität, die das Modul im WebFront bietet.
+Keine Funktionen verfügbar.  
 
-### 7. PHP-Befehlsreferenz
+## 7. Aktionen
 
-`boolean BSHC_BeispielFunktion(integer $InstanzID);`
-Erklärung der Funktion.
+Keine Aktionen verfügbar.
 
-Beispiel:
-`BSHC_BeispielFunktion(12345);`
+## 8. Anhang
+
+### 1. Changelog
+
+[Changelog der Library](../README.md#2-changelog)
+
+### 2. Spenden
+
+Die Library ist für die nicht kommerzielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:  
+
+<a href="https://www.paypal.com/donate?hosted_button_id=G2SLW2MEMQZH2" target="_blank"><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" /></a>  
+
+[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share) 
+
+## 9. Lizenz
+
+  IPS-Modul:  
+  [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)  

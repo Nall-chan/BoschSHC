@@ -7,7 +7,7 @@ require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
 /**
  * @property string $RuleId
  */
-class BoschSmartHomeAutomationRule extends BSHBasicClass
+class BoschSmartHomeAutomationRule extends BSHCBasicClass
 {
     use \BoschSmartHomeAutomationRule\BufferHelper;
 
@@ -18,6 +18,7 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
         //Never delete this line!
         parent::Create();
     }
+
     public function ApplyChanges(): void
     {
         $RuleId = $this->ReadPropertyString(\BoschSHC\Property::AutomationRule_Property_RuleId);
@@ -53,18 +54,23 @@ class BoschSmartHomeAutomationRule extends BSHBasicClass
             restore_error_handler();
             return;
         }
-        $this->SendData(
-            \BoschSHC\ApiUrl::AutomationRules .
-                '/' . $this->RuleId .
-                \BoschSHC\ApiUrl::Enabled,
-            \BoschSHC\HTTP::PUT,
-            json_encode($Value)
-        );
+        $this->EnableAutomationRule((bool) $Value);
     }
 
     public function RequestState(): bool
     {
         return $this->GetState();
+    }
+
+    public function EnableAutomationRule(bool $Active): bool
+    {
+        return $this->SendData(
+            \BoschSHC\ApiUrl::AutomationRules .
+                '/' . $this->RuleId .
+                \BoschSHC\ApiUrl::Enabled,
+            \BoschSHC\HTTP::PUT,
+            json_encode($Active)
+        );
     }
 
     protected function DecodeServiceData(array $AutomationRule): void

@@ -7,7 +7,7 @@ require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
 /**
  * @property array $Multi_States
  */
-class BoschSmartHomeDoorsandWindows extends BSHBasicClass
+class BoschSmartHomeDoorsandWindows extends BSHCBasicClass
 {
     use \BoschSmartHomeDoorsandWindows\BufferHelper;
 
@@ -37,14 +37,17 @@ class BoschSmartHomeDoorsandWindows extends BSHBasicClass
         restore_error_handler();
         return;
     }
+
     public function RequestState(): bool
     {
         return $this->GetState();
     }
-    public function ReadData(): array
+
+    public function GetStates(): array
     {
         return $this->Multi_States;
     }
+
     /* todo / URL/Method unknown
     public function DeleteMessage(string $MessageId)
     {
@@ -53,6 +56,7 @@ class BoschSmartHomeDoorsandWindows extends BSHBasicClass
             return false;
         }
     }*/
+
     protected function DecodeServiceData(array $Message): void
     {
         $OpenWindows = $this->Multi_States;
@@ -74,6 +78,7 @@ class BoschSmartHomeDoorsandWindows extends BSHBasicClass
         $this->Multi_States = $OpenWindows;
         $this->UpdateVariables();
     }
+
     private function GetState(): bool
     {
         $OpenWindows = $this->SendData(\BoschSHC\ApiUrl::OpenWindows);
@@ -85,10 +90,10 @@ class BoschSmartHomeDoorsandWindows extends BSHBasicClass
         $this->UpdateVariables();
         return true;
     }
+
     private function UpdateVariables(): void
     {
         $OpenWindows = $this->Multi_States;
-
         foreach ($OpenWindows as $Type => $Items) {
             $this->RegisterVariableInteger(
                 $Type,

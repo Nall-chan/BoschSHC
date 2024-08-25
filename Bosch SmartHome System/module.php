@@ -8,7 +8,7 @@ require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
  * @property string $DeviceId
  * @property array $Multi_UnsupportedServices
  */
-class BoschSmartHomeSystem extends BSHBasicClass
+class BoschSmartHomeSystem extends BSHCBasicClass
 {
     use \BoschSmartHomeSystem\BufferHelper;
 

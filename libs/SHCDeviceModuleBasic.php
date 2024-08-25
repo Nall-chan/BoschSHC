@@ -9,7 +9,7 @@ require_once dirname(__DIR__) . '/libs/Services.php';
 /**
  * @method bool SendDebug(string $Message, mixed $Data, int $Format)
  */
-abstract class BSHBasicClass extends IPSModuleStrict
+abstract class BSHCBasicClass extends IPSModuleStrict
 {
     use \BoschSHCDevice\DebugHelper;
     use \BoschSHCDevice\VariableProfileHelper;
@@ -75,6 +75,7 @@ abstract class BSHBasicClass extends IPSModuleStrict
         echo $errstr . PHP_EOL;
         return true;
     }
+
     abstract protected function DecodeServiceData(array $ServiceData): void;
 
     protected function SendData(string $ApiCall, string $Method = \BoschSHC\HTTP::GET, string $Payload = ''): bool|array
@@ -100,7 +101,7 @@ abstract class BSHBasicClass extends IPSModuleStrict
             $this->SendDebug('Result', 'false', 0);
             return false;
         }
-        if (($Method == \BoschSHC\HTTP::PUT) && ($Result)) {
+        if ((($Method == \BoschSHC\HTTP::PUT) || ($Method == \BoschSHC\HTTP::POST) && empty($Result))) {
             $this->SendDebug('Result', 'true', 0);
             return true;
         }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
 
-class BoschSmartHomeWateralarmSystem extends BSHBasicClass
+class BoschSmartHomeWateralarmSystem extends BSHCBasicClass
 {
     public const WaterAlarmSystemState = 'waterAlarmSystemState';
 

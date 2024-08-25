@@ -11,7 +11,7 @@ require_once dirname(__DIR__) . '/libs/SHCDeviceModuleBasic.php';
  *
  * @property array $Multi_Messages
  */
-class BoschSmartHomeMessages extends BSHBasicClass
+class BoschSmartHomeMessages extends BSHCBasicClass
 {
     use \BoschSmartHomeMessages\BufferHelper;
 
@@ -41,22 +41,28 @@ class BoschSmartHomeMessages extends BSHBasicClass
         restore_error_handler();
         return;
     }
+
     public function RequestState(): bool
     {
         return $this->GetState();
     }
+
     public function ReadMessages(): array
     {
-        return $this->Multi_Messages;
+        $MultiMessages = $this->Multi_Messages;
+        $Messages = [];
+        foreach ($MultiMessages as $Message) {
+            $Messages[$Message['id']] = array_intersect_key($Message, array_flip(['messageCode', 'sourceType', 'sourceId', 'sourceName', 'location', 'timestamp']));
+        }
+        return $Messages;
     }
+
     public function DeleteMessage(string $MessageId): bool
     {
         $Messages = $this->SendData(\BoschSHC\ApiUrl::Messages . '/' . $MessageId, \BoschSHC\HTTP::DELETE);
-        if (!$Messages) {
-            return false;
-        }
-        return true;
+        return $Messages;
     }
+
     protected function DecodeServiceData(array $Message): void
     {
         $Messages = $this->Multi_Messages;
@@ -76,6 +82,7 @@ class BoschSmartHomeMessages extends BSHBasicClass
         $this->Multi_Messages = $Messages;
         $this->UpdateVariables();
     }
+
     private function GetState(): bool
     {
         $Messages = $this->SendData(\BoschSHC\ApiUrl::Messages);
@@ -87,6 +94,7 @@ class BoschSmartHomeMessages extends BSHBasicClass
         $this->UpdateVariables();
         return true;
     }
+
     private function UpdateVariables(): void
     {
         $Messages = $this->Multi_Messages;
@@ -94,7 +102,8 @@ class BoschSmartHomeMessages extends BSHBasicClass
             'ERROR'      => 0,
             'WARNING'    => 0,
             'ALARM'      => 0,
-            'INFORMATION'=> 0
+            'INFORMATION'=> 0,
+            'SW_UPDATE'  => 0
         ];
         $Types = array_count_values(array_column(array_column($Messages, 'messageCode'), 'category'));
         $Types = array_merge($EmptyTypes, $Types);

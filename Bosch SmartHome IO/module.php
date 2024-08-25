@@ -326,7 +326,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
                 'certificate' => $cert
             ]
         );
-        $result = $this->SendRequest(self::SHC_Client, \BoschSHC\HTTP::POST, $Payload, 5000, $Header);
+        $result = $this->SendRequest(self::SHC_Client, \BoschSHC\HTTP::POST, $Payload, 15000, $Header);
         if ($result) {
             $this->isPaired = true;
             $this->SendDebug('PairState', $this->isPaired, 0);
