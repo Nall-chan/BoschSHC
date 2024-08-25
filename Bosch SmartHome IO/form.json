@@ -35,7 +35,7 @@
                         "name": "PopupTitle",
                         "type": "Label",
                         "bold": true,
-                        "caption": "Please start paring with the Controller!"
+                        "caption": "Please start pairing with the Controller!"
                     },
                     {
                         "type": "RowLayout",
@@ -75,6 +75,27 @@
                     {
                         "type": "Label",
                         "name": "CheckSHCResult",
+                        "caption": ""
+                    }
+                ]
+            }
+        },
+        {
+            "name": "CheckLicense",
+            "type": "PopupAlert",
+            "visible": false,
+            "popup": {
+                "closeCaption": "Ignore",
+                "buttons": [
+                    {
+                        "caption": "Reset pairing",
+                        "onClick": "echo BSHC_ResetPairing($id);"
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "Label",
+                        "name": "CheckLicenseResult",
                         "caption": ""
                     }
                 ]

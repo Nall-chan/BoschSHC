@@ -310,7 +310,6 @@ namespace BoschSHC\Services
         protected static $properties = [
             'powerConsumption' => [
                 'type'       => 'number',
-                IPSVarFactor => 1000,
                 IPSProfile   => '~Watt',
                 IPSVarType   => VARIABLETYPE_FLOAT,
                 IPSVarName   => 'Power consumption'

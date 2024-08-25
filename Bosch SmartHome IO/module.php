@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 eval('declare(strict_types=1);namespace BoschSHCIO {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/BufferHelper.php') . '}');
 eval('declare(strict_types=1);namespace BoschSHCIO {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/DebugHelper.php') . '}');
-eval('declare(strict_types=1);namespace BoschSHCIO {?>' . file_get_contents(dirname(__DIR__) . '/libs/helper/SemaphoreHelper.php') . '}');
 require_once dirname(__DIR__) . '/libs/SHCTypes.php';
 /**
  * @method bool SendDebug(string $Message, mixed $Data, int $Format)
- * @method bool lock(string $ident)
- * @method void unlock(string $ident)
  *
  * @property string $Host
  * @property string $ClientId
@@ -25,7 +22,6 @@ class BoschSmartHomeIO extends IPSModuleStrict
 {
     use \BoschSHCIO\BufferHelper;
     use \BoschSHCIO\DebugHelper;
-    use \BoschSHCIO\Semaphore;
 
     public const IS_NotReachable = IS_EBASE + 1;
     public const IS_Unauthorized = IS_EBASE + 2;
@@ -42,6 +38,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
     public const Attribute_PrivateKey = 'privatekey';
     public const Attribute_PublicKey = 'publickey';
     public const Attribute_MyCert = 'cert';
+    public const Attribute_License = 'mail';
 
     private static $CURL_error_codes = [
         0  => 'UNKNOWN ERROR',
@@ -141,6 +138,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
         $this->RegisterAttributeString(self::Attribute_PrivateKey, '');
         $this->RegisterAttributeString(self::Attribute_PublicKey, '');
         $this->RegisterAttributeString(self::Attribute_MyCert, '');
+        $this->RegisterAttributeString(self::Attribute_License, IPS_GetLicensee());
         $this->RegisterPropertyBoolean(\BoschSHC\Property::IO_Property_Open, false);
         $this->RegisterPropertyString(\BoschSHC\Property::IO_Property_Host, '');
         $this->RegisterTimer(self::TIMER_LongPoll, 0, 'IPS_RequestAction(' . $this->InstanceID . ',"Subscribe",true);');
@@ -240,6 +238,11 @@ class BoschSmartHomeIO extends IPSModuleStrict
             $Form['actions'][1]['popup']['items'][1]['items'][1]['onClick'] = 'IPS_RequestAction($id, \'DisplaySHC\', ' . $SHCButton . ');';
             $Form['actions'][1]['popup']['items'][2]['caption'] = sprintf($this->Translate("Press the Bosch Smart Home Controller's front-side button number %d, until the LED begin flashing.\r\n\r\nEnter your Bosch Smart Home Controller system password into the Textbox below\r\n and then click the \"Pair\" button."), $SHCButton);
             $Form['actions'][1]['visible'] = true;
+        } else {
+            if ($this->ReadAttributeString(self::Attribute_License) != IPS_GetLicensee()){
+                $Form['actions'][3]['popup']['items'][0]['caption']=$this->Translate("Your Symcon license has changed.\r\nPlease delete the old connection in Symcon and your Bosch Smart Home App,\r\n and start re-pairing with Symcon.");
+                $Form['actions'][3]['visible'] = true;
+            }
         }
         $this->SendDebug('FORM', json_encode($Form), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
@@ -328,11 +331,25 @@ class BoschSmartHomeIO extends IPSModuleStrict
             $this->isPaired = true;
             $this->SendDebug('PairState', $this->isPaired, 0);
             $this->StartConnection();
-            return 'MESSAGE:' . $this->Translate('Paring with SHC complete.');
+            return 'MESSAGE:' . $this->Translate('Pairing with SHC complete.');
         }
-        return $this->Translate('Paring error! Button pressed? Password correct?');
+        return $this->Translate('Pairing error! Button pressed? Password correct?');
     }
 
+    public function ResetPairing():string
+    {
+        if ($this->SHCPollId != '') {
+            $this->Unsubscribe();
+        }
+                    if ($this->CreateNewCert()){
+                $this->isPaired=false;
+                $this->SetStatus(self::IS_NotPaired);
+                return 'MESSAGE:' . $this->Translate('Pairing deleted.');
+            }
+            $this->SetStatus(self::IS_NoCert);
+            return $this->Translate('No certificate available');
+
+    }
     /**
      * Wird ausgeführt wenn der Kernel hochgefahren wurde.
      */
@@ -474,6 +491,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
 
     private function Subscribe(): bool
     {
+        $this->SetTimerInterval(self::TIMER_LongPoll, 0);
         // send subscribe
         $Payload = json_encode([
             'jsonrpc' => '2.0',
@@ -494,23 +512,25 @@ class BoschSmartHomeIO extends IPSModuleStrict
     private function PollLong(): void
     {
         if (!$this->lock('PollLong')) {
-            // doublicated Thread :(
+            $this->SendDebug('duplicated PollLong', 'EXIT', 0);
+            // duplicated Thread :(
             return;
         }
-        $this->unlock('PollLong');
         $this->SetTimerInterval(self::TIMER_LongPoll, 0);
         if ($this->SHCPollId == '') {
+            $this->unlock('PollLong');
             return; // not more subscribed -> exit IPS_RunScriptText PollLong loop
         }
         $this->SendDebug('START PollLong', '', 0);
-        $this->SetTimerInterval(self::TIMER_LongPoll, 60000); //60 seconds timeout for Resubscribe
+        $this->SetTimerInterval(self::TIMER_LongPoll, 40000); //40 seconds timeout for Resubscribe
         $Payload = json_encode([
             'jsonrpc' => '2.0',
             'method'  => 'RE/longPoll',
-            'params'  => [$this->SHCPollId, 50] //Long poll for 50 seconds
+            'params'  => [$this->SHCPollId, 29] //Long poll for 29 seconds
         ]);
-        $Result = $this->SendRequest(self::SHC_Poll, \BoschSHC\HTTP::POST, $Payload, 51000); //51 seconds timeout
+        $Result = $this->SendRequest(self::SHC_Poll, \BoschSHC\HTTP::POST, $Payload, 30000); //30 seconds timeout
         if (!$Result) {
+            $this->unlock('PollLong');
             $this->SendDebug('ABORT PollLong -> Resubscribe', $Result, 0);
             if ($this->Subscribe()) { // new loop start in Subscribe()
                 return;
@@ -524,6 +544,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
         }
         $Data = json_decode($Result, true);
         if (array_key_exists('error', $Data)) {
+            $this->unlock('PollLong');
             $this->LogMessage($Data['error']['message'], KL_ERROR);
             $this->SendDebug('ERROR PollLong -> Resubscribe', $Data['error']['message'], 0);
             if ($this->Subscribe()) { // new loop start in Subscribe()
@@ -543,14 +564,37 @@ class BoschSmartHomeIO extends IPSModuleStrict
         } catch (\Throwable $th) {
             $this->LogMessage($th->getMessage(), KL_ERROR);
         }
+        $this->unlock('PollLong');
         $this->SendDebug('END PollLong', $Result, 0);
         if (IPS_GetKernelRunlevel() == KR_READY) {
             IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"PollLong",true);');
         }
     }
+    /**
+     * Versucht eine Semaphore zu setzen und wiederholt dies bei Misserfolg bis zu 100 mal.
+     * @param string $ident Ein String der den Lock bezeichnet.
+     * @return bool TRUE bei Erfolg, FALSE bei Misserfolg.
+     */
+    private function lock(string $ident): bool
+    {
+        if (IPS_SemaphoreEnter(__CLASS__ . '.' . (string) $this->InstanceID . (string) $ident, 1)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Löscht eine Semaphore.
+     * @param string $ident Ein String der den Lock bezeichnet.
+     */
+    private function unlock(string $ident): void
+    {
+        IPS_SemaphoreLeave(__CLASS__ . '.' . (string) $this->InstanceID . (string) $ident);
+    }
 
     private function Unsubscribe(): bool
     {
+        $this->SetTimerInterval(self::TIMER_LongPoll, 0);
         // send unsubscribe
         $Payload = json_encode([
             'jsonrpc' => '2.0',
@@ -585,6 +629,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
         }
         return true;
     }
+
     private function UpdatePairingPopup(int $SHCModel)
     {
         switch ($SHCModel) {
@@ -606,6 +651,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
         $this->UpdateFormField('ChangeSHC', 'onClick', 'IPS_RequestAction($id, \'DisplaySHC\', ' . $SHCButton . ');');
         $this->UpdateFormField('PairingPopup', 'visible', true);
     }
+
     private function StartConnection(): void
     {
         $this->SetStatus(IS_ACTIVE);
@@ -630,12 +676,22 @@ class BoschSmartHomeIO extends IPSModuleStrict
         return $TmpFileName;
     }
 
+    private function DeleteTempFile(string $Type):void
+    {
+        if ($this->{'TempFile' . $Type} != '') {
+            if (file_exists($this->{'TempFile' . $Type})) {
+                @unlink($this->{'TempFile' . $Type});
+            }
+        }       
+    }
+
     private function SendRequest(string $RequestURL, string $RequestMethod = \BoschSHC\HTTP::GET, string $Payload = '', int $Timeout = 5000, array $RequestHeader = []): bool|string
     {
         if (!$this->Host) {
             return false;
         }
-        $CurlURL = $this->Host . $RequestURL;
+        $CurlURL = $this->Host . $RequestURL;        
+        /** @var array $_IPS */
         $this->SendDebug('RequestMethod:' . $_IPS['THREAD'], $RequestMethod, 0);
         $this->SendDebug('RequestURL:' . $_IPS['THREAD'], $CurlURL, 0);
         $this->SendDebug('RequestHeader:' . $_IPS['THREAD'], $RequestHeader, 0);
@@ -655,7 +711,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
         if (($RequestURL != self::SHC_Client) && ($RequestURL != self::SHC_Info)) {
             curl_setopt($ch, CURLOPT_SSLCERT, $this->GetTempFile(self::Attribute_MyCert));
             curl_setopt($ch, CURLOPT_SSLKEY, $this->GetTempFile(self::Attribute_PrivateKey));
-            curl_setopt($ch, CURLOPT_SSLKEYPASSWD, IPS_GetLicensee());
+            curl_setopt($ch, CURLOPT_SSLKEYPASSWD, $this->ReadAttributeString(self::Attribute_License));
         }
         if ($Payload) {
             curl_setopt($ch, CURLOPT_POST, true);
@@ -721,6 +777,8 @@ class BoschSmartHomeIO extends IPSModuleStrict
     private function CreateNewCert(): bool
     {
         $this->SendDebug('CreateNewCert', 'start', 0);
+        $this->DeleteTempFile(self::Attribute_MyCert);
+        $this->DeleteTempFile(self::Attribute_PrivateKey);        
         $basedir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->InstanceID;
         $configfile = $basedir . '.cnf';
         $newLine = "\r\n";
@@ -743,7 +801,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
         $dn = [
             'organizationName'       => $this->ClientName,
             'commonName'             => $this->ClientName,
-            'emailAddress'           => IPS_GetLicensee()
+            'emailAddress'           => $this->ReadAttributeString(self::Attribute_License)
         ];
         $config = [
             'config'      => $configfile,
@@ -756,7 +814,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
         ];
         $pkGenerate = openssl_pkey_new($configKey);
-        openssl_pkey_export($pkGenerate, $pkGeneratePrivate, IPS_GetLicensee(), $config);
+        openssl_pkey_export($pkGenerate, $pkGeneratePrivate, $this->ReadAttributeString(self::Attribute_License), $config);
         $pkGeneratePublic = openssl_pkey_get_details($pkGenerate)['key'];
         $csr = openssl_csr_new($dn, $pkGenerate, $config);
         if ($csr === false) {
