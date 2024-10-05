@@ -370,11 +370,12 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'operationMode' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.RoomClimateControl.operationMode',
-                IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarAction => true,
-                IPSVarName   => 'Operation mode'
+                'type'                   => 'string',
+                IPSProfile               => 'BSH.RoomClimateControl.operationMode',
+                IPSVarType               => VARIABLETYPE_STRING,
+                IPSVarAction             => true,
+                IPSVarName               => 'Operation mode',
+                OverrideSendServiceState => 'climateControlState'
             ],
             'setpointTemperature' => [
                 'type'                   => 'string',
@@ -398,7 +399,6 @@ namespace BoschSHC\Services
                 IPSVarType               => VARIABLETYPE_FLOAT,
                 IPSVarAction             => true,
                 IPSVarName               => 'Setpoint temperature comfort',
-                OverrideSendServiceState => 'climateControlState',
                 OverrideSendServiceState => 'climateControlState'
             ],
             'ventilationMode' => [

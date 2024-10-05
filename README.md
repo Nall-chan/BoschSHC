@@ -1,5 +1,5 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version](https://img.shields.io/badge/Modul%20Version-1.00-blue.svg)](https://community.symcon.de/t/modul-bosch-smarthome-system-beta/138205)
+[![Version](https://img.shields.io/badge/Modul%20Version-1.10-blue.svg)](https://community.symcon.de/t/modul-bosch-smarthome-system-beta/138205)
 [![Version](https://img.shields.io/badge/Symcon%20Version-7.0%20%3E-green.svg)](https://www.symcon.de/service/dokumentation/installation/migrationen/v60-v61-q1-2022/)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Check Style](https://github.com/Nall-chan/BoschSHC/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/BoschSHC/actions)
@@ -101,6 +101,9 @@ Wurde der Bosch SmartHome Controller im Netzwerk gefunden, so wird er in der [Bo
 ----------
 ### 2. Changelog
 
+**Version 1.10:**  
+- Setzen des Betriebsmodus von RoomClimateControl war fehlerhaft  
+  
 **Version 1.00:**  
 - Diverse Rückmeldungen von Funktionen ergänzt  
 - Dokumentation erstellt  
