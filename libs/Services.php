@@ -2287,24 +2287,24 @@ namespace BoschSHC\Services
                         [
                             'Value'            => 'GOOD',
                             'Caption'          => 'good',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
+                            'IconActive'       => true,
+                            'IconValue'        => 'signal-strong',
                             'ColorActive'      => false,
                             'ColorValue'       => -1
                         ],
                         [
                             'Value'            => 'BAD',
                             'Caption'          => 'bad',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
+                            'IconActive'       => true,
+                            'IconValue'        => 'signal-weak',
                             'ColorActive'      => false,
                             'ColorValue'       => -1
                         ],
                         [
                             'Value'            => 'NORMAL',
                             'Caption'          => 'normal',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
+                            'IconActive'       => true,
+                            'IconValue'        => 'signal-good',
                             'ColorActive'      => false,
                             'ColorValue'       => -1
                         ],
@@ -2319,8 +2319,8 @@ namespace BoschSHC\Services
                         [
                             'Value'            => 'FETCHING',
                             'Caption'          => 'fetching',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
+                            'IconActive'       => true,
+                            'IconValue'        => 'rss',
                             'ColorActive'      => false,
                             'ColorValue'       => -1
                         ]
