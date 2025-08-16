@@ -39,7 +39,7 @@ class BoschSmartHomeScenarios extends BSHCBasicClass
                     [
                         'Value'      => 0,
                         'Caption'    => \BoschSHC\Services\ServiceBasics::TranslatePresentationValue('Execute'),
-                        'ColorValue' => 0x3485EA,
+                        'Color'      => 0x3485EA,
                         'IconActive' => false,
                         'IconValue'  => ''
                     ]

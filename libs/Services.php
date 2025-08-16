@@ -399,24 +399,21 @@ namespace BoschSHC\Services
                             'Caption'     => 'off',
                             'IconActive'  => true,
                             'IconValue'   => 'plug-circle-xmark',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => 0xff0000
                         ],
                         [
                             'Value'       => 'LAST_STATE',
                             'Caption'     => 'laste state',
                             'IconActive'  => true,
                             'IconValue'   => 'plug-circle-check',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => 0xffff00
                         ],
                         [
                             'Value'       => 'ON',
                             'Caption'     => 'on',
                             'IconActive'  => true,
                             'IconValue'   => 'plug-circle-bolt',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => 0x00ff00
                         ]
                     ]
 
@@ -439,16 +436,14 @@ namespace BoschSHC\Services
                             'Caption'     => 'manual',
                             'IconActive'  => true,
                             'IconValue'   => 'hand-back-point-up',
-                            'ColorActive' => true,
-                            'ColorValue'  => -1
+                            'Color'       => 0xF48D43
                         ],
                         [
                             'Value'       => 'SCHEDULE',
                             'Caption'     => 'schedule',
                             'IconActive'  => true,
                             'IconValue'   => 'calendar-check',
-                            'ColorActive' => true,
-                            'ColorValue'  => -1
+                            'Color'       => 0x00CDAB
                         ]
                     ]
 
@@ -472,31 +467,28 @@ namespace BoschSHC\Services
                             'Caption'     => 'manual',
                             'IconActive'  => true,
                             'IconValue'   => 'hand-back-point-up',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xF48D43,
+                            'Color'       => 0xF48D43
                         ],
                         [
                             'Value'       => 'AUTOMATIC',
                             'Caption'     => 'automatic',
                             'IconActive'  => true,
                             'IconValue'   => 'calendar-check',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0x00CDAB,
+                            'Color'       => 0x00CDAB
                         ],
                         [
                             'Value'       => 'OFF',
                             'Caption'     => 'off',
                             'IconActive'  => true,
                             'IconValue'   => 'xmark',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xff0000,
-                        ],                            [
+                            'Color'       => 0xff0000
+                        ],
+                        [
                             'Value'       => 'UNKNOWN',
                             'Caption'     => 'unknown',
                             'IconActive'  => true,
                             'IconValue'   => 'question',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xffff00,
+                            'Color'       => 0xffff00
                         ],
                     ],
                 ],
@@ -622,32 +614,28 @@ namespace BoschSHC\Services
                             'Caption'     => 'off',
                             'IconActive'  => true,
                             'IconValue'   => 'xmark',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xff0000,
+                            'Color'       => 0xff0000,
                         ],
                         [
                             'Value'       => 'COOLING',
                             'Caption'     => 'cooling',
                             'IconActive'  => true,
                             'IconValue'   => 'temperature-arrow-down',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0x3485EA,
+                            'Color'       => 0x3485EA,
                         ],
                         [
                             'Value'       => 'HEATING',
                             'Caption'     => 'heating',
                             'IconActive'  => true,
                             'IconValue'   => 'temperature-arrow-up',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xF48D43,
+                            'Color'       => 0xF48D43,
                         ],
                         [
                             'Value'       => 'UNKNOWN',
                             'Caption'     => 'unknown',
                             'IconActive'  => true,
                             'IconValue'   => 'question',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xffff00,
+                            'Color'       => 0xffff00,
                         ],
                     ]
                 ],
@@ -672,31 +660,27 @@ namespace BoschSHC\Services
                             'Caption'     => 'manual',
                             'IconActive'  => true,
                             'IconValue'   => 'hand-back-point-up',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xF48D43,
+                            'Color'       => 0xF48D43,
                         ],
                         [
                             'Value'       => 'AUTOMATIC',
                             'Caption'     => 'automatic',
                             'IconActive'  => true,
                             'IconValue'   => 'calendar-check',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0x00CDAB,
+                            'Color'       => 0x00CDAB,
                         ],
                         [
                             'Value'       => 'OFF',
                             'Caption'     => 'off',
                             'IconActive'  => true,
                             'IconValue'   => 'xmark',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xff0000,
+                            'Color'       => 0xff0000,
                         ],                            [
                             'Value'       => 'UNKNOWN',
                             'Caption'     => 'unknown',
                             'IconActive'  => true,
                             'IconValue'   => 'question',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xffff00,
+                            'Color'       => 0xffff00,
                         ],
                     ]
                 ],
@@ -714,32 +698,28 @@ namespace BoschSHC\Services
                             'Caption'     => 'off',
                             'IconActive'  => true,
                             'IconValue'   => 'xmark',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xff0000,
+                            'Color'       => 0xff0000,
                         ],
                         [
                             'Value'       => 'COOLING',
                             'Caption'     => 'cooling',
                             'IconActive'  => true,
                             'IconValue'   => 'temperature-arrow-down',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0x3485EA,
+                            'Color'       => 0x3485EA,
                         ],
                         [
                             'Value'       => 'HEATING',
                             'Caption'     => 'heating',
                             'IconActive'  => true,
                             'IconValue'   => 'temperature-arrow-up',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xF48D43,
+                            'Color'       => 0xF48D43,
                         ],
                         [
                             'Value'       => 'UNKNOWN',
                             'Caption'     => 'unknown',
                             'IconActive'  => true,
                             'IconValue'   => 'question',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xffff00,
+                            'Color'       => 0xffff00,
                         ],
                     ]
 
@@ -1072,16 +1052,14 @@ namespace BoschSHC\Services
                             'Caption'     => 'stopped',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 'MOVING',
                             'Caption'     => 'moving',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => 0x0000ff
                         ]
                     ]
                 ],
@@ -1105,56 +1083,49 @@ namespace BoschSHC\Services
                             'Caption'     => 'no test',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 'SMOKE_TEST_REQUESTED',
                             'Caption'     => 'test requested',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 'SMOKE_TEST_OK',
                             'Caption'     => 'test ok',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => 0x00ff00
                         ],
                         [
                             'Value'       => 'SMOKE_TEST_FAILED',
                             'Caption'     => 'test failed',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => 0xff0000
                         ],
                         [
                             'Value'       => 'COMMUNICATION_TEST_SENT',
                             'Caption'     => 'communication test sent',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 'COMMUNICATION_TEST_OK',
                             'Caption'     => 'communication test ok',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => 0x00ff00
                         ],
                         [
                             'Value'       => 'COMMUNICATION_TEST_REQUESTED',
                             'Caption'     => 'communication test requested',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ]
                     ]
                 ],
@@ -1180,32 +1151,28 @@ namespace BoschSHC\Services
                             'Caption'     => 'high',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 'MIDDLE',
                             'Caption'     => 'middle',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 'LOW',
                             'Caption'     => 'low',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 'UNKNOWN',
                             'Caption'     => 'unknown',
                             'IconActive'  => true,
                             'IconValue'   => 'question',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xffff00
+                            'Color'       => 0xffff00
                         ]
                     ]
                 ],
@@ -2112,24 +2079,21 @@ namespace BoschSHC\Services
                             'Caption'     => 'off',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 'ON',
                             'Caption'     => 'on',
                             'IconActive'  => false,
                             'IconValue'   => '',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 'UNKNOWN',
                             'Caption'     => 'unknown',
                             'IconActive'  => true,
                             'IconValue'   => 'question',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xffff00
+                            'Color'       => 0xffff00
                         ]
                     ]
                 ],
@@ -2495,32 +2459,28 @@ namespace BoschSHC\Services
                             'Caption'     => 'unlocked',
                             'IconActive'  => true,
                             'IconValue'   => 'lock-open',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 'LOCKED',
                             'Caption'     => 'locked',
                             'IconActive'  => true,
                             'IconValue'   => 'lock',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => 0x0000ff
                         ],
                         [
                             'Value'       => 'LOCKING',
                             'Caption'     => 'locking',
                             'IconActive'  => true,
                             'IconValue'   => 'lock-keyhole',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 'UNLOCKING',
                             'Caption'     => 'unlocking',
                             'IconActive'  => true,
                             'IconValue'   => 'lock-keyhole-open',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ]
                     ]
                 ],
@@ -2681,8 +2641,7 @@ namespace BoschSHC\Services
                         [
                             'Value'       => 0,
                             'Caption'     => 'Execute',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0x3485EA,
+                            'Color'       => 0x3485EA,
                             'IconActive'  => false,
                             'IconValue'   => ''
                         ]
@@ -3107,32 +3066,28 @@ namespace BoschSHC\Services
                             'Caption'     => 'is arming',
                             'IconActive'  => true,
                             'IconValue'   => 'shield',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0x900000
+                            'Color'       => 0x900000
                         ],
                         [
                             'Value'       => 'SYSTEM_ARMED',
                             'Caption'     => 'armed',
                             'IconActive'  => true,
                             'IconValue'   => 'shield-check',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0xff0000
+                            'Color'       => 0xff0000
                         ],
                         [
                             'Value'       => 'SYSTEM_DISARMED',
                             'Caption'     => 'disarmed',
                             'IconActive'  => true,
                             'IconValue'   => 'shield-xmark',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0x00ff00
+                            'Color'       => 0x00ff00
                         ],
                         [
                             'Value'       => 'MUTE_ALARM',
                             'Caption'     => 'muted',
                             'IconActive'  => true,
                             'IconValue'   => 'shield-slash',
-                            'ColorActive' => true,
-                            'ColorValue'  => 0x0000ff
+                            'Color'       => 0x0000ff
                         ]
                     ]
 
@@ -3151,24 +3106,21 @@ namespace BoschSHC\Services
                             'Caption'     => 'full protection',
                             'IconActive'  => true,
                             'IconValue'   => 'shield',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 1,
                             'Caption'     => 'partial protection',
                             'IconActive'  => true,
                             'IconValue'   => 'shield-halved',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ],
                         [
                             'Value'       => 2,
                             'Caption'     => 'customized protection',
                             'IconActive'  => true,
                             'IconValue'   => 'shield-quartered',
-                            'ColorActive' => false,
-                            'ColorValue'  => -1
+                            'Color'       => -1
                         ]
                     ]
 
