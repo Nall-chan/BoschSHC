@@ -2,6 +2,7 @@
     "translations": {
         "de": {
             "Bosch SmartHome Configurator": "Bosch SmartHome Konfigurator",
+            "Instance has no active parent.": "Instanz hat keinen aktiven IO.",
             "Device-ID": "Geräte-ID",
             "Type": "Typ",
             "Bosch SmartHome Automation Rules": "Bosch SmartHome Automationen",

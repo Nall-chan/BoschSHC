@@ -12,7 +12,6 @@ class BoschSmartHomeConfigurator extends IPSModuleStrict
     {
         //Never delete this line!
         parent::Create();
-        $this->ConnectParent(\BoschSHC\GUID::IO);
     }
 
     public function Destroy(): void

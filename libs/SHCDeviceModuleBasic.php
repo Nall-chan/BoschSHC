@@ -19,7 +19,6 @@ abstract class BSHCBasicClass extends IPSModuleStrict
     {
         //Never delete this line!
         parent::Create();
-        $this->ConnectParent(\BoschSHC\GUID::IO);
     }
 
     public function ApplyChanges(): void
