@@ -119,7 +119,7 @@ class BoschSmartHomeDiscovery extends IPSModuleStrict
                 $SHC['Hostname'][((strpos($ipv4, '169.254') === 0) ? 10 : 0) + 30 + $Index] = $ipv4;
             }
             ksort($SHC['Hostname']);
-            array_push($SHCs, ['name' => $device['Name'], 'host'=>$SHC['Hostname']]);
+            array_push($SHCs, ['name' => $device['Name'], 'host' =>$SHC['Hostname']]);
         }
         return $SHCs;
     }

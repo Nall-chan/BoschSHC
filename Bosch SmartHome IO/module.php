@@ -706,8 +706,8 @@ class BoschSmartHomeIO extends IPSModuleStrict
         $ch = curl_init($CurlURL);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($ch, CURLOPT_CAINFO, dirname(__DIR__) . '/libs/Cert/Smart Home Controller CA chain.crt');
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         if (($RequestURL != self::SHC_Client) && ($RequestURL != self::SHC_Info)) {
             curl_setopt($ch, CURLOPT_SSLCERT, $this->GetTempFile(self::Attribute_MyCert));
             curl_setopt($ch, CURLOPT_SSLKEY, $this->GetTempFile(self::Attribute_PrivateKey));

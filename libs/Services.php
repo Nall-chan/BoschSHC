@@ -198,7 +198,7 @@ namespace BoschSHC
 
 namespace BoschSHC\Services
 {
-    const IPSProfile = 'Profile';
+    const IPSPresentation = 'Presentation';
     const IPSVarType = 'VarType';
     const IPSVarFactor = 'Factor';
     const IPSVarName = 'VarName';
@@ -266,20 +266,56 @@ namespace BoschSHC\Services
                     }
                     break;
             }
-            $Result[IPSProfile] = static::getIPSProfile($Property);
+            $Result[IPSPresentation] = static::getIPSPresentation($Property);
             $Result[IPSVarName] = static::getIPSName($Property);
             $Result[IPSVarAction] = static::getIPSAction($Property);
             $Result[IPSVarIdent] = explode('\\', get_called_class())[2] . '_' . $Property;
             return $Result;
         }
-        public static function getIPSProfile(string $Property): string
+        public static function TranslatePresentationValue(string $Text): string
         {
-            return
-                isset(static::$properties[$Property][IPSProfile]) ?
-                static::$properties[$Property][IPSProfile] :
-                '';
+            $translation = self::GetPresentationTranslation();
+            $language = IPS_GetSystemLanguage();
+            $code = explode('_', $language)[0];
+            if (isset($translation['translations'])) {
+                if (isset($translation['translations'][$language])) {
+                    if (isset($translation['translations'][$language][$Text])) {
+                        return $translation['translations'][$language][$Text];
+                    }
+                } elseif (isset($translation['translations'][$code])) {
+                    if (isset($translation['translations'][$code][$Text])) {
+                        return $translation['translations'][$code][$Text];
+                    }
+                }
+            }
+            return $Text;
         }
-        protected static function getServiceState(): string
+        private static function getIPSPresentation(string $Property): array
+        {
+            $Presentation = [];
+            if (isset(static::$properties[$Property][IPSPresentation])) {
+                $Presentation = static::$properties[$Property][IPSPresentation];
+                if (isset($Presentation['PREFIX'])) {
+                    $Presentation['PREFIX'] = self::TranslatePresentationValue($Presentation['PREFIX']);
+                }
+                if (isset($Presentation['SUFFIX'])) {
+                    $Presentation['SUFFIX'] = self::TranslatePresentationValue($Presentation['SUFFIX']);
+                }
+                if (isset($Presentation['OPTIONS'])) {
+                    $Options = $Presentation['OPTIONS'];
+                    foreach ($Options as &$Option) {
+                        $Option['Caption'] = self::TranslatePresentationValue($Option['Caption']);
+                    }
+                    $Presentation['OPTIONS'] = json_encode($Options);
+                }
+            }
+            return $Presentation;
+        }
+        private static function GetPresentationTranslation(): array
+        {
+            return json_decode(file_get_contents(__DIR__ . '/locale_profile.json'), true);
+        }
+        private static function getServiceState(): string
         {
             return lcfirst(explode('\\', get_called_class())[2]) . static::$state;
         }
@@ -309,15 +345,20 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'powerConsumption' => [
-                'type'       => 'number',
-                IPSProfile   => '~Watt',
+                'type'          => 'number',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'TEMPLATE'     => VARIABLE_TEMPLATE_VALUE_PRESENTATION_POWER
+                ],
                 IPSVarType   => VARIABLETYPE_FLOAT,
                 IPSVarName   => 'Power consumption'
             ],
             'energyConsumption' => [
-                'type'       => 'number',
-                IPSVarFactor => 1000,
-                IPSProfile   => '~Electricity',
+                'type'          => 'number',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'TEMPLATE'     => VARIABLE_TEMPLATE_VALUE_PRESENTATION_ENERGY
+                ],
                 IPSVarType   => VARIABLETYPE_FLOAT,
                 IPSVarName   => 'Energy consumption'
             ],
@@ -332,23 +373,54 @@ namespace BoschSHC\Services
                     true   => 'ON',
                     false  => 'OFF',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Switch'
             ]
-            //todo
-            //'automaticPowerOffTime' INTEGER
-
+            /** @todo
+             * 'automaticPowerOffTime' INTEGER
+             */
         ];
     }
     class PowerSwitchConfiguration extends ServiceBasics
     {
         protected static $properties = [
             'stateAfterPowerOutage' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.PowerSwitchConfiguration.stateAfterPowerOutage',
-                IPSVarType   => VARIABLETYPE_STRING,
+                'type'          => 'string',
+                IPSVarType      => VARIABLETYPE_STRING,
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'OFF',
+                            'Caption'     => 'off',
+                            'IconActive'  => true,
+                            'IconValue'   => 'plug-circle-xmark',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'LAST_STATE',
+                            'Caption'     => 'laste state',
+                            'IconActive'  => true,
+                            'IconValue'   => 'plug-circle-check',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'ON',
+                            'Caption'     => 'on',
+                            'IconActive'  => true,
+                            'IconValue'   => 'plug-circle-bolt',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ]
+                    ]
+
+                ],
                 IPSVarAction => true,
                 IPSVarName   => 'State after power outage'
             ]
@@ -358,8 +430,29 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'operationMode' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.PowerSwitchProgram.operationMode',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'MANUAL',
+                            'Caption'     => 'manual',
+                            'IconActive'  => true,
+                            'IconValue'   => 'hand-back-point-up',
+                            'ColorActive' => true,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'SCHEDULE',
+                            'Caption'     => 'schedule',
+                            'IconActive'  => true,
+                            'IconValue'   => 'calendar-check',
+                            'ColorActive' => true,
+                            'ColorValue'  => -1
+                        ]
+                    ]
+
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarAction => true,
                 IPSVarName   => 'Operation mode'
@@ -370,8 +463,43 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'operationMode' => [
-                'type'                   => 'string',
-                IPSProfile               => 'BSH.RoomClimateControl.operationMode',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'MANUAL',
+                            'Caption'     => 'manual',
+                            'IconActive'  => true,
+                            'IconValue'   => 'hand-back-point-up',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xF48D43,
+                        ],
+                        [
+                            'Value'       => 'AUTOMATIC',
+                            'Caption'     => 'automatic',
+                            'IconActive'  => true,
+                            'IconValue'   => 'calendar-check',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00CDAB,
+                        ],
+                        [
+                            'Value'       => 'OFF',
+                            'Caption'     => 'off',
+                            'IconActive'  => true,
+                            'IconValue'   => 'xmark',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000,
+                        ],                            [
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00,
+                        ],
+                    ],
+                ],
                 IPSVarType               => VARIABLETYPE_STRING,
                 IPSVarAction             => true,
                 IPSVarName               => 'Operation mode',
@@ -379,7 +507,24 @@ namespace BoschSHC\Services
             ],
             'setpointTemperature' => [
                 'type'                   => 'string',
-                IPSProfile               => 'BSH.RoomClimateControl.setpointTemperature',
+                IPSPresentation          => [
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_SLIDER,
+                    'DIGITS'              => 1,
+                    'CUSTOM_GRADIENT'     => '[]',
+                    'ICON'                => 'temperature-half',
+                    'DECIMAL_SEPARATOR'   => 'Client',
+                    'GRADIENT_TYPE'       => 1,
+                    'MAX'                 => 30,
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MIN'                 => 5,
+                    'PERCENTAGE'          => false,
+                    'PREFIX'              => '',
+                    'STEP_SIZE'           => 0.5,
+                    'SUFFIX'              => ' °C',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 0,
+                ],
                 IPSVarType               => VARIABLETYPE_FLOAT,
                 IPSVarAction             => true,
                 IPSVarName               => 'Setpoint temperature',
@@ -387,7 +532,24 @@ namespace BoschSHC\Services
             ],
             'setpointTemperatureForLevelEco' => [
                 'type'                   => 'string',
-                IPSProfile               => 'BSH.RoomClimateControl.setpointTemperature',
+                IPSPresentation          => [
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_SLIDER,
+                    'DIGITS'              => 1,
+                    'CUSTOM_GRADIENT'     => '[]',
+                    'ICON'                => 'temperature-half',
+                    'DECIMAL_SEPARATOR'   => 'Client',
+                    'GRADIENT_TYPE'       => 1,
+                    'MAX'                 => 30,
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MIN'                 => 5,
+                    'PERCENTAGE'          => false,
+                    'PREFIX'              => '',
+                    'STEP_SIZE'           => 0.5,
+                    'SUFFIX'              => ' °C',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 0,
+                ],
                 IPSVarType               => VARIABLETYPE_FLOAT,
                 IPSVarAction             => true,
                 IPSVarName               => 'Setpoint temperature eco',
@@ -395,7 +557,24 @@ namespace BoschSHC\Services
             ],
             'setpointTemperatureForLevelComfort' => [
                 'type'                   => 'string',
-                IPSProfile               => 'BSH.RoomClimateControl.setpointTemperature',
+                IPSPresentation          => [
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_SLIDER,
+                    'DIGITS'              => 1,
+                    'CUSTOM_GRADIENT'     => '[]',
+                    'ICON'                => 'temperature-half',
+                    'DECIMAL_SEPARATOR'   => 'Client',
+                    'GRADIENT_TYPE'       => 1,
+                    'MAX'                 => 30,
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MIN'                 => 5,
+                    'PERCENTAGE'          => false,
+                    'PREFIX'              => '',
+                    'STEP_SIZE'           => 0.5,
+                    'SUFFIX'              => ' °C',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 0,
+                ],
                 IPSVarType               => VARIABLETYPE_FLOAT,
                 IPSVarAction             => true,
                 IPSVarName               => 'Setpoint temperature comfort',
@@ -403,7 +582,9 @@ namespace BoschSHC\Services
             ],
             'ventilationMode' => [
                 'type'                   => 'bool',
-                IPSProfile               => '~Switch',
+                IPSPresentation          => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType               => VARIABLETYPE_BOOLEAN,
                 IPSVarAction             => true,
                 IPSVarName               => 'Ventilation mode active',
@@ -412,7 +593,9 @@ namespace BoschSHC\Services
             //low
             'boostMode' => [
                 'type'                   => 'bool',
-                IPSProfile               => '~Switch',
+                IPSPresentation          => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType               => VARIABLETYPE_BOOLEAN,
                 IPSVarAction             => true,
                 IPSVarName               => 'Boost mode active',
@@ -420,7 +603,9 @@ namespace BoschSHC\Services
             ],
             'summerMode' => [
                 'type'                   => 'bool',
-                IPSProfile               => '~Switch',
+                IPSPresentation          => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType               => VARIABLETYPE_BOOLEAN,
                 IPSVarAction             => true,
                 IPSVarName               => 'Summer mode active',
@@ -428,8 +613,44 @@ namespace BoschSHC\Services
             ],
             //supportsBoostMode
             'roomControlMode' => [
-                'type'                   => 'string',
-                IPSProfile               => 'BSH.RoomClimateControl.roomControlMode',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'OFF',
+                            'Caption'     => 'off',
+                            'IconActive'  => true,
+                            'IconValue'   => 'xmark',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000,
+                        ],
+                        [
+                            'Value'       => 'COOLING',
+                            'Caption'     => 'cooling',
+                            'IconActive'  => true,
+                            'IconValue'   => 'temperature-arrow-down',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x3485EA,
+                        ],
+                        [
+                            'Value'       => 'HEATING',
+                            'Caption'     => 'heating',
+                            'IconActive'  => true,
+                            'IconValue'   => 'temperature-arrow-up',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xF48D43,
+                        ],
+                        [
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00,
+                        ],
+                    ]
+                ],
                 IPSVarType               => VARIABLETYPE_STRING,
                 IPSVarAction             => true,
                 IPSVarName               => 'Room control mode',
@@ -442,15 +663,87 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'operationMode' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.RoomClimateControl.operationMode',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'MANUAL',
+                            'Caption'     => 'manual',
+                            'IconActive'  => true,
+                            'IconValue'   => 'hand-back-point-up',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xF48D43,
+                        ],
+                        [
+                            'Value'       => 'AUTOMATIC',
+                            'Caption'     => 'automatic',
+                            'IconActive'  => true,
+                            'IconValue'   => 'calendar-check',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00CDAB,
+                        ],
+                        [
+                            'Value'       => 'OFF',
+                            'Caption'     => 'off',
+                            'IconActive'  => true,
+                            'IconValue'   => 'xmark',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000,
+                        ],                            [
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00,
+                        ],
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarAction => true,
                 IPSVarName   => 'Operation mode'
             ],
             'roomControlMode' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.RoomClimateControl.roomControlMode',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'OFF',
+                            'Caption'     => 'off',
+                            'IconActive'  => true,
+                            'IconValue'   => 'xmark',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000,
+                        ],
+                        [
+                            'Value'       => 'COOLING',
+                            'Caption'     => 'cooling',
+                            'IconActive'  => true,
+                            'IconValue'   => 'temperature-arrow-down',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x3485EA,
+                        ],
+                        [
+                            'Value'       => 'HEATING',
+                            'Caption'     => 'heating',
+                            'IconActive'  => true,
+                            'IconValue'   => 'temperature-arrow-up',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xF48D43,
+                        ],
+                        [
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00,
+                        ],
+                    ]
+
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarAction => true,
                 IPSVarName   => 'Room control mode'
@@ -461,8 +754,11 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'temperature' => [
-                'type'       => 'number',
-                IPSProfile   => '~Temperature',
+                'type'          => 'number',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'TEMPLATE'     => VARIABLE_TEMPLATE_VALUE_PRESENTATION_ROOM_TEMPERATURE
+                ],
                 IPSVarType   => VARIABLETYPE_FLOAT,
                 IPSVarName   => 'Current temperature'
             ]
@@ -477,7 +773,27 @@ namespace BoschSHC\Services
                     true   => 'CLOSED',
                     false  => 'OPEN',
                 ],
-                IPSProfile   => '~Window.Reversed',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => false,
+                            'Caption'          => 'open',
+                            'IconActive'       => true,
+                            'IconValue'        => 'window-left-open-right-open',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x0000ff
+                        ],
+                        [
+                            'Value'            => true,
+                            'Caption'          => 'closed',
+                            'IconActive'       => true,
+                            'IconValue'        => 'window-left-closed-right-closed',
+                            'ColorActive'      => true,
+                            'ColorValue'       => -1
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarName   => 'Shutter contact state'
             ]
@@ -497,14 +813,63 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'operationState' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.HCWasher.operationState',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'ICON'         => 'washing-machine',
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'RUNNING',
+                            'Caption'          => 'running',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00ff00
+                        ],
+                        [
+                            'Value'            => 'END',
+                            'Caption'          => 'end',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x0000ff
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Operation state'
             ],
             'remoteControlStartAllowed' => [
-                'type'       => 'bool',
-                IPSProfile   => '~Switch',
+                'type'          => 'bool',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => false,
+                            'Caption'          => 'off',
+                            'IconActive'       => true,
+                            'IconValue'        => 'xmark',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xff0000
+                        ],
+                        [
+                            'Value'            => true,
+                            'Caption'          => 'on',
+                            'IconActive'       => true,
+                            'IconValue'        => 'check',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00ff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarName   => 'Remote control start allowed'
             ]
@@ -514,14 +879,71 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'operationState' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.HCDishwasher.operationState',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'ICON'         => 'utensils',
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'RUNNING',
+                            'Caption'          => 'running',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00ff00
+                        ],
+                        [
+                            'Value'            => 'END',
+                            'Caption'          => 'end',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x0000ff
+                        ],
+                        [
+                            'Value'            => 'STANDBY',
+                            'Caption'          => 'standby',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xF48D43
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Operation state'
             ],
             'remoteControlStartAllowed' => [
-                'type'       => 'bool',
-                IPSProfile   => '~Switch',
+                'type'          => 'bool',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => false,
+                            'Caption'          => 'off',
+                            'IconActive'       => true,
+                            'IconValue'        => 'xmark',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xff0000
+                        ],
+                        [
+                            'Value'            => true,
+                            'Caption'          => 'on',
+                            'IconActive'       => true,
+                            'IconValue'        => 'check',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00ff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarName   => 'Remote control start allowed'
             ]
@@ -531,14 +953,71 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'operationState' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.HCOven.operationState',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'ICON'         => 'oven',
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'RUNNING',
+                            'Caption'          => 'running',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00ff00
+                        ],
+                        [
+                            'Value'            => 'END',
+                            'Caption'          => 'end',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x0000ff
+                        ],
+                        [
+                            'Value'            => 'STANDBY',
+                            'Caption'          => 'standby',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xF48D43
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Operation state'
             ],
             'remoteControlStartAllowed' => [
-                'type'       => 'bool',
-                IPSProfile   => '~Switch',
+                'type'          => 'bool',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => false,
+                            'Caption'          => 'off',
+                            'IconActive'       => true,
+                            'IconValue'        => 'xmark',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xff0000
+                        ],
+                        [
+                            'Value'            => true,
+                            'Caption'          => 'on',
+                            'IconActive'       => true,
+                            'IconValue'        => 'check',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00ff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarName   => 'Remote control start allowed'
             ]
@@ -554,7 +1033,9 @@ namespace BoschSHC\Services
                     false => 'ENABLED',
                     true  => 'DISABLED',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Privacy mode'
@@ -565,16 +1046,45 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'level' => [
-                'type'       => 'string',
-                IPSVarFactor => 0.01,
-                IPSProfile   => '~Shutter',
+                'type'          => 'string',
+                IPSVarFactor    => 0.01,
+                IPSPresentation => [
+                    'PRESENTATION'         => VARIABLE_PRESENTATION_SHUTTER,
+                    'CLOSE_INSIDE_VALUE'   => 100,
+                    'MAX_ROTATION_INSIDE'  => 0,
+                    'MAX_ROTATION_OUTSIDE' => 0,
+                    'OPEN_OUTSIDE_VALUE'   => 0,
+                    'SUN_POSITION'         => 2,
+                    'USAGE_TYPE'           => 0,
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Level'
             ],
             'operationState' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.ShutterControl.operationState',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'ICON'         => 'shutters',
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'STOPPED',
+                            'Caption'     => 'stopped',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'MOVING',
+                            'Caption'     => 'moving',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarAction => true,
                 IPSVarName   => 'Operation'
@@ -585,8 +1095,69 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'value' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.SmokeDetectorCheck.value',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'ICON'         => 'sensor-fire',
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'NONE',
+                            'Caption'     => 'no test',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'SMOKE_TEST_REQUESTED',
+                            'Caption'     => 'test requested',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'SMOKE_TEST_OK',
+                            'Caption'     => 'test ok',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'SMOKE_TEST_FAILED',
+                            'Caption'     => 'test failed',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'COMMUNICATION_TEST_SENT',
+                            'Caption'     => 'communication test sent',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'COMMUNICATION_TEST_OK',
+                            'Caption'     => 'communication test ok',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'COMMUNICATION_TEST_REQUESTED',
+                            'Caption'     => 'communication test requested',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarAction => true,
                 IPSVarName   => 'Smoke test'
@@ -599,8 +1170,45 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'smokeSensitivity' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.SmokeSensitivity.smokeSensitivity',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'ICON'         => 'sensor-fire',
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'HIGH',
+                            'Caption'     => 'high',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'MIDDLE',
+                            'Caption'     => 'middle',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'LOW',
+                            'Caption'     => 'low',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarAction => true,
                 IPSVarName   => 'Smoke sensitivity'
@@ -611,14 +1219,133 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'position' => [
-                'type'       => 'string',
-                IPSProfile   => '~Intensity.100',
-                IPSVarType   => VARIABLETYPE_INTEGER,
+                'type'          => 'string',
+                IPSVarType      => VARIABLETYPE_INTEGER,
+                IPSPresentation => [
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'COLOR'               => -1,
+                    'DECIMAL_SEPARATOR'   => '',
+                    'DIGITS'              => 0,
+                    'ICON'                => 'Intensity',
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MAX'                 => 100,
+                    'MIN'                 => 0,
+                    'MULTILINE'           => false,
+                    'PERCENTAGE'          => true,
+                    'PREFIX'              => '',
+                    'SUFFIX'              => ' %',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 0,
+                ],
                 IPSVarName   => 'Valve position'
             ],
             'value' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.ValveTappet.value',
+                'type'          => 'string',
+                /**
+                 * @todo Übersetzungen fehlen
+                 */
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'NO_AVAILABLE',
+                            'Caption'          => 'NOT_AVAILABLE',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'RUN_TO_START_POSITION',
+                            'Caption'          => 'RUN_TO_START_POSITION',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'START_POSITION_REQUESTED',
+                            'Caption'          => 'START_POSITION_REQUESTED',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'IN_START_POSITION',
+                            'Caption'          => 'IN_START_POSITION',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'VALVE_ADAPTION_REQUESTED',
+                            'Caption'          => 'VALVE_ADAPTION_REQUESTED',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'VALVE_ADAPTION_IN_PROGRESS',
+                            'Caption'          => 'VALVE_ADAPTION_IN_PROGRESS',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'VALVE_ADAPTION_SUCCESSFUL',
+                            'Caption'          => 'VALVE_ADAPTION_SUCCESSFUL',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'VALVE_TOO_TIGHT',
+                            'Caption'          => 'VALVE_TOO_TIGHT',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'RANGE_TOO_BIG',
+                            'Caption'          => 'RANGE_TOO_BIG',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'RANGE_TOO_SMALL',
+                            'Caption'          => 'RANGE_TOO_SMALL',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'ERROR',
+                            'Caption'          => 'ERROR',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'UNKNOWN',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Valve state'
             ]
@@ -631,43 +1358,389 @@ namespace BoschSHC\Services
         protected static $properties = [
             'combinedRating' => [
                 'type'       => 'string',
-                IPSProfile   => 'BSH.AirQualityLevel.combinedRating',
+                /**
+                 * @todo Übersetzung fehlt
+                 */
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'OK',
+                            'Caption'          => 'OK',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'COLD',
+                            'Caption'          => 'COLD',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'COLD_DRY',
+                            'Caption'          => 'COLD_DRY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'COLD_HUMID',
+                            'Caption'          => 'COLD_HUMID',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'COLD_STUFFY',
+                            'Caption'          => 'COLD_STUFFY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'COLD_DRY_STUFFY',
+                            'Caption'          => 'COLD_DRY_STUFFY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'COLD_HUMID_STUFFY',
+                            'Caption'          => 'COLD_HUMID_STUFFY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'LITTLE_COLD',
+                            'Caption'          => 'LITTLE_COLD',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'LITTLE_DRY',
+                            'Caption'          => 'LITTLE_DRY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'LITTLE_HUMID',
+                            'Caption'          => 'LITTLE_HUMID',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'LITTLE_STUFFY',
+                            'Caption'          => 'LITTLE_STUFFY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'LITTLE_WARM',
+                            'Caption'          => 'LITTLE_WARM',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'DRY',
+                            'Caption'          => 'DRY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'DRY_STUFFY',
+                            'Caption'          => 'DRY_STUFFY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'HUMID',
+                            'Caption'          => 'HUMID',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'HUMID_STUFFY',
+                            'Caption'          => 'HUMID_STUFFY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'STUFFY',
+                            'Caption'          => 'STUFFY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'WARM',
+                            'Caption'          => 'WARM',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'WARM_DRY',
+                            'Caption'          => 'WARM_DRY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'WARM_HUMID',
+                            'Caption'          => 'WARM_HUMID',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'WARM_STUFFY',
+                            'Caption'          => 'WARM_STUFFY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'WARM_HUMID_STUFFY',
+                            'Caption'          => 'WARM_HUMID_STUFFY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'WARM_DRY_STUFFY',
+                            'Caption'          => 'WARM_DRY_STUFFY',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'UNKNOWN',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'Combined rating'
+                IPSVarName   => 'Combined rating',
+
             ],
             'temperature' => [
-                'type'       => 'number',
-                IPSProfile   => '~Temperature',
+                'type'          => 'number',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'TEMPLATE'     => VARIABLE_TEMPLATE_VALUE_PRESENTATION_ROOM_TEMPERATURE
+                ],
                 IPSVarType   => VARIABLETYPE_FLOAT,
                 IPSVarName   => 'Temperature'
             ],
             'temperatureRating' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.AirQualityLevel.temperatureRating',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'ICON'         => 'temperature-half',
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'GOOD',
+                            'Caption'          => 'good',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00ff00
+                        ],
+                        [
+                            'Value'            => 'MEDIUM',
+                            'Caption'          => 'medium',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00CDAB
+                        ],
+                        [
+                            'Value'            => 'BAD',
+                            'Caption'          => 'bad',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xff0000
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Temperature rating'
             ],
             'humidity' => [
-                'type'       => 'number',
-                IPSProfile   => '~Humidity',
+                'type'          => 'number',
+                IPSPresentation => [
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'COLOR'               => -1,
+                    'DECIMAL_SEPARATOR'   => '',
+                    'DIGITS'              => 0,
+                    'ICON'                => 'droplet-degree',
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MAX'                 => 100,
+                    'MIN'                 => 0,
+                    'MULTILINE'           => false,
+                    'PERCENTAGE'          => true,
+                    'PREFIX'              => '',
+                    'SUFFIX'              => ' %',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 0,
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarName   => 'Humidity'
             ],
             'humidityRating' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.AirQualityLevel.temperatureRating',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'ICON'         => 'droplet-degree',
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'GOOD',
+                            'Caption'          => 'good',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00ff00
+                        ],
+                        [
+                            'Value'            => 'MEDIUM',
+                            'Caption'          => 'medium',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00CDAB
+                        ],
+                        [
+                            'Value'            => 'BAD',
+                            'Caption'          => 'bad',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xff0000
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Humidity rating'
             ],
-            'purity' => [ //todo profile
-                'type'       => 'number',
-                IPSProfile   => '',
+            'purity' => [
+                'type'          => 'number',
+                IPSPresentation => [
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'COLOR'               => -1,
+                    'DECIMAL_SEPARATOR'   => '',
+                    'DIGITS'              => 0,
+                    'ICON'                => 'wind',
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MAX'                 => 100,
+                    'MIN'                 => 0,
+                    'MULTILINE'           => false,
+                    'PERCENTAGE'          => true,
+                    'PREFIX'              => '',
+                    'SUFFIX'              => ' %',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 0,
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarName   => 'Purity'
             ],
             'purityRating' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.AirQualityLevel.temperatureRating',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'ICON'         => 'wind',
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'GOOD',
+                            'Caption'          => 'good',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00ff00
+                        ],
+                        [
+                            'Value'            => 'MEDIUM',
+                            'Caption'          => 'medium',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00CDAB
+                        ],
+                        [
+                            'Value'            => 'BAD',
+                            'Caption'          => 'bad',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xff0000
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Purity rating'
             ]
@@ -677,19 +1750,61 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'keyCode' => [
-                'type'       => 'integer',
-                IPSVarType   => VARIABLETYPE_INTEGER,
-                IPSVarName   => 'Keycode'
+                'type'          => 'integer',
+                IPSVarType      => VARIABLETYPE_INTEGER,
+                IPSVarName      => 'Keycode'
             ],
             'keyName' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.Keypad.keyName',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'ICON'         => 'hand-back-point-up',
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'LOWER_BUTTON',
+                            'Caption'          => 'Lower button',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'UPPER_BUTTON',
+                            'Caption'          => 'Upper button',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Key name'
             ],
             'eventType' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.Keypad.eventType',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'ICON'         => 'hand-back-point-up',
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'PRESS_SHORT',
+                            'Caption'          => 'short',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'PRESS_LONG',
+                            'Caption'          => 'long',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Event'
             ],
@@ -704,8 +1819,24 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'humidity' => [
-                'type'       => 'number',
-                IPSProfile   => '~Humidity',
+                'type'          => 'number',
+                IPSPresentation => [
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'COLOR'               => -1,
+                    'DECIMAL_SEPARATOR'   => '',
+                    'DIGITS'              => 0,
+                    'ICON'                => 'droplet-degree',
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MAX'                 => 100,
+                    'MIN'                 => 0,
+                    'MULTILINE'           => false,
+                    'PERCENTAGE'          => true,
+                    'PREFIX'              => '',
+                    'SUFFIX'              => ' %',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 0,
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarName   => 'Humidity'
             ]
@@ -720,7 +1851,9 @@ namespace BoschSHC\Services
                     true   => 'ON',
                     false  => 'OFF',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Camera light'
@@ -731,8 +1864,53 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'batteryLevel' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.BatteryLevel.batteryLevel',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'ICON'         => 'hand-back-point-up',
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'OK',
+                            'Caption'          => 'ok',
+                            'IconActive'       => true,
+                            'IconValue'        => 'battery-bolt',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x22b934
+                        ],
+                        [
+                            'Value'            => 'LOW_BATTERY',
+                            'Caption'          => 'low battery',
+                            'IconActive'       => true,
+                            'IconValue'        => 'battery-low',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xefff04
+                        ],
+                        [
+                            'Value'            => 'CRITICAL_LOW',
+                            'Caption'          => 'critically low',
+                            'IconActive'       => true,
+                            'IconValue'        => 'battery-empty',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xff571f
+                        ],
+                        [
+                            'Value'            => 'CRITICALLY_LOW_BATTERY',
+                            'Caption'          => 'critically low battery',
+                            'IconActive'       => true,
+                            'IconValue'        => 'battery-exclamation',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xea1f1f
+                        ],
+                        [
+                            'Value'            => 'NOT_AVAILABLE',
+                            'Caption'          => 'not available',
+                            'IconActive'       => true,
+                            'IconValue'        => 'battery-slash',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xff0000
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Battery state'
             ]
@@ -753,8 +1931,10 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'enabled' => [
-                'type'       => 'bool',
-                IPSProfile   => '~Switch',
+                'type'            => 'bool',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Enabled'
@@ -778,8 +1958,12 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'delay' => [
-                'type'       => 'number',
-                IPSProfile   => 'BSH.VentilationDelay.delay',
+                'type'          => 'number',
+                IPSPresentation => [
+                    'PREFIX'       => '',
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_INPUT,
+                    'SUFFIX'       => ' seconds',
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Delay'
@@ -790,9 +1974,17 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'targetAngle' => [
-                'type'       => 'number',
-                IPSVarFactor => 0.01,
-                IPSProfile   => '~Lamella',
+                'type'          => 'number',
+                IPSVarFactor    => 0.01,
+                IPSPresentation => [
+                    'PRESENTATION'         => VARIABLE_PRESENTATION_SHUTTER,
+                    'CLOSE_INSIDE_VALUE'   => 0,
+                    'MAX_ROTATION_INSIDE'  => 0,
+                    'MAX_ROTATION_OUTSIDE' => 100,
+                    'OPEN_OUTSIDE_VALUE'   => 0,
+                    'SUN_POSITION'         => 1,
+                    'USAGE_TYPE'           => 1,
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Target angle'
@@ -803,17 +1995,33 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'level' => [
-                'type'       => 'number',
-                IPSVarFactor => 0.01,
-                IPSProfile   => '~Shutter',
+                'type'          => 'number',
+                IPSVarFactor    => 0.01,
+                IPSPresentation => [
+                    'PRESENTATION'         => VARIABLE_PRESENTATION_SHUTTER,
+                    'CLOSE_INSIDE_VALUE'   => 100,
+                    'MAX_ROTATION_INSIDE'  => 0,
+                    'MAX_ROTATION_OUTSIDE' => 0,
+                    'OPEN_OUTSIDE_VALUE'   => 0,
+                    'SUN_POSITION'         => 2,
+                    'USAGE_TYPE'           => 0,
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Level'
             ],
             'angle' => [
-                'type'       => 'number',
-                IPSVarFactor => 0.01,
-                IPSProfile   => '~Lamella',
+                'type'          => 'number',
+                IPSVarFactor    => 0.01,
+                IPSPresentation => [
+                    'PRESENTATION'         => VARIABLE_PRESENTATION_SHUTTER,
+                    'CLOSE_INSIDE_VALUE'   => 0,
+                    'MAX_ROTATION_INSIDE'  => 0,
+                    'MAX_ROTATION_OUTSIDE' => 100,
+                    'OPEN_OUTSIDE_VALUE'   => 0,
+                    'SUN_POSITION'         => 1,
+                    'USAGE_TYPE'           => 1,
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Angle'
@@ -829,7 +2037,9 @@ namespace BoschSHC\Services
                     true   => 'ON',
                     false  => 'OFF',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Child lock'
@@ -845,7 +2055,9 @@ namespace BoschSHC\Services
                     true   => 'MODE_SILENT',
                     false  => 'MODE_NORMAL',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Silent mode'
@@ -861,7 +2073,27 @@ namespace BoschSHC\Services
                     false => 'ENABLED',
                     true  => 'DISABLED',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => false,
+                            'Caption'          => 'enabled',
+                            'IconActive'       => true,
+                            'IconValue'        => 'xmark',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xff0000
+                        ],
+                        [
+                            'Value'            => true,
+                            'Caption'          => 'disabled',
+                            'IconActive'       => true,
+                            'IconValue'        => 'check',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00ff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarName   => 'Routing state'
             ]
@@ -871,8 +2103,36 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'blinkingState' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.HueBlinking.blinkingState',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'OFF',
+                            'Caption'     => 'off',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'ON',
+                            'Caption'     => 'on',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarAction => true,
                 IPSVarName   => 'Blinking state'
@@ -884,13 +2144,123 @@ namespace BoschSHC\Services
         protected static $properties = [
             'searcherState' => [
                 'type'       => 'string',
-                IPSProfile   => 'BSH.HueBridgeSearcher.searcherState',
+                /**
+                 * @todo Übersetzung fehlt
+                 */
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'BRIDGE_SEARCH_REQUESTED',
+                            'Caption'          => 'BRIDGE_SEARCH_REQUESTED',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'BRIDGE_SEARCH_STARTED',
+                            'Caption'          => 'BRIDGE_SEARCH_STARTED',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'BRIDGES_FOUND',
+                            'Caption'          => 'BRIDGES_FOUND',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'NO_BRIDGE_FOUND',
+                            'Caption'          => 'NO_BRIDGE_FOUND',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'ERROR',
+                            'Caption'          => 'ERROR',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'UNKNOWN',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Searcher state'
             ],
             'value' => [
                 'type'       => 'string',
-                IPSProfile   => 'BSH.HueBridgeSearcher.searcherState',
+                /**
+                 * @todo Übersetzung fehlt
+                 */
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'BRIDGE_SEARCH_REQUESTED',
+                            'Caption'          => 'BRIDGE_SEARCH_REQUESTED',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'BRIDGE_SEARCH_STARTED',
+                            'Caption'          => 'BRIDGE_SEARCH_STARTED',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'BRIDGES_FOUND',
+                            'Caption'          => 'BRIDGES_FOUND',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'NO_BRIDGE_FOUND',
+                            'Caption'          => 'NO_BRIDGE_FOUND',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'ERROR',
+                            'Caption'          => 'ERROR',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'UNKNOWN',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Search result'
             ]
@@ -899,9 +2269,8 @@ namespace BoschSHC\Services
     class HueBridgeConnector extends ServiceBasics
     {
         protected static $properties = [
-            'hueBridgeConnectorState' => [ //todo Profile kein VALUE bekannt
+            'hueBridgeConnectorState' => [
                 'type'       => 'string',
-                IPSProfile   => '',
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Connector state'
             ]
@@ -911,8 +2280,52 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'quality' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.CommunicationQuality.quality',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'GOOD',
+                            'Caption'          => 'good',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'BAD',
+                            'Caption'          => 'bad',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'NORMAL',
+                            'Caption'          => 'normal',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ],
+                        [
+                            'Value'            => 'FETCHING',
+                            'Caption'          => 'fetching',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Communication quality'
             ]
@@ -922,8 +2335,36 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'updateState' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.MultiswitchConfiguration.updateState',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'UPDATING',
+                            'Caption'          => 'updating',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'UP_TO_DATE',
+                            'Caption'          => 'up to date',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Update'
             ]
@@ -933,14 +2374,70 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'walkState' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.WalkTest.walkState',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'WALK_TEST_STARTED',
+                            'Caption'          => 'started',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'WALK_TEST_STOPPED',
+                            'Caption'          => 'stopped',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'WALK_TEST_UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Walktest'
             ],
             'petImmunityState' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.WalkTest.walkState',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'WALK_TEST_STARTED',
+                            'Caption'          => 'started',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'WALK_TEST_STOPPED',
+                            'Caption'          => 'stopped',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'WALK_TEST_UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Pet immunity'
             ]
@@ -950,8 +2447,36 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'doorState' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.DoorSensor.doorState',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'DOOR_CLOSED',
+                            'Caption'          => 'closed',
+                            'IconActive'       => true,
+                            'IconValue'        => 'door-closed',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'DOOR_OPEN',
+                            'Caption'          => 'open',
+                            'IconActive'       => true,
+                            'IconValue'        => 'door-open',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'DOOR_UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Door state'
             ]
@@ -961,8 +2486,44 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'lockState' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.LockActuator.lockState',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'UNLOCKED',
+                            'Caption'     => 'unlocked',
+                            'IconActive'  => true,
+                            'IconValue'   => 'lock-open',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'LOCKED',
+                            'Caption'     => 'locked',
+                            'IconActive'  => true,
+                            'IconValue'   => 'lock',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'LOCKING',
+                            'Caption'     => 'locking',
+                            'IconActive'  => true,
+                            'IconValue'   => 'lock-keyhole',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 'UNLOCKING',
+                            'Caption'     => 'unlocking',
+                            'IconActive'  => true,
+                            'IconValue'   => 'lock-keyhole-open',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarAction => true,
                 IPSVarName   => 'Lock state'
@@ -978,7 +2539,9 @@ namespace BoschSHC\Services
                     false => 'ENABLED',
                     true  => 'DISABLED',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Camera notification'
@@ -1002,7 +2565,27 @@ namespace BoschSHC\Services
                     false => 'NO_LEAKAGE',
                     true  => 'LEAKAGE_DETECTED',
                 ],
-                IPSProfile   => '~Alert',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => false,
+                            'Caption'          => 'off',
+                            'IconActive'       => true,
+                            'IconValue'        => 'droplet-slash',
+                            'ColorActive'      => true,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => true,
+                            'Caption'          => 'alarm',
+                            'IconActive'       => true,
+                            'IconValue'        => 'droplet',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xf22626
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarName   => 'Water leakage state'
             ]
@@ -1011,9 +2594,12 @@ namespace BoschSHC\Services
     class WaterLeakageSensorCheck extends ServiceBasics
     {
         protected static $properties = [
-            'result' => [  //todo Profile
+            'result' => [
                 'type'       => 'string',
                 IPSVarType   => VARIABLETYPE_STRING,
+                /**
+                 * @todo Darstellung fehlt
+                 */
                 IPSVarName   => 'Water leakage sensor check'
             ]
         ];
@@ -1027,7 +2613,9 @@ namespace BoschSHC\Services
                     true   => 'ENABLED',
                     false  => 'DISABLED',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Push notification state on tilt'
@@ -1038,7 +2626,9 @@ namespace BoschSHC\Services
                     true   => 'ENABLED',
                     false  => 'DISABLED',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Acoustic signal state on tilt'
@@ -1049,14 +2639,54 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'state' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.WaterAlarmSystem.state',
-                IPSVarType   => VARIABLETYPE_STRING,
-                IPSVarName   => 'Water alarm system state'
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'ALARM_OFF',
+                            'Caption'          => 'off',
+                            'IconActive'       => true,
+                            'IconValue'        => 'droplet-slash',
+                            'ColorActive'      => true,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'WATER_ALARM',
+                            'Caption'          => 'alarm',
+                            'IconActive'       => true,
+                            'IconValue'        => 'droplet',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xf22626
+                        ],
+                        [
+                            'Value'            => 'ALARM_MUTED',
+                            'Caption'          => 'muted',
+                            'IconActive'       => true,
+                            'IconValue'        => 'alarm-snooze',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xf2e126
+                        ]
+                    ]
+                ],
+                IPSVarType      => VARIABLETYPE_STRING,
+                IPSVarName      => 'Water alarm system state'
             ],
             'mute' => [
-                'type'       => 'number',
-                IPSProfile   => 'BSH.WaterAlarmSystem.mute',
+                'type'         => 'number',
+                IPSPresentation=> [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'ICON'         => 'play',
+                    'OPTIONS'      => [
+                        [
+                            'Value'      => 0,
+                            'Caption'    => 'Execute',
+                            'ColorValue' => 0x3485EA,
+                            'IconActive' => false,
+                            'IconValue'  => ''
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Set muted'
@@ -1067,10 +2697,17 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'enabled' => [
-                'type'       => 'bool',
-                IPSProfile   => '~Switch',
-                IPSVarType   => VARIABLETYPE_BOOLEAN,
-                IPSVarName   => 'Enabled'
+                'type'          => 'bool',
+                IPSPresentation => [
+                    'PRESENTATION'   => VARIABLE_PRESENTATION_SWITCH,
+                    'USE_ICON_FALSE' => true,
+                    'ICON_TRUE'      => 'check',
+                    'ICON_FALSE'     => 'xmark',
+                    'USAGE_TYPE'     => 0
+                ],
+                IPSVarType      => VARIABLETYPE_BOOLEAN,
+                IPSVarAction    => true,
+                IPSVarName      => 'Enabled'
             ]
         ];
     }
@@ -1078,14 +2715,41 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'swUpdateState' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.SoftwareUpdate.swUpdateState',
+                'type'            => 'string',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'NO_UPDATE_AVAILABLE',
+                            'Caption'          => 'no update available',
+                            'IconActive'       => true,
+                            'IconValue'        => 'shield-check',
+                            'ColorActive'      => true,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'UPDATE_IN_PROGRESS',
+                            'Caption'          => 'update in progress',
+                            'IconActive'       => true,
+                            'IconValue'        => 'gear-code',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xf22626
+                        ],
+                        [
+                            'Value'            => 'UPDATE_AVAILABLE',
+                            'Caption'          => 'update available',
+                            'IconActive'       => true,
+                            'IconValue'        => 'font-awesome',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xf2e126
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Software update state'
             ],
             'swUpdateLastResult' => [
                 'type'       => 'string',
-                //UPDATE_SUCCESS
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Software update last result'
             ],
@@ -1100,11 +2764,17 @@ namespace BoschSHC\Services
                 IPSVarName   => 'Installed software version'
             ],
             'automaticUpdatesEnabled' => [
-                'type'       => 'bool',
-                IPSProfile   => '~Switch',
-                IPSVarType   => VARIABLETYPE_BOOLEAN,
-                IPSVarAction => true,
-                IPSVarName   => 'Automatic updates enabled'
+                'type'            => 'bool',
+                IPSPresentation   => [
+                    'PRESENTATION'   => VARIABLE_PRESENTATION_SWITCH,
+                    'USE_ICON_FALSE' => true,
+                    'ICON_TRUE'      => 'check',
+                    'ICON_FALSE'     => 'xmark',
+                    'USAGE_TYPE'     => 0
+                ],
+                IPSVarType        => VARIABLETYPE_BOOLEAN,
+                IPSVarAction      => true,
+                IPSVarName        => 'Automatic updates enabled'
             ]
         ];
     }
@@ -1117,7 +2787,9 @@ namespace BoschSHC\Services
                     true   => 'ENABLED',
                     false  => 'DISABLED',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Remote access'
@@ -1133,7 +2805,9 @@ namespace BoschSHC\Services
                     true   => 'ENABLED',
                     false  => 'DISABLED',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Remote push notification'
@@ -1149,7 +2823,9 @@ namespace BoschSHC\Services
                     true   => 'ENABLED',
                     false  => 'DISABLED',
                 ],
-                IPSProfile   => '~Switch',
+                IPSPresentation   => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType   => VARIABLETYPE_BOOLEAN,
                 IPSVarAction => true,
                 IPSVarName   => 'Arm/Disarm push notification'
@@ -1160,15 +2836,49 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'displayBrightness' => [
-                'type'       => 'number',
-                IPSProfile   => 'BSH.DisplayConfiguration.displayBrightness',
+                'type'                   => 'number',
+                IPSPresentation          => [
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_SLIDER,
+                    'DIGITS'              => 0,
+                    'CUSTOM_GRADIENT'     => '[]',
+                    'ICON'                => 'brightness',
+                    'DECIMAL_SEPARATOR'   => '',
+                    'GRADIENT_TYPE'       => 0,
+                    'MAX'                 => 100,
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MIN'                 => 10,
+                    'PERCENTAGE'          => false,
+                    'PREFIX'              => '',
+                    'STEP_SIZE'           => 10,
+                    'SUFFIX'              => ' %',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 5,
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Display brightness'
             ],
             'displayOnTime' => [
-                'type'       => 'number',
-                IPSProfile   => 'BSH.DisplayConfiguration.displayOnTime',
+                'type'                   => 'number',
+                IPSPresentation          => [
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_SLIDER,
+                    'DIGITS'              => 0,
+                    'CUSTOM_GRADIENT'     => '[]',
+                    'ICON'                => 'display-slash',
+                    'DECIMAL_SEPARATOR'   => '',
+                    'GRADIENT_TYPE'       => 0,
+                    'MAX'                 => 30,
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MIN'                 => 5,
+                    'PERCENTAGE'          => false,
+                    'PREFIX'              => '',
+                    'STEP_SIZE'           => 5,
+                    'SUFFIX'              => ' s',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 5,
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Display on time'
@@ -1179,8 +2889,27 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'offset' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.TemperatureOffset.offset',
+                'type'          => 'string',
+                IPSPresentation => [
+
+                    'DIGITS'              => 1,
+                    'CUSTOM_GRADIENT'     => '[]',
+                    'ICON'                => 'temperature-half',
+                    'DECIMAL_SEPARATOR'   => 'Client',
+                    'GRADIENT_TYPE'       => 1,
+                    'MAX'                 => 5,
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_SLIDER,
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MIN'                 => -5,
+                    'PERCENTAGE'          => false,
+                    'PREFIX'              => '',
+                    'STEP_SIZE'           => 0.1,
+                    'SUFFIX'              => ' °C',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 0,
+
+                ],
                 IPSVarType   => VARIABLETYPE_FLOAT,
                 IPSVarAction => true,
                 IPSVarName   => 'Temperature offset'
@@ -1194,8 +2923,44 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'type' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.TerminalConfiguration.type',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'OUTDOOR_SENSOR_CONNECTED',
+                            'Caption'          => 'outdoor sensor connected',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'FLOOR_SENSOR_DISPLAYED_AND_USED_FOR_REGULATION',
+                            'Caption'          => 'floor sensor (displayed & used)',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'FLOOR_SENSOR_DISPLAYED',
+                            'Caption'          => 'floor sensor displayed',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => 'NOT_CONNECTED',
+                            'Caption'          => 'not connected',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => false,
+                            'ColorValue'       => -1
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Terminal configuration'
             ]
@@ -1210,7 +2975,9 @@ namespace BoschSHC\Services
                     true   => 'ON',
                     false  => 'OFF',
                 ],
-                IPSProfile               => '~Switch',
+                IPSPresentation          => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType               => VARIABLETYPE_BOOLEAN,
                 IPSVarAction             => true,
                 IPSVarName               => 'Child lock',
@@ -1227,7 +2994,9 @@ namespace BoschSHC\Services
                     true   => 'BYPASS_ACTIVE',
                     false  => 'BYPASS_INACTIVE',
                 ],
-                IPSProfile              => '~Switch',
+                IPSPresentation         => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH
+                ],
                 IPSVarType              => VARIABLETYPE_BOOLEAN,
                 IPSVarAction            => true,
                 IPSVarName              => 'Bypass'
@@ -1243,7 +3012,27 @@ namespace BoschSHC\Services
                     true   => 'VIBRATION',
                     false  => 'NO_VIBRATION',
                 ],
-                IPSProfile              => '~Alert',
+                IPSPresentation         => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => false,
+                            'Caption'          => 'off',
+                            'IconActive'       => true,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => -1
+                        ],
+                        [
+                            'Value'            => true,
+                            'Caption'          => 'alarm',
+                            'IconActive'       => true,
+                            'IconValue'        => 'warning',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xf22626
+                        ]
+                    ]
+                ],
                 IPSVarType              => VARIABLETYPE_BOOLEAN,
                 IPSVarName              => 'Vibration sensor'
             ]
@@ -1253,8 +3042,52 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'value' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.SurveillanceAlarm.value',
+                'type'                  => 'string',
+                IPSPresentation         => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'            => 'ALARM_ON',
+                            'Caption'          => 'on',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xff0000
+                        ],
+                        [
+                            'Value'            => 'ALARM_OFF',
+                            'Caption'          => 'off',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x00ff00
+                        ],
+                        [
+                            'Value'            => 'ALARM_MUTED',
+                            'Caption'          => 'muted',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x0000ff
+                        ],
+                        [
+                            'Value'            => 'PRE_ALARM',
+                            'Caption'          => 'Pre-alarm',
+                            'IconActive'       => false,
+                            'IconValue'        => '',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0x900000
+                        ],
+                        [
+                            'Value'            => 'UNKNOWN',
+                            'Caption'          => 'unknown',
+                            'IconActive'       => true,
+                            'IconValue'        => 'question',
+                            'ColorActive'      => true,
+                            'ColorValue'       => 0xffff00
+                        ]
+                    ]
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarName   => 'Surveillance alarm status'
             ]
@@ -1264,39 +3097,140 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'value' => [
-                'type'       => 'string',
-                IPSProfile   => 'BSH.IntrusionDetectionControl.value',
+                'type'          => 'string',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 'SYSTEM_ARMING',
+                            'Caption'     => 'is arming',
+                            'IconActive'  => true,
+                            'IconValue'   => 'shield',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x900000
+                        ],
+                        [
+                            'Value'       => 'SYSTEM_ARMED',
+                            'Caption'     => 'armed',
+                            'IconActive'  => true,
+                            'IconValue'   => 'shield-check',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000
+                        ],
+                        [
+                            'Value'       => 'SYSTEM_DISARMED',
+                            'Caption'     => 'disarmed',
+                            'IconActive'  => true,
+                            'IconValue'   => 'shield-xmark',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
+                        ],
+                        [
+                            'Value'       => 'MUTE_ALARM',
+                            'Caption'     => 'muted',
+                            'IconActive'  => true,
+                            'IconValue'   => 'shield-slash',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x0000ff
+                        ]
+                    ]
+
+                ],
                 IPSVarType   => VARIABLETYPE_STRING,
                 IPSVarAction => true,
                 IPSVarName   => 'Control'
             ],
             'activeProfile'           => [
-                'type'       => 'number',
-                IPSProfile   => 'BSH.IntrusionDetectionControl.activeProfile',
+                'type'          => 'number',
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'OPTIONS'      => [
+                        [
+                            'Value'       => 0,
+                            'Caption'     => 'full protection',
+                            'IconActive'  => true,
+                            'IconValue'   => 'shield',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 1,
+                            'Caption'     => 'partial protection',
+                            'IconActive'  => true,
+                            'IconValue'   => 'shield-halved',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ],
+                        [
+                            'Value'       => 2,
+                            'Caption'     => 'customized protection',
+                            'IconActive'  => true,
+                            'IconValue'   => 'shield-quartered',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
+                        ]
+                    ]
+
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Active profile'
             ],
             'armActivationDelayTime'  => [
-                'type'       => 'number',
-                IPSProfile   => 'BSH.IntrusionDetectionControl.DelayTime',
+                'type'                   => 'number',
+                IPSPresentation          => [
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_SLIDER,
+                    'DIGITS'              => 0,
+                    'CUSTOM_GRADIENT'     => '[]',
+                    'ICON'                => 'timer',
+                    'DECIMAL_SEPARATOR'   => '',
+                    'GRADIENT_TYPE'       => 0,
+                    'MAX'                 => 600,
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MIN'                 => 0,
+                    'PERCENTAGE'          => false,
+                    'PREFIX'              => '',
+                    'STEP_SIZE'           => 1,
+                    'SUFFIX'              => ' s',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 5,
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Activation delay time'
             ],
-            'alarmActivationDelayTime'=> [
-                'type'       => 'number',
-                IPSProfile   => 'BSH.IntrusionDetectionControl.DelayTime',
+            'alarmActivationDelayTime' => [
+                'type'                   => 'number',
+                IPSPresentation          => [
+                    'PRESENTATION'        => VARIABLE_PRESENTATION_SLIDER,
+                    'DIGITS'              => 0,
+                    'CUSTOM_GRADIENT'     => '[]',
+                    'ICON'                => 'timer',
+                    'DECIMAL_SEPARATOR'   => '',
+                    'GRADIENT_TYPE'       => 0,
+                    'MAX'                 => 600,
+                    'INTERVALS'           => '[]',
+                    'INTERVALS_ACTIVE'    => false,
+                    'MIN'                 => 0,
+                    'PERCENTAGE'          => false,
+                    'PREFIX'              => '',
+                    'STEP_SIZE'           => 1,
+                    'SUFFIX'              => ' s',
+                    'THOUSANDS_SEPARATOR' => '',
+                    'USAGE_TYPE'          => 5,
+                ],
                 IPSVarType   => VARIABLETYPE_INTEGER,
                 IPSVarAction => true,
                 IPSVarName   => 'Alarm delay time'
             ],
-            'remainingTimeUntilArmed'=> [
-                'type'       => 'number',
-                IPSVarFactor => 1000,
-                IPSProfile   => 'BSH.IntrusionDetectionControl.DelayTime',
-                IPSVarType   => VARIABLETYPE_INTEGER,
-                IPSVarAction => false,
+            'remainingTimeUntilArmed' => [
+                'type'          => 'number',
+                IPSVarFactor    => 1000,
+                IPSVarType      => VARIABLETYPE_INTEGER,
+                IPSPresentation => [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_DURATION
+                ],
                 IPSVarName   => 'Remaining until armed'
             ],
         ];
@@ -1318,499 +3252,49 @@ namespace BoschSHC\Services
     {
     }
     /**
-     * @method void RegisterProfileStringEx(string $Name, string $Icon, string $Prefix, string $Suffix, array $Associations)
-     * @method void RegisterProfileFloat(string $Name, string $Icon, string $Prefix, string $Suffix, float $MinValue, float $MaxValue, float $StepSize, int $Digits)
-     * @method void RegisterProfileInteger(string $Name, string $Icon, string $Prefix, string $Suffix, int $MinValue, int $MaxValue, int $StepSize)
-     * @method void RegisterProfileIntegerEx(string $Name, string $Icon, string $Prefix, string $Suffix, array $Associations, int $MaxValue = -1, float $StepSize = 0)
-     * @method string TranslateProfile(string $Text)
+     * @method void UnregisterProfile(string $Name)
      */
     trait IPSProfile
     {
-        protected function RegisterProfiles()
-        {
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\PowerSwitchConfiguration::getIPSProfile('stateAfterPowerOutage'),
-                '',
-                '',
-                '',
-                [
-                    ['OFF', $this->TranslateProfile('off'), '', -1],
-                    ['LAST_STATE', $this->TranslateProfile('laste state'), '', -1],
-                    ['ON', $this->TranslateProfile('on'), '', -1]
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\PowerSwitchProgram::getIPSProfile('operationMode'),
-                'Clock',
-                '',
-                '',
-                [
-                    ['MANUAL', $this->TranslateProfile('manual'), '', -1],
-                    ['SCHEDULE', $this->TranslateProfile('schedule'), '', -1]
-                ]
-            );
-            $this->RegisterProfileFloat(
-                \BoschSHC\Services\RoomClimateControl::getIPSProfile('setpointTemperature'),
-                'Temperature',
-                '',
-                ' °C',
-                5,
-                30,
-                0.5,
-                1
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\RoomClimateControl::getIPSProfile('operationMode'),
-                '',
-                '',
-                '',
-                [
-                    ['MANUAL', $this->TranslateProfile('manual'), '', -1],
-                    ['AUTOMATIC', $this->TranslateProfile('automatic'), '', -1],
-                    ['OFF', $this->TranslateProfile('off'), '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\RoomClimateControl::getIPSProfile('roomControlMode'),
-                '',
-                '',
-                '',
-                [
-                    ['OFF', $this->TranslateProfile('off'), '', -1],
-                    ['HEATING', $this->TranslateProfile('heating'), '', -1],
-                    ['COOLING', $this->TranslateProfile('cooling'), '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\HCWasher::getIPSProfile('operationState'),
-                'Menu',
-                '',
-                '',
-                [
-                    ['RUNNING', $this->TranslateProfile('running'), '', -1],
-                    ['END', $this->TranslateProfile('end'), '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\HCDishwasher::getIPSProfile('operationState'),
-                'Menu',
-                '',
-                '',
-                [
-                    ['RUNNING', $this->TranslateProfile('running'), '', -1],
-                    ['END', $this->TranslateProfile('end'), '', -1],
-                    ['STANDBY',  $this->TranslateProfile('standby'), '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\HCOven::getIPSProfile('operationState'),
-                'Menu',
-                '',
-                '',
-                [
-                    ['RUNNING', $this->TranslateProfile('running'), '', -1],
-                    ['END', $this->TranslateProfile('end'), '', -1],
-                    ['STANDBY',  $this->TranslateProfile('standby'), '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\ShutterControl::getIPSProfile('operationState'),
-                'Execute',
-                '',
-                '',
-                [
-                    ['STOPPED', $this->TranslateProfile('stopped'), '', -1],
-                    ['MOVING', $this->TranslateProfile('moving'), '', -1]
-                ]
-            );
-
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\SmokeDetectorCheck::getIPSProfile('value'),
-                'Alert',
-                '',
-                '',
-                [
-                    ['NONE', $this->TranslateProfile('no test'), '', -1],
-                    ['SMOKE_TEST_REQUESTED', $this->TranslateProfile('test requested'), '', -1],
-                    ['SMOKE_TEST_OK', $this->TranslateProfile('test ok'), '', -1],
-                    ['SMOKE_TEST_FAILED', $this->TranslateProfile('test failed'), '', -1],
-                    ['COMMUNICATION_TEST_SENT', $this->TranslateProfile('communication test sent'), '', -1],
-                    ['COMMUNICATION_TEST_OK', $this->TranslateProfile('communication test ok'), '', -1],
-                    ['COMMUNICATION_TEST_REQUESTED', $this->TranslateProfile('communication test requested'), '', -1]
-                ]
-            );
-
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\SmokeSensitivity::getIPSProfile('smokeSensitivity'),
-                'Alert',
-                '',
-                '',
-                [
-                    ['HIGH', $this->TranslateProfile('high'), '', -1],
-                    ['MIDDLE', $this->TranslateProfile('middle'), '', -1],
-                    ['LOW', $this->TranslateProfile('low'), '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
-                ]
-            );
-            $this->RegisterProfileStringEx( //todo
-                \BoschSHC\Services\ValveTappet::getIPSProfile('value'),
-                '',
-                '',
-                '',
-                [
-                    ['NO_AVAILABLE', 'NOT_AVAILABLE', '', -1],
-                    ['RUN_TO_START_POSITION', 'RUN_TO_START_POSITION', '', -1],
-                    ['START_POSITION_REQUESTED', 'START_POSITION_REQUESTED', '', -1],
-                    ['IN_START_POSITION', 'IN_START_POSITION', '', -1],
-                    ['VALVE_ADAPTION_REQUESTED', 'VALVE_ADAPTION_REQUESTED', '', -1],
-                    ['VALVE_ADAPTION_IN_PROGRESS', 'VALVE_ADAPTION_IN_PROGRESS', '', -1],
-                    ['VALVE_ADAPTION_SUCCESSFUL', 'VALVE_ADAPTION_SUCCESSFUL', '', -1],
-                    ['VALVE_TOO_TIGHT', 'VALVE_TOO_TIGHT', '', -1],
-                    ['RANGE_TOO_BIG', 'RANGE_TOO_BIG', '', -1],
-                    ['RANGE_TOO_SMALL', 'RANGE_TOO_SMALL', '', -1],
-                    ['ERROR', 'ERROR', '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
-                ]
-            );
-            $this->RegisterProfileStringEx( //todo
-                \BoschSHC\Services\AirQualityLevel::getIPSProfile('combinedRating'),
-                '',
-                '',
-                '',
-                [
-                    ['OK', 'OK', '', -1],
-                    ['COLD', 'COLD', '', -1],
-                    ['COLD_DRY', 'COLD_DRY', '', -1],
-                    ['COLD_HUMID', 'COLD_HUMID', '', -1],
-                    ['COLD_STUFFY', 'COLD_STUFFY', '', -1],
-                    ['COLD_DRY_STUFFY', 'COLD_DRY_STUFFY', '', -1],
-                    ['COLD_HUMID_STUFFY', 'COLD_HUMID_STUFFY', '', -1],
-                    ['LITTLE_COLD', 'LITTLE_COLD', '', -1],
-                    ['LITTLE_DRY', 'LITTLE_DRY', '', -1],
-                    ['LITTLE_HUMID', 'LITTLE_HUMID', '', -1],
-                    ['LITTLE_STUFFY', 'LITTLE_STUFFY', '', -1],
-                    ['LITTLE_WARM', 'LITTLE_WARM', '', -1],
-                    ['DRY', 'DRY', '', -1],
-                    ['DRY_STUFFY', 'DRY_STUFFY', '', -1],
-                    ['HUMID', 'HUMID', '', -1],
-                    ['HUMID_STUFFY', 'HUMID_STUFFY', '', -1],
-                    ['STUFFY', 'STUFFY', '', -1],
-                    ['WARM', 'WARM', '', -1],
-                    ['WARM_DRY', 'WARM_DRY', '', -1],
-                    ['WARM_HUMID', 'WARM_HUMID', '', -1],
-                    ['WARM_STUFFY', 'WARM_STUFFY', '', -1],
-                    ['WARM_HUMID_STUFFY', 'WARM_HUMID_STUFFY', '', -1],
-                    ['WARM_DRY_STUFFY', 'WARM_DRY_STUFFY', '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\AirQualityLevel::getIPSProfile('temperatureRating'),
-                '',
-                '',
-                '',
-                [
-                    ['GOOD', $this->TranslateProfile('good'), '', -1],
-                    ['MEDIUM', $this->TranslateProfile('medium'), '', -1],
-                    ['BAD', $this->TranslateProfile('bad'), '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\Keypad::getIPSProfile('keyName'),
-                'Execute',
-                '',
-                '',
-                [
-                    ['LOWER_BUTTON', $this->TranslateProfile('Lower button'), '', -1],
-                    ['UPPER_BUTTON', $this->TranslateProfile('Upper button'), '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\Keypad::getIPSProfile('eventType'),
-                'Execute',
-                '',
-                '',
-                [
-                    ['PRESS_SHORT', $this->TranslateProfile('short'), '', -1],
-                    ['PRESS_LONG', $this->TranslateProfile('long'), '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\BatteryLevel::getIPSProfile('batteryLevel'),
-                'Execute',
-                '',
-                '',
-                [
-                    ['OK', $this->TranslateProfile('ok'), '', -1],
-                    ['LOW_BATTERY', $this->TranslateProfile('low battery'), '', -1],
-                    ['CRITICAL_LOW', $this->TranslateProfile('critically low'), '', -1],
-                    ['CRITICALLY_LOW_BATTERY', $this->TranslateProfile('critically low battery'), '', -1],
-                    ['NOT_AVAILABLE', $this->TranslateProfile('not available'), '', -1],
-                ]
-            );
-            $this->RegisterProfileInteger(
-                \BoschSHC\Services\VentilationDelay::getIPSProfile('delay'),
-                'Clock',
-                '',
-                $this->TranslateProfile(' seconds'),
-                0,
-                3600,
-                1
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\HueBlinking::getIPSProfile('blinkingState'),
-                '',
-                '',
-                '',
-                [
-                    ['OFF', $this->TranslateProfile('off'), '', -1],
-                    ['ON', $this->TranslateProfile('on'), '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
-                ]
-            );
-            $this->RegisterProfileStringEx( //todo
-                \BoschSHC\Services\HueBridgeSearcher::getIPSProfile('searcherState'),
-                '',
-                '',
-                '',
-                [
-                    ['BRIDGE_SEARCH_REQUESTED', 'BRIDGE_SEARCH_REQUESTED', '', -1],
-                    ['BRIDGE_SEARCH_STARTED', 'BRIDGE_SEARCH_STARTED', '', -1],
-                    ['BRIDGES_FOUND', 'BRIDGES_FOUND', '', -1],
-                    ['NO_BRIDGE_FOUND', 'NO_BRIDGE_FOUND', '', -1],
-                    ['ERROR', 'ERROR', '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\CommunicationQuality::getIPSProfile('quality'),
-                '',
-                '',
-                '',
-                [
-                    ['GOOD', $this->TranslateProfile('good'), '', -1],
-                    ['BAD', $this->TranslateProfile('bad'), '', -1],
-                    ['NORMAL', $this->TranslateProfile('normal'), '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
-                    ['FETCHING', $this->TranslateProfile('fetching'), '', -1]
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\MultiswitchConfiguration::getIPSProfile('updateState'),
-                '',
-                '',
-                '',
-                [
-                    ['UPDATING', $this->TranslateProfile('updating'), '', -1],
-                    ['UP_TO_DATE', $this->TranslateProfile('up to date'), '', -1],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\WalkTest::getIPSProfile('walkState'),
-                '',
-                '',
-                '',
-                [
-                    ['WALK_TEST_STARTED', $this->TranslateProfile('started'), '', -1],
-                    ['WALK_TEST_STOPPED', $this->TranslateProfile('stopped'), '', -1],
-                    ['WALK_TEST_UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\DoorSensor::getIPSProfile('doorState'),
-                '',
-                '',
-                '',
-                [
-                    ['DOOR_CLOSED', $this->TranslateProfile('closed'), '', -1],
-                    ['DOOR_OPEN', $this->TranslateProfile('open'), '', -1],
-                    ['DOOR_UNKNOWN', $this->TranslateProfile('unknown'), '', -1]
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\LockActuator::getIPSProfile('lockState'),
-                '',
-                '',
-                '',
-                [
-                    ['UNLOCKED', $this->TranslateProfile('unlocked'), '', -1],
-                    ['LOCKED', $this->TranslateProfile('locked'), '', -1],
-                    ['LOCKING', $this->TranslateProfile('locking'), '', -1],
-                    ['UNLOCKING', $this->TranslateProfile('unlocking'), '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\WaterAlarmSystem::getIPSProfile('state'),
-                'Alert',
-                '',
-                '',
-                [
-                    ['ALARM_OFF', $this->TranslateProfile('off'), '', -1],
-                    ['WATER_ALARM', $this->TranslateProfile('alarm'), '', -1],
-                    ['ALARM_MUTED', $this->TranslateProfile('muted'), '', -1]
-                ]
-            );
-            $this->RegisterProfileIntegerEx(
-                \BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'),
-                '',
-                '',
-                '',
-                [
-                    [0, $this->TranslateProfile('Execute'), '', -1]
-                ]
-            );
-            $this->RegisterProfileIntegerEx(
-                'BSH.Scenario.Trigger',
-                '',
-                '',
-                '',
-                [
-                    [0, $this->TranslateProfile('Execute'), '', -1]
-                ]
-            );
-            $this->RegisterProfileInteger(
-                \BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayBrightness'),
-                '',
-                '',
-                ' %',
-                10,
-                100,
-                10
-            );
-            $this->RegisterProfileInteger(
-                \BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayOnTime'),
-                '',
-                '',
-                $this->TranslateProfile(' seconds'),
-                5,
-                30,
-                5
-            );
-            $this->RegisterProfileFloat(
-                \BoschSHC\Services\TemperatureOffset::getIPSProfile('offset'),
-                '',
-                '',
-                '',
-                -5,
-                5,
-                0.1,
-                1
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\TerminalConfiguration::getIPSProfile('type'),
-                '',
-                '',
-                '',
-                [
-                    ['OUTDOOR_SENSOR_CONNECTED', $this->TranslateProfile('outdoor sensor connected'), '', -1],
-                    ['FLOOR_SENSOR_DISPLAYED_AND_USED_FOR_REGULATION', $this->TranslateProfile('floor sensor (displayed & used)'), '', -1],
-                    ['FLOOR_SENSOR_DISPLAYED', $this->TranslateProfile('floor sensor displayed'), '', -1],
-                    ['NOT_CONNECTED', $this->TranslateProfile('not connected'), '', -1]
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\SoftwareUpdate::getIPSProfile('swUpdateState'),
-                '',
-                '',
-                '',
-                [
-                    ['NO_UPDATE_AVAILABLE', $this->TranslateProfile('no update available'), '', -1],
-                    ['UPDATE_IN_PROGRESS', $this->TranslateProfile('update in progress'), '', -1],
-                    ['UPDATE_AVAILABLE', $this->TranslateProfile('update available'), '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\SurveillanceAlarm::getIPSProfile('value'),
-                '',
-                '',
-                '',
-                [
-                    ['ALARM_ON', $this->TranslateProfile('on'), '', 0xff0000],
-                    ['ALARM_OFF', $this->TranslateProfile('off'), '', 0x00ff00],
-                    ['ALARM_MUTED', $this->TranslateProfile('muted'), '', 0x0000ff],
-                    ['PRE_ALARM', $this->TranslateProfile('Pre-alarm'), '', 0x900000],
-                    ['UNKNOWN', $this->TranslateProfile('unknown'), '', -1],
-                ]
-            );
-            $this->RegisterProfileStringEx(
-                \BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('value'),
-                '',
-                '',
-                '',
-                [
-                    ['SYSTEM_ARMING', $this->TranslateProfile('is arming'), '', 0x900000],
-                    ['SYSTEM_ARMED', $this->TranslateProfile('armed'), '', 0xff0000],
-                    ['SYSTEM_DISARMED', $this->TranslateProfile('disarmed'), '', 0x00ff00],
-                    ['MUTE_ALARM', $this->TranslateProfile('muted'), '', 0x0000ff]
-                ]
-            );
-            $this->RegisterProfileIntegerEx(
-                \BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('activeProfile'),
-                '',
-                '',
-                '',
-                [
-                    [0, $this->TranslateProfile('full protection'), '', -1],
-                    [1, $this->TranslateProfile('partial protection'), '', -1],
-                    [2, $this->TranslateProfile('customized protection'), '', -1]
-                ]
-            );
-            $this->RegisterProfileInteger(
-                \BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('alarmActivationDelayTime'),
-                'Clock',
-                '',
-                $this->TranslateProfile(' seconds'),
-                0,
-                600,
-                1
-            );
-        }
         protected function UnregisterProfiles()
         {
-            $this->UnregisterProfile(\BoschSHC\Services\PowerSwitchConfiguration::getIPSProfile('stateAfterPowerOutage'));
-            $this->UnregisterProfile(\BoschSHC\Services\PowerSwitchProgram::getIPSProfile('operationMode'));
-            $this->UnregisterProfile(\BoschSHC\Services\RoomClimateControl::getIPSProfile('setpointTemperature'));
-            $this->UnregisterProfile(\BoschSHC\Services\RoomClimateControl::getIPSProfile('operationMode'));
-            $this->UnregisterProfile(\BoschSHC\Services\RoomClimateControl::getIPSProfile('roomControlMode'));
-            $this->UnregisterProfile(\BoschSHC\Services\HCWasher::getIPSProfile('operationState'));
-            $this->UnregisterProfile(\BoschSHC\Services\HCDishwasher::getIPSProfile('operationState'));
-            $this->UnregisterProfile(\BoschSHC\Services\HCOven::getIPSProfile('operationState'));
-            $this->UnregisterProfile(\BoschSHC\Services\ShutterControl::getIPSProfile('operationState'));
-            $this->UnregisterProfile(\BoschSHC\Services\SmokeDetectorCheck::getIPSProfile('value'));
-            $this->UnregisterProfile(\BoschSHC\Services\SmokeSensitivity::getIPSProfile('smokeSensitivity'));
-            $this->UnregisterProfile(\BoschSHC\Services\ValveTappet::getIPSProfile('value'));
-            $this->UnregisterProfile(\BoschSHC\Services\AirQualityLevel::getIPSProfile('combinedRating'));
-            $this->UnregisterProfile(\BoschSHC\Services\AirQualityLevel::getIPSProfile('temperatureRating'));
-            $this->UnregisterProfile(\BoschSHC\Services\Keypad::getIPSProfile('keyName'));
-            $this->UnregisterProfile(\BoschSHC\Services\Keypad::getIPSProfile('eventType'));
-            $this->UnregisterProfile(\BoschSHC\Services\BatteryLevel::getIPSProfile('batteryLevel'));
-            $this->UnregisterProfile(\BoschSHC\Services\VentilationDelay::getIPSProfile('delay'));
-            $this->UnregisterProfile(\BoschSHC\Services\HueBlinking::getIPSProfile('blinkingState'));
-            $this->UnregisterProfile(\BoschSHC\Services\HueBridgeSearcher::getIPSProfile('searcherState'));
-            $this->UnregisterProfile(\BoschSHC\Services\CommunicationQuality::getIPSProfile('quality'));
-            $this->UnregisterProfile(\BoschSHC\Services\MultiswitchConfiguration::getIPSProfile('updateState'));
-            $this->UnregisterProfile(\BoschSHC\Services\WalkTest::getIPSProfile('walkState'));
-            $this->UnregisterProfile(\BoschSHC\Services\DoorSensor::getIPSProfile('doorState'));
-            $this->UnregisterProfile(\BoschSHC\Services\LockActuator::getIPSProfile('lockState'));
-            $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('state'));
-            $this->UnregisterProfile(\BoschSHC\Services\WaterAlarmSystem::getIPSProfile('mute'));
+            $this->UnregisterProfile('BSH.PowerSwitchConfiguration.stateAfterPowerOutage');
+            $this->UnregisterProfile('BSH.PowerSwitchProgram.operationMode');
+            $this->UnregisterProfile('BSH.RoomClimateControl.setpointTemperature');
+            $this->UnregisterProfile('BSH.RoomClimateControl.operationMode');
+            $this->UnregisterProfile('BSH.RoomClimateControl.roomControlMode');
+            $this->UnregisterProfile('BSH.HCWasher.operationState');
+            $this->UnregisterProfile('BSH.HCDishwasher.operationState');
+            $this->UnregisterProfile('BSH.HCOven.operationState');
+            $this->UnregisterProfile('BSH.ShutterControl.operationState');
+            $this->UnregisterProfile('BSH.SmokeDetectorCheck.value');
+            $this->UnregisterProfile('BSH.SmokeSensitivity.smokeSensitivity');
+            $this->UnregisterProfile('BSH.ValveTappet.value');
+            $this->UnregisterProfile('BSH.AirQualityLevel.combinedRating');
+            $this->UnregisterProfile('BSH.AirQualityLevel.temperatureRating');
+            $this->UnregisterProfile('BSH.Keypad.keyName');
+            $this->UnregisterProfile('BSH.Keypad.eventType');
+            $this->UnregisterProfile('BSH.BatteryLevel.batteryLevel');
+            $this->UnregisterProfile('BSH.VentilationDelay.delay');
+            $this->UnregisterProfile('BSH.HueBlinking.blinkingState');
+            $this->UnregisterProfile('BSH.HueBridgeSearcher.searcherState');
+            $this->UnregisterProfile('BSH.CommunicationQuality.quality');
+            $this->UnregisterProfile('BSH.MultiswitchConfiguration.updateState');
+            $this->UnregisterProfile('BSH.WalkTest.walkState');
+            $this->UnregisterProfile('BSH.DoorSensor.doorState');
+            $this->UnregisterProfile('BSH.LockActuator.lockState');
+            $this->UnregisterProfile('BSH.WaterAlarmSystem.state');
+            $this->UnregisterProfile('BSH.WaterAlarmSystem.mute');
             $this->UnregisterProfile('BSH.Scenario.Trigger');
-            $this->UnregisterProfile(\BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayBrightness'));
-            $this->UnregisterProfile(\BoschSHC\Services\DisplayConfiguration::getIPSProfile('displayOnTime'));
-            $this->UnregisterProfile(\BoschSHC\Services\TemperatureOffset::getIPSProfile('offset'));
-            $this->UnregisterProfile(\BoschSHC\Services\TerminalConfiguration::getIPSProfile('type'));
-            $this->UnregisterProfile(\BoschSHC\Services\SoftwareUpdate::getIPSProfile('swUpdateState'));
-            $this->UnregisterProfile(\BoschSHC\Services\SurveillanceAlarm::getIPSProfile('value'));
-            $this->UnregisterProfile(\BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('value'));
-            $this->UnregisterProfile(\BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('activeProfile'));
-            $this->UnregisterProfile(\BoschSHC\Services\IntrusionDetectionControl::getIPSProfile('alarmActivationDelayTime'));
+            $this->UnregisterProfile('BSH.SoftwareUpdate.swUpdateState');
+            $this->UnregisterProfile('BSH.DisplayConfiguration.displayBrightness');
+            $this->UnregisterProfile('BSH.DisplayConfiguration.displayOnTime');
+            $this->UnregisterProfile('BSH.TemperatureOffset.offset');
+            $this->UnregisterProfile('BSH.TerminalConfiguration.type');
+            $this->UnregisterProfile('BSH.SurveillanceAlarm.value');
+            $this->UnregisterProfile('BSH.IntrusionDetectionControl.value');
+            $this->UnregisterProfile('BSH.IntrusionDetectionControl.activeProfile');
+            $this->UnregisterProfile('BSH.IntrusionDetectionControl.DelayTime');
         }
     }
 }

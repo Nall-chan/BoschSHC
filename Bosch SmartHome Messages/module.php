@@ -99,11 +99,11 @@ class BoschSmartHomeMessages extends BSHCBasicClass
     {
         $Messages = $this->Multi_Messages;
         $EmptyTypes = [
-            'ERROR'      => 0,
-            'WARNING'    => 0,
-            'ALARM'      => 0,
-            'INFORMATION'=> 0,
-            'SW_UPDATE'  => 0
+            'ERROR'       => 0,
+            'WARNING'     => 0,
+            'ALARM'       => 0,
+            'INFORMATION' => 0,
+            'SW_UPDATE'   => 0
         ];
         $Types = array_count_values(array_column(array_column($Messages, 'messageCode'), 'category'));
         $Types = array_merge($EmptyTypes, $Types);

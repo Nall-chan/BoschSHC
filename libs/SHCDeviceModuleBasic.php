@@ -22,17 +22,10 @@ abstract class BSHCBasicClass extends IPSModuleStrict
         $this->ConnectParent(\BoschSHC\GUID::IO);
     }
 
-    public function Destroy(): void
-    {
-        //Never delete this line!
-        $this->UnregisterProfiles();
-        parent::Destroy();
-    }
-
     public function ApplyChanges(): void
     {
         //Never delete this line!
-        $this->RegisterProfiles();
+        $this->UnregisterProfiles();
         parent::ApplyChanges();
     }
 
@@ -45,30 +38,6 @@ abstract class BSHCBasicClass extends IPSModuleStrict
     }
 
     abstract public function RequestState(): bool;
-
-    protected function TranslateProfile(string $Text): string
-    {
-        $translation = $this->GetProfileTranslation();
-        $language = IPS_GetSystemLanguage();
-        $code = explode('_', $language)[0];
-        if (isset($translation['translations'])) {
-            if (isset($translation['translations'][$language])) {
-                if (isset($translation['translations'][$language][$Text])) {
-                    return $translation['translations'][$language][$Text];
-                }
-            } elseif (isset($translation['translations'][$code])) {
-                if (isset($translation['translations'][$code][$Text])) {
-                    return $translation['translations'][$code][$Text];
-                }
-            }
-        }
-        return $Text;
-    }
-
-    protected function GetProfileTranslation(): array
-    {
-        return json_decode(file_get_contents(__DIR__ . '/locale_profile.json'), true);
-    }
 
     protected function ModulErrorHandler(int $errno, string $errstr): bool
     {

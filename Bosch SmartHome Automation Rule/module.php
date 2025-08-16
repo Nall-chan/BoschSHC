@@ -33,7 +33,7 @@ class BoschSmartHomeAutomationRule extends BSHCBasicClass
             $VariableValues[\BoschSHC\Services\IPSVarIdent],
             $this->Translate($VariableValues[\BoschSHC\Services\IPSVarName]),
             $VariableValues[\BoschSHC\Services\IPSVarType],
-            $VariableValues[\BoschSHC\Services\IPSProfile],
+            $VariableValues[\BoschSHC\Services\IPSPresentation],
             0,
             true
         );
@@ -83,7 +83,7 @@ class BoschSmartHomeAutomationRule extends BSHCBasicClass
             $VariableValues[\BoschSHC\Services\IPSVarIdent],
             $this->Translate($VariableValues[\BoschSHC\Services\IPSVarName]),
             $VariableValues[\BoschSHC\Services\IPSVarType],
-            $VariableValues[\BoschSHC\Services\IPSProfile],
+            $VariableValues[\BoschSHC\Services\IPSPresentation],
             0,
             true
         );

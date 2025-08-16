@@ -32,7 +32,19 @@ class BoschSmartHomeScenarios extends BSHCBasicClass
             'trigger',
             $this->Translate('Start scenario'),
             VARIABLETYPE_INTEGER,
-            'BSH.Scenario.Trigger',
+            [
+                'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                'ICON'         => 'play',
+                'OPTIONS'      => json_encode([
+                    [
+                        'Value'      => 0,
+                        'Caption'    => \BoschSHC\Services\ServiceBasics::TranslatePresentationValue('Execute'),
+                        'ColorValue' => 0x3485EA,
+                        'IconActive' => false,
+                        'IconValue'  => ''
+                    ]
+                ])
+            ],
             0,
             true
         );
@@ -41,7 +53,13 @@ class BoschSmartHomeScenarios extends BSHCBasicClass
             'lastExecute',
             $this->Translate('Last execute time'),
             VARIABLETYPE_INTEGER,
-            '~UnixTimestamp',
+            [
+                'PRESENTATION'    => VARIABLE_PRESENTATION_DATE_TIME,
+                'MONTH_TEXT'      => false,
+                'DAY_OF_THE_WEEK' => false,
+                'DATE'            => 2,
+                'TIME'            => 1
+            ],
             0,
             true
         );
