@@ -777,20 +777,20 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => false,
-                            'Caption'          => 'open',
-                            'IconActive'       => true,
-                            'IconValue'        => 'window-left-open-right-open',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x0000ff
+                            'Value'       => false,
+                            'Caption'     => 'open',
+                            'IconActive'  => true,
+                            'IconValue'   => 'window-left-open-right-open',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x0000ff
                         ],
                         [
-                            'Value'            => true,
-                            'Caption'          => 'closed',
-                            'IconActive'       => true,
-                            'IconValue'        => 'window-left-closed-right-closed',
-                            'ColorActive'      => true,
-                            'ColorValue'       => -1
+                            'Value'       => true,
+                            'Caption'     => 'closed',
+                            'IconActive'  => true,
+                            'IconValue'   => 'window-left-closed-right-closed',
+                            'ColorActive' => true,
+                            'ColorValue'  => -1
                         ]
                     ]
                 ],
@@ -819,28 +819,28 @@ namespace BoschSHC\Services
                     'ICON'         => 'washing-machine',
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'RUNNING',
-                            'Caption'          => 'running',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00ff00
+                            'Value'       => 'RUNNING',
+                            'Caption'     => 'running',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
                         ],
                         [
-                            'Value'            => 'END',
-                            'Caption'          => 'end',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x0000ff
+                            'Value'       => 'END',
+                            'Caption'     => 'end',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x0000ff
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -853,20 +853,20 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => false,
-                            'Caption'          => 'off',
-                            'IconActive'       => true,
-                            'IconValue'        => 'xmark',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xff0000
+                            'Value'       => false,
+                            'Caption'     => 'off',
+                            'IconActive'  => true,
+                            'IconValue'   => 'xmark',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000
                         ],
                         [
-                            'Value'            => true,
-                            'Caption'          => 'on',
-                            'IconActive'       => true,
-                            'IconValue'        => 'check',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00ff00
+                            'Value'       => true,
+                            'Caption'     => 'on',
+                            'IconActive'  => true,
+                            'IconValue'   => 'check',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
                         ]
                     ]
                 ],
@@ -885,36 +885,36 @@ namespace BoschSHC\Services
                     'ICON'         => 'utensils',
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'RUNNING',
-                            'Caption'          => 'running',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00ff00
+                            'Value'       => 'RUNNING',
+                            'Caption'     => 'running',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
                         ],
                         [
-                            'Value'            => 'END',
-                            'Caption'          => 'end',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x0000ff
+                            'Value'       => 'END',
+                            'Caption'     => 'end',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x0000ff
                         ],
                         [
-                            'Value'            => 'STANDBY',
-                            'Caption'          => 'standby',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xF48D43
+                            'Value'       => 'STANDBY',
+                            'Caption'     => 'standby',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xF48D43
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -927,20 +927,20 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => false,
-                            'Caption'          => 'off',
-                            'IconActive'       => true,
-                            'IconValue'        => 'xmark',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xff0000
+                            'Value'       => false,
+                            'Caption'     => 'off',
+                            'IconActive'  => true,
+                            'IconValue'   => 'xmark',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000
                         ],
                         [
-                            'Value'            => true,
-                            'Caption'          => 'on',
-                            'IconActive'       => true,
-                            'IconValue'        => 'check',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00ff00
+                            'Value'       => true,
+                            'Caption'     => 'on',
+                            'IconActive'  => true,
+                            'IconValue'   => 'check',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
                         ]
                     ]
                 ],
@@ -959,36 +959,36 @@ namespace BoschSHC\Services
                     'ICON'         => 'oven',
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'RUNNING',
-                            'Caption'          => 'running',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00ff00
+                            'Value'       => 'RUNNING',
+                            'Caption'     => 'running',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
                         ],
                         [
-                            'Value'            => 'END',
-                            'Caption'          => 'end',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x0000ff
+                            'Value'       => 'END',
+                            'Caption'     => 'end',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x0000ff
                         ],
                         [
-                            'Value'            => 'STANDBY',
-                            'Caption'          => 'standby',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xF48D43
+                            'Value'       => 'STANDBY',
+                            'Caption'     => 'standby',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xF48D43
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -1001,20 +1001,20 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => false,
-                            'Caption'          => 'off',
-                            'IconActive'       => true,
-                            'IconValue'        => 'xmark',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xff0000
+                            'Value'       => false,
+                            'Caption'     => 'off',
+                            'IconActive'  => true,
+                            'IconValue'   => 'xmark',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000
                         ],
                         [
-                            'Value'            => true,
-                            'Caption'          => 'on',
-                            'IconActive'       => true,
-                            'IconValue'        => 'check',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00ff00
+                            'Value'       => true,
+                            'Caption'     => 'on',
+                            'IconActive'  => true,
+                            'IconValue'   => 'check',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
                         ]
                     ]
                 ],
@@ -1241,7 +1241,7 @@ namespace BoschSHC\Services
                 IPSVarName   => 'Valve position'
             ],
             'value' => [
-                'type'          => 'string',
+                'type' => 'string',
                 /**
                  * @todo Übersetzungen fehlen
                  */
@@ -1249,100 +1249,100 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'NO_AVAILABLE',
-                            'Caption'          => 'NOT_AVAILABLE',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'NO_AVAILABLE',
+                            'Caption'     => 'NOT_AVAILABLE',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'RUN_TO_START_POSITION',
-                            'Caption'          => 'RUN_TO_START_POSITION',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'RUN_TO_START_POSITION',
+                            'Caption'     => 'RUN_TO_START_POSITION',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'START_POSITION_REQUESTED',
-                            'Caption'          => 'START_POSITION_REQUESTED',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'START_POSITION_REQUESTED',
+                            'Caption'     => 'START_POSITION_REQUESTED',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'IN_START_POSITION',
-                            'Caption'          => 'IN_START_POSITION',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'IN_START_POSITION',
+                            'Caption'     => 'IN_START_POSITION',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'VALVE_ADAPTION_REQUESTED',
-                            'Caption'          => 'VALVE_ADAPTION_REQUESTED',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'VALVE_ADAPTION_REQUESTED',
+                            'Caption'     => 'VALVE_ADAPTION_REQUESTED',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'VALVE_ADAPTION_IN_PROGRESS',
-                            'Caption'          => 'VALVE_ADAPTION_IN_PROGRESS',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'VALVE_ADAPTION_IN_PROGRESS',
+                            'Caption'     => 'VALVE_ADAPTION_IN_PROGRESS',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'VALVE_ADAPTION_SUCCESSFUL',
-                            'Caption'          => 'VALVE_ADAPTION_SUCCESSFUL',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'VALVE_ADAPTION_SUCCESSFUL',
+                            'Caption'     => 'VALVE_ADAPTION_SUCCESSFUL',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'VALVE_TOO_TIGHT',
-                            'Caption'          => 'VALVE_TOO_TIGHT',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'VALVE_TOO_TIGHT',
+                            'Caption'     => 'VALVE_TOO_TIGHT',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'RANGE_TOO_BIG',
-                            'Caption'          => 'RANGE_TOO_BIG',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'RANGE_TOO_BIG',
+                            'Caption'     => 'RANGE_TOO_BIG',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'RANGE_TOO_SMALL',
-                            'Caption'          => 'RANGE_TOO_SMALL',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'RANGE_TOO_SMALL',
+                            'Caption'     => 'RANGE_TOO_SMALL',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'ERROR',
-                            'Caption'          => 'ERROR',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'ERROR',
+                            'Caption'     => 'ERROR',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'UNKNOWN',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'UNKNOWN',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -1357,7 +1357,7 @@ namespace BoschSHC\Services
         // "purityRating":"GOOD","temperature":23.77,"description":"LITTLE_DRY","humidity":32.69,"combinedRating":"MEDIUM"}
         protected static $properties = [
             'combinedRating' => [
-                'type'       => 'string',
+                'type' => 'string',
                 /**
                  * @todo Übersetzung fehlt
                  */
@@ -1365,196 +1365,196 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'OK',
-                            'Caption'          => 'OK',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'OK',
+                            'Caption'     => 'OK',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'COLD',
-                            'Caption'          => 'COLD',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'COLD',
+                            'Caption'     => 'COLD',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'COLD_DRY',
-                            'Caption'          => 'COLD_DRY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'COLD_DRY',
+                            'Caption'     => 'COLD_DRY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'COLD_HUMID',
-                            'Caption'          => 'COLD_HUMID',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'COLD_HUMID',
+                            'Caption'     => 'COLD_HUMID',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'COLD_STUFFY',
-                            'Caption'          => 'COLD_STUFFY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'COLD_STUFFY',
+                            'Caption'     => 'COLD_STUFFY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'COLD_DRY_STUFFY',
-                            'Caption'          => 'COLD_DRY_STUFFY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'COLD_DRY_STUFFY',
+                            'Caption'     => 'COLD_DRY_STUFFY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'COLD_HUMID_STUFFY',
-                            'Caption'          => 'COLD_HUMID_STUFFY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'COLD_HUMID_STUFFY',
+                            'Caption'     => 'COLD_HUMID_STUFFY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'LITTLE_COLD',
-                            'Caption'          => 'LITTLE_COLD',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'LITTLE_COLD',
+                            'Caption'     => 'LITTLE_COLD',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'LITTLE_DRY',
-                            'Caption'          => 'LITTLE_DRY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'LITTLE_DRY',
+                            'Caption'     => 'LITTLE_DRY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'LITTLE_HUMID',
-                            'Caption'          => 'LITTLE_HUMID',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'LITTLE_HUMID',
+                            'Caption'     => 'LITTLE_HUMID',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'LITTLE_STUFFY',
-                            'Caption'          => 'LITTLE_STUFFY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'LITTLE_STUFFY',
+                            'Caption'     => 'LITTLE_STUFFY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'LITTLE_WARM',
-                            'Caption'          => 'LITTLE_WARM',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'LITTLE_WARM',
+                            'Caption'     => 'LITTLE_WARM',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'DRY',
-                            'Caption'          => 'DRY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'DRY',
+                            'Caption'     => 'DRY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'DRY_STUFFY',
-                            'Caption'          => 'DRY_STUFFY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'DRY_STUFFY',
+                            'Caption'     => 'DRY_STUFFY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'HUMID',
-                            'Caption'          => 'HUMID',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'HUMID',
+                            'Caption'     => 'HUMID',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'HUMID_STUFFY',
-                            'Caption'          => 'HUMID_STUFFY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'HUMID_STUFFY',
+                            'Caption'     => 'HUMID_STUFFY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'STUFFY',
-                            'Caption'          => 'STUFFY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'STUFFY',
+                            'Caption'     => 'STUFFY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'WARM',
-                            'Caption'          => 'WARM',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'WARM',
+                            'Caption'     => 'WARM',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'WARM_DRY',
-                            'Caption'          => 'WARM_DRY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'WARM_DRY',
+                            'Caption'     => 'WARM_DRY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'WARM_HUMID',
-                            'Caption'          => 'WARM_HUMID',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'WARM_HUMID',
+                            'Caption'     => 'WARM_HUMID',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'WARM_STUFFY',
-                            'Caption'          => 'WARM_STUFFY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'WARM_STUFFY',
+                            'Caption'     => 'WARM_STUFFY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'WARM_HUMID_STUFFY',
-                            'Caption'          => 'WARM_HUMID_STUFFY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'WARM_HUMID_STUFFY',
+                            'Caption'     => 'WARM_HUMID_STUFFY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'WARM_DRY_STUFFY',
-                            'Caption'          => 'WARM_DRY_STUFFY',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'WARM_DRY_STUFFY',
+                            'Caption'     => 'WARM_DRY_STUFFY',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'UNKNOWN',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'UNKNOWN',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -1578,36 +1578,36 @@ namespace BoschSHC\Services
                     'ICON'         => 'temperature-half',
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'GOOD',
-                            'Caption'          => 'good',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00ff00
+                            'Value'       => 'GOOD',
+                            'Caption'     => 'good',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
                         ],
                         [
-                            'Value'            => 'MEDIUM',
-                            'Caption'          => 'medium',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00CDAB
+                            'Value'       => 'MEDIUM',
+                            'Caption'     => 'medium',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00CDAB
                         ],
                         [
-                            'Value'            => 'BAD',
-                            'Caption'          => 'bad',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xff0000
+                            'Value'       => 'BAD',
+                            'Caption'     => 'bad',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -1643,36 +1643,36 @@ namespace BoschSHC\Services
                     'ICON'         => 'droplet-degree',
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'GOOD',
-                            'Caption'          => 'good',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00ff00
+                            'Value'       => 'GOOD',
+                            'Caption'     => 'good',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
                         ],
                         [
-                            'Value'            => 'MEDIUM',
-                            'Caption'          => 'medium',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00CDAB
+                            'Value'       => 'MEDIUM',
+                            'Caption'     => 'medium',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00CDAB
                         ],
                         [
-                            'Value'            => 'BAD',
-                            'Caption'          => 'bad',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xff0000
+                            'Value'       => 'BAD',
+                            'Caption'     => 'bad',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -1708,36 +1708,36 @@ namespace BoschSHC\Services
                     'ICON'         => 'wind',
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'GOOD',
-                            'Caption'          => 'good',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00ff00
+                            'Value'       => 'GOOD',
+                            'Caption'     => 'good',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
                         ],
                         [
-                            'Value'            => 'MEDIUM',
-                            'Caption'          => 'medium',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00CDAB
+                            'Value'       => 'MEDIUM',
+                            'Caption'     => 'medium',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00CDAB
                         ],
                         [
-                            'Value'            => 'BAD',
-                            'Caption'          => 'bad',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xff0000
+                            'Value'       => 'BAD',
+                            'Caption'     => 'bad',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -1761,20 +1761,20 @@ namespace BoschSHC\Services
                     'ICON'         => 'hand-back-point-up',
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'LOWER_BUTTON',
-                            'Caption'          => 'Lower button',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'LOWER_BUTTON',
+                            'Caption'     => 'Lower button',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'UPPER_BUTTON',
-                            'Caption'          => 'Upper button',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'UPPER_BUTTON',
+                            'Caption'     => 'Upper button',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ]
                     ]
                 ],
@@ -1788,20 +1788,20 @@ namespace BoschSHC\Services
                     'ICON'         => 'hand-back-point-up',
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'PRESS_SHORT',
-                            'Caption'          => 'short',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'PRESS_SHORT',
+                            'Caption'     => 'short',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'PRESS_LONG',
-                            'Caption'          => 'long',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'PRESS_LONG',
+                            'Caption'     => 'long',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ]
                     ]
                 ],
@@ -1870,44 +1870,44 @@ namespace BoschSHC\Services
                     'ICON'         => 'hand-back-point-up',
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'OK',
-                            'Caption'          => 'ok',
-                            'IconActive'       => true,
-                            'IconValue'        => 'battery-bolt',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x22b934
+                            'Value'       => 'OK',
+                            'Caption'     => 'ok',
+                            'IconActive'  => true,
+                            'IconValue'   => 'battery-bolt',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x22b934
                         ],
                         [
-                            'Value'            => 'LOW_BATTERY',
-                            'Caption'          => 'low battery',
-                            'IconActive'       => true,
-                            'IconValue'        => 'battery-low',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xefff04
+                            'Value'       => 'LOW_BATTERY',
+                            'Caption'     => 'low battery',
+                            'IconActive'  => true,
+                            'IconValue'   => 'battery-low',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xefff04
                         ],
                         [
-                            'Value'            => 'CRITICAL_LOW',
-                            'Caption'          => 'critically low',
-                            'IconActive'       => true,
-                            'IconValue'        => 'battery-empty',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xff571f
+                            'Value'       => 'CRITICAL_LOW',
+                            'Caption'     => 'critically low',
+                            'IconActive'  => true,
+                            'IconValue'   => 'battery-empty',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff571f
                         ],
                         [
-                            'Value'            => 'CRITICALLY_LOW_BATTERY',
-                            'Caption'          => 'critically low battery',
-                            'IconActive'       => true,
-                            'IconValue'        => 'battery-exclamation',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xea1f1f
+                            'Value'       => 'CRITICALLY_LOW_BATTERY',
+                            'Caption'     => 'critically low battery',
+                            'IconActive'  => true,
+                            'IconValue'   => 'battery-exclamation',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xea1f1f
                         ],
                         [
-                            'Value'            => 'NOT_AVAILABLE',
-                            'Caption'          => 'not available',
-                            'IconActive'       => true,
-                            'IconValue'        => 'battery-slash',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xff0000
+                            'Value'       => 'NOT_AVAILABLE',
+                            'Caption'     => 'not available',
+                            'IconActive'  => true,
+                            'IconValue'   => 'battery-slash',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000
                         ]
                     ]
                 ],
@@ -2077,20 +2077,20 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => false,
-                            'Caption'          => 'enabled',
-                            'IconActive'       => true,
-                            'IconValue'        => 'xmark',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xff0000
+                            'Value'       => false,
+                            'Caption'     => 'enabled',
+                            'IconActive'  => true,
+                            'IconValue'   => 'xmark',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000
                         ],
                         [
-                            'Value'            => true,
-                            'Caption'          => 'disabled',
-                            'IconActive'       => true,
-                            'IconValue'        => 'check',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00ff00
+                            'Value'       => true,
+                            'Caption'     => 'disabled',
+                            'IconActive'  => true,
+                            'IconValue'   => 'check',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
                         ]
                     ]
                 ],
@@ -2143,7 +2143,7 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'searcherState' => [
-                'type'       => 'string',
+                'type' => 'string',
                 /**
                  * @todo Übersetzung fehlt
                  */
@@ -2151,52 +2151,52 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'BRIDGE_SEARCH_REQUESTED',
-                            'Caption'          => 'BRIDGE_SEARCH_REQUESTED',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'BRIDGE_SEARCH_REQUESTED',
+                            'Caption'     => 'BRIDGE_SEARCH_REQUESTED',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'BRIDGE_SEARCH_STARTED',
-                            'Caption'          => 'BRIDGE_SEARCH_STARTED',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'BRIDGE_SEARCH_STARTED',
+                            'Caption'     => 'BRIDGE_SEARCH_STARTED',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'BRIDGES_FOUND',
-                            'Caption'          => 'BRIDGES_FOUND',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'BRIDGES_FOUND',
+                            'Caption'     => 'BRIDGES_FOUND',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'NO_BRIDGE_FOUND',
-                            'Caption'          => 'NO_BRIDGE_FOUND',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'NO_BRIDGE_FOUND',
+                            'Caption'     => 'NO_BRIDGE_FOUND',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'ERROR',
-                            'Caption'          => 'ERROR',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'ERROR',
+                            'Caption'     => 'ERROR',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'UNKNOWN',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'UNKNOWN',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -2204,7 +2204,7 @@ namespace BoschSHC\Services
                 IPSVarName   => 'Searcher state'
             ],
             'value' => [
-                'type'       => 'string',
+                'type' => 'string',
                 /**
                  * @todo Übersetzung fehlt
                  */
@@ -2212,52 +2212,52 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'BRIDGE_SEARCH_REQUESTED',
-                            'Caption'          => 'BRIDGE_SEARCH_REQUESTED',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'BRIDGE_SEARCH_REQUESTED',
+                            'Caption'     => 'BRIDGE_SEARCH_REQUESTED',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'BRIDGE_SEARCH_STARTED',
-                            'Caption'          => 'BRIDGE_SEARCH_STARTED',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'BRIDGE_SEARCH_STARTED',
+                            'Caption'     => 'BRIDGE_SEARCH_STARTED',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'BRIDGES_FOUND',
-                            'Caption'          => 'BRIDGES_FOUND',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'BRIDGES_FOUND',
+                            'Caption'     => 'BRIDGES_FOUND',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'NO_BRIDGE_FOUND',
-                            'Caption'          => 'NO_BRIDGE_FOUND',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'NO_BRIDGE_FOUND',
+                            'Caption'     => 'NO_BRIDGE_FOUND',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'ERROR',
-                            'Caption'          => 'ERROR',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'ERROR',
+                            'Caption'     => 'ERROR',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'UNKNOWN',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'UNKNOWN',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -2285,44 +2285,44 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'GOOD',
-                            'Caption'          => 'good',
-                            'IconActive'       => true,
-                            'IconValue'        => 'signal-strong',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'GOOD',
+                            'Caption'     => 'good',
+                            'IconActive'  => true,
+                            'IconValue'   => 'signal-strong',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'BAD',
-                            'Caption'          => 'bad',
-                            'IconActive'       => true,
-                            'IconValue'        => 'signal-weak',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'BAD',
+                            'Caption'     => 'bad',
+                            'IconActive'  => true,
+                            'IconValue'   => 'signal-weak',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'NORMAL',
-                            'Caption'          => 'normal',
-                            'IconActive'       => true,
-                            'IconValue'        => 'signal-good',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'NORMAL',
+                            'Caption'     => 'normal',
+                            'IconActive'  => true,
+                            'IconValue'   => 'signal-good',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ],
                         [
-                            'Value'            => 'FETCHING',
-                            'Caption'          => 'fetching',
-                            'IconActive'       => true,
-                            'IconValue'        => 'rss',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'FETCHING',
+                            'Caption'     => 'fetching',
+                            'IconActive'  => true,
+                            'IconValue'   => 'rss',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ]
                     ]
                 ],
@@ -2340,28 +2340,28 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'UPDATING',
-                            'Caption'          => 'updating',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'UPDATING',
+                            'Caption'     => 'updating',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'UP_TO_DATE',
-                            'Caption'          => 'up to date',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'UP_TO_DATE',
+                            'Caption'     => 'up to date',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -2379,28 +2379,28 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'WALK_TEST_STARTED',
-                            'Caption'          => 'started',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'WALK_TEST_STARTED',
+                            'Caption'     => 'started',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'WALK_TEST_STOPPED',
-                            'Caption'          => 'stopped',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'WALK_TEST_STOPPED',
+                            'Caption'     => 'stopped',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'WALK_TEST_UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'WALK_TEST_UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -2413,28 +2413,28 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'WALK_TEST_STARTED',
-                            'Caption'          => 'started',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'WALK_TEST_STARTED',
+                            'Caption'     => 'started',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'WALK_TEST_STOPPED',
-                            'Caption'          => 'stopped',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'WALK_TEST_STOPPED',
+                            'Caption'     => 'stopped',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'WALK_TEST_UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'WALK_TEST_UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -2452,28 +2452,28 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'DOOR_CLOSED',
-                            'Caption'          => 'closed',
-                            'IconActive'       => true,
-                            'IconValue'        => 'door-closed',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'DOOR_CLOSED',
+                            'Caption'     => 'closed',
+                            'IconActive'  => true,
+                            'IconValue'   => 'door-closed',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'DOOR_OPEN',
-                            'Caption'          => 'open',
-                            'IconActive'       => true,
-                            'IconValue'        => 'door-open',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'DOOR_OPEN',
+                            'Caption'     => 'open',
+                            'IconActive'  => true,
+                            'IconValue'   => 'door-open',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'DOOR_UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'DOOR_UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -2534,8 +2534,8 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'value' => [
-                'type'       => 'string',
-                'enum'       => [
+                'type' => 'string',
+                'enum' => [
                     false => 'ENABLED',
                     true  => 'DISABLED',
                 ],
@@ -2560,8 +2560,8 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'state' => [
-                'type'       => 'string',
-                'enum'       => [
+                'type' => 'string',
+                'enum' => [
                     false => 'NO_LEAKAGE',
                     true  => 'LEAKAGE_DETECTED',
                 ],
@@ -2569,20 +2569,20 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => false,
-                            'Caption'          => 'off',
-                            'IconActive'       => true,
-                            'IconValue'        => 'droplet-slash',
-                            'ColorActive'      => true,
-                            'ColorValue'       => -1
+                            'Value'       => false,
+                            'Caption'     => 'off',
+                            'IconActive'  => true,
+                            'IconValue'   => 'droplet-slash',
+                            'ColorActive' => true,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => true,
-                            'Caption'          => 'alarm',
-                            'IconActive'       => true,
-                            'IconValue'        => 'droplet',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xf22626
+                            'Value'       => true,
+                            'Caption'     => 'alarm',
+                            'IconActive'  => true,
+                            'IconValue'   => 'droplet',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xf22626
                         ]
                     ]
                 ],
@@ -2608,8 +2608,8 @@ namespace BoschSHC\Services
     {
         protected static $properties = [
             'pushNotificationState' => [
-                'type'       => 'string',
-                'enum'       => [
+                'type' => 'string',
+                'enum' => [
                     true   => 'ENABLED',
                     false  => 'DISABLED',
                 ],
@@ -2621,8 +2621,8 @@ namespace BoschSHC\Services
                 IPSVarName   => 'Push notification state on tilt'
             ],
             'acousticSignalState' => [
-                'type'       => 'string',
-                'enum'       => [
+                'type' => 'string',
+                'enum' => [
                     true   => 'ENABLED',
                     false  => 'DISABLED',
                 ],
@@ -2644,28 +2644,28 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'ALARM_OFF',
-                            'Caption'          => 'off',
-                            'IconActive'       => true,
-                            'IconValue'        => 'droplet-slash',
-                            'ColorActive'      => true,
-                            'ColorValue'       => -1
+                            'Value'       => 'ALARM_OFF',
+                            'Caption'     => 'off',
+                            'IconActive'  => true,
+                            'IconValue'   => 'droplet-slash',
+                            'ColorActive' => true,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'WATER_ALARM',
-                            'Caption'          => 'alarm',
-                            'IconActive'       => true,
-                            'IconValue'        => 'droplet',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xf22626
+                            'Value'       => 'WATER_ALARM',
+                            'Caption'     => 'alarm',
+                            'IconActive'  => true,
+                            'IconValue'   => 'droplet',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xf22626
                         ],
                         [
-                            'Value'            => 'ALARM_MUTED',
-                            'Caption'          => 'muted',
-                            'IconActive'       => true,
-                            'IconValue'        => 'alarm-snooze',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xf2e126
+                            'Value'       => 'ALARM_MUTED',
+                            'Caption'     => 'muted',
+                            'IconActive'  => true,
+                            'IconValue'   => 'alarm-snooze',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xf2e126
                         ]
                     ]
                 ],
@@ -2679,11 +2679,12 @@ namespace BoschSHC\Services
                     'ICON'         => 'play',
                     'OPTIONS'      => [
                         [
-                            'Value'      => 0,
-                            'Caption'    => 'Execute',
-                            'ColorValue' => 0x3485EA,
-                            'IconActive' => false,
-                            'IconValue'  => ''
+                            'Value'       => 0,
+                            'Caption'     => 'Execute',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x3485EA,
+                            'IconActive'  => false,
+                            'IconValue'   => ''
                         ]
                     ]
                 ],
@@ -2720,28 +2721,28 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'NO_UPDATE_AVAILABLE',
-                            'Caption'          => 'no update available',
-                            'IconActive'       => true,
-                            'IconValue'        => 'shield-check',
-                            'ColorActive'      => true,
-                            'ColorValue'       => -1
+                            'Value'       => 'NO_UPDATE_AVAILABLE',
+                            'Caption'     => 'no update available',
+                            'IconActive'  => true,
+                            'IconValue'   => 'shield-check',
+                            'ColorActive' => true,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'UPDATE_IN_PROGRESS',
-                            'Caption'          => 'update in progress',
-                            'IconActive'       => true,
-                            'IconValue'        => 'gear-code',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xf22626
+                            'Value'       => 'UPDATE_IN_PROGRESS',
+                            'Caption'     => 'update in progress',
+                            'IconActive'  => true,
+                            'IconValue'   => 'gear-code',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xf22626
                         ],
                         [
-                            'Value'            => 'UPDATE_AVAILABLE',
-                            'Caption'          => 'update available',
-                            'IconActive'       => true,
-                            'IconValue'        => 'font-awesome',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xf2e126
+                            'Value'       => 'UPDATE_AVAILABLE',
+                            'Caption'     => 'update available',
+                            'IconActive'  => true,
+                            'IconValue'   => 'font-awesome',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xf2e126
                         ]
                     ]
                 ],
@@ -2928,36 +2929,36 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'OUTDOOR_SENSOR_CONNECTED',
-                            'Caption'          => 'outdoor sensor connected',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'OUTDOOR_SENSOR_CONNECTED',
+                            'Caption'     => 'outdoor sensor connected',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'FLOOR_SENSOR_DISPLAYED_AND_USED_FOR_REGULATION',
-                            'Caption'          => 'floor sensor (displayed & used)',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'FLOOR_SENSOR_DISPLAYED_AND_USED_FOR_REGULATION',
+                            'Caption'     => 'floor sensor (displayed & used)',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'FLOOR_SENSOR_DISPLAYED',
-                            'Caption'          => 'floor sensor displayed',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'FLOOR_SENSOR_DISPLAYED',
+                            'Caption'     => 'floor sensor displayed',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => 'NOT_CONNECTED',
-                            'Caption'          => 'not connected',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => false,
-                            'ColorValue'       => -1
+                            'Value'       => 'NOT_CONNECTED',
+                            'Caption'     => 'not connected',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => false,
+                            'ColorValue'  => -1
                         ]
                     ]
                 ],
@@ -3016,20 +3017,20 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => false,
-                            'Caption'          => 'off',
-                            'IconActive'       => true,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => -1
+                            'Value'       => false,
+                            'Caption'     => 'off',
+                            'IconActive'  => true,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => -1
                         ],
                         [
-                            'Value'            => true,
-                            'Caption'          => 'alarm',
-                            'IconActive'       => true,
-                            'IconValue'        => 'warning',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xf22626
+                            'Value'       => true,
+                            'Caption'     => 'alarm',
+                            'IconActive'  => true,
+                            'IconValue'   => 'warning',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xf22626
                         ]
                     ]
                 ],
@@ -3047,44 +3048,44 @@ namespace BoschSHC\Services
                     'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
                     'OPTIONS'      => [
                         [
-                            'Value'            => 'ALARM_ON',
-                            'Caption'          => 'on',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xff0000
+                            'Value'       => 'ALARM_ON',
+                            'Caption'     => 'on',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xff0000
                         ],
                         [
-                            'Value'            => 'ALARM_OFF',
-                            'Caption'          => 'off',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x00ff00
+                            'Value'       => 'ALARM_OFF',
+                            'Caption'     => 'off',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x00ff00
                         ],
                         [
-                            'Value'            => 'ALARM_MUTED',
-                            'Caption'          => 'muted',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x0000ff
+                            'Value'       => 'ALARM_MUTED',
+                            'Caption'     => 'muted',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x0000ff
                         ],
                         [
-                            'Value'            => 'PRE_ALARM',
-                            'Caption'          => 'Pre-alarm',
-                            'IconActive'       => false,
-                            'IconValue'        => '',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0x900000
+                            'Value'       => 'PRE_ALARM',
+                            'Caption'     => 'Pre-alarm',
+                            'IconActive'  => false,
+                            'IconValue'   => '',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0x900000
                         ],
                         [
-                            'Value'            => 'UNKNOWN',
-                            'Caption'          => 'unknown',
-                            'IconActive'       => true,
-                            'IconValue'        => 'question',
-                            'ColorActive'      => true,
-                            'ColorValue'       => 0xffff00
+                            'Value'       => 'UNKNOWN',
+                            'Caption'     => 'unknown',
+                            'IconActive'  => true,
+                            'IconValue'   => 'question',
+                            'ColorActive' => true,
+                            'ColorValue'  => 0xffff00
                         ]
                     ]
                 ],
@@ -3140,7 +3141,7 @@ namespace BoschSHC\Services
                 IPSVarAction => true,
                 IPSVarName   => 'Control'
             ],
-            'activeProfile'           => [
+            'activeProfile' => [
                 'type'          => 'number',
                 IPSPresentation => [
                     'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
@@ -3176,7 +3177,7 @@ namespace BoschSHC\Services
                 IPSVarAction => true,
                 IPSVarName   => 'Active profile'
             ],
-            'armActivationDelayTime'  => [
+            'armActivationDelayTime' => [
                 'type'                   => 'number',
                 IPSPresentation          => [
                     'PRESENTATION'        => VARIABLE_PRESENTATION_SLIDER,
