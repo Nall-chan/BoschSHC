@@ -30,7 +30,7 @@ Anzeige und Starten eines Bosch SmartHome Szenarios
 
 ## 2. Voraussetzungen
 
-* IP-Symcon ab Version 7.0
+* IP-Symcon ab Version 8.1
 * Bosch SmartHome Controller I oder II.
 
 ## 3. Software-Installation
