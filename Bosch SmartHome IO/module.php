@@ -528,7 +528,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
             'method'  => 'RE/longPoll',
             'params'  => [$this->SHCPollId, 29] //Long poll for 29 seconds
         ]);
-        $Result = $this->SendRequest(self::SHC_Poll, \BoschSHC\HTTP::POST, $Payload, 30500); //30,5 seconds timeout
+        $Result = $this->SendRequest(self::SHC_Poll, \BoschSHC\HTTP::POST, $Payload, 31000); //31 seconds timeout
         if (!$Result) {
             $this->unlock('PollLong');
             $this->SendDebug('ABORT PollLong -> Resubscribe', $Result, 0);
@@ -567,6 +567,7 @@ class BoschSmartHomeIO extends IPSModuleStrict
         $this->unlock('PollLong');
         $this->SendDebug('END PollLong', $Result, 0);
         if (IPS_GetKernelRunlevel() == KR_READY) {
+            // new loop only if Kernel is ready
             IPS_RunScriptText('IPS_RequestAction(' . $this->InstanceID . ',"PollLong",true);');
         }
     }
