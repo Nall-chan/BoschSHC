@@ -4,8 +4,8 @@
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Check Style](https://github.com/Nall-chan/BoschSHC/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/BoschSHC/actions)
 [![Run Tests](https://github.com/Nall-chan/BoschSHC/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/BoschSHC/actions)  
-[![Spenden](https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_SM.gif)](#3-spenden)[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#3-spenden)  
-
+[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#3-spenden)
+[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#3-spenden)  
 
 # Bosch Smart Home <!-- omit in toc -->
 
@@ -13,6 +13,7 @@ Lokale<sup>*1</sup> Anbindung des Bosch SmartHome Systems an Symcon.
 <sup>*1) Gilt nicht für die HomeConnect Geräte und die Kameras</sup>  
 
 ## Inhaltsverzeichnis <!-- omit in toc -->
+
 - [1. Vorbemerkungen](#1-vorbemerkungen)
 - [2. Voraussetzungen](#2-voraussetzungen)
 - [3. Enthaltende Module](#3-enthaltende-module)
@@ -24,54 +25,55 @@ Lokale<sup>*1</sup> Anbindung des Bosch SmartHome Systems an Symcon.
 	- [3. Spenden](#3-spenden)
 - [6. Lizenz](#6-lizenz)
 
-
 ## 1. Vorbemerkungen
 
 ----------
+
 ## 2. Voraussetzungen
 
-* IP-Symcon ab Version 8.1
-* Bosch SmartHome Controller I oder II.
- 
+- IP-Symcon ab Version 8.1  
+- Bosch SmartHome Controller I oder II.  
+
 ## 3. Enthaltende Module
 
 - __Bosch SmartHome Discovery__ ([Dokumentation](Bosch%20SmartHome%20Discovery/README.md))  
-	Kurze Beschreibung des Moduls.
+    Kurze Beschreibung des Moduls.
 
 - __Bosch SmartHome Konfigurator__ ([Dokumentation](Bosch%20SmartHome%20Configurator/README.md))  
-	Kurze Beschreibung des Moduls.
+    Kurze Beschreibung des Moduls.
 
 - __Bosch SmartHome IO__ ([Dokumentation](Bosch%20SmartHome%20IO/README.md))  
-	Kurze Beschreibung des Moduls.
+    Kurze Beschreibung des Moduls.
 
 - __Bosch SmartHome Device__ ([Dokumentation](Bosch%20SmartHome%20Device/README.md))  
-	Kurze Beschreibung des Moduls.
+    Kurze Beschreibung des Moduls.
 
 - __Bosch SmartHome Automatisierungsregel__ ([Dokumentation](Bosch%20SmartHome%20Automation%20Rule/README.md))  
-	Kurze Beschreibung des Moduls.
+    Kurze Beschreibung des Moduls.
 
 - __Bosch SmartHome Türen und Fenster__ ([Dokumentation](Bosch%20SmartHome%20Doors%20and%20Windows/README.md))  
-	Kurze Beschreibung des Moduls.
+    Kurze Beschreibung des Moduls.
 
 - __Bosch SmartHome Meldungen__ ([Dokumentation](Bosch%20SmartHome%20Messages/README.md))  
-	Kurze Beschreibung des Moduls.
+    Kurze Beschreibung des Moduls.
 
 - __Bosch SmartHome Szenarien__ ([Dokumentation](Bosch%20SmartHome%20Scenarios/README.md))  
-	Kurze Beschreibung des Moduls.
+    Kurze Beschreibung des Moduls.
 
 - __Bosch SmartHome System__ ([Dokumentation](Bosch%20SmartHome%20System/README.md))  
-	Kurze Beschreibung des Moduls.
+    Kurze Beschreibung des Moduls.
 
 - __Bosch SmartHome Wateralarm System__ ([Dokumentation](Bosch%20SmartHome%20Wateralarm%20System/README.md))  
-	Kurze Beschreibung des Moduls.
+    Kurze Beschreibung des Moduls.
 
 ## 4. Software-Installation
   
   Über den 'Module-Store' in IPS das Modul 'Bosch SmartHome' hinzufügen.  
-   **Bei kommerzieller Nutzung (z.B. als Errichter oder Integrator) wenden Sie sich bitte an den Autor.**  
-![Module-Store](imgs/install.png) 
+   __Bei kommerzieller Nutzung (z.B. als Errichter oder Integrator) wenden Sie sich bitte an den Autor.__  
+![Module-Store](imgs/install.png)  
 
-## 5. Einrichten der Instanzen in IP-Symcon
+## 5. Einrichten der Instanzen in IP-Symcon  
+
  Details sind direkt in der Dokumentation der jeweiligen Module beschrieben.
  Es wird empfohlen die Einrichtung mit der Discovery-Instanz zu starten [Bosch SmartHome Discovery](/Bosch%20SmartHome%20Discovery/README.md).
  Nach der installation aus dem Store wird diese Instanz auf Rückfrage automatisch angelegt.
@@ -82,7 +84,7 @@ Wurde der Bosch SmartHome Controller im Netzwerk gefunden, so wird er in der [Bo
 
 ## 6. Anhang
 
-###  1. GUID der Module
+### 1. GUID der Module
 
 | Modul                                 |     Typ      | Prefix | GUID                                   |
 | :------------------------------------ | :----------: | :----: | :------------------------------------- |
@@ -97,28 +99,33 @@ Wurde der Bosch SmartHome Controller im Netzwerk gefunden, so wird er in der [Bo
 | Bosch SmartHome Meldungen             |    Gerät     |  BSHC  | {02661809-F3CE-4D12-95B0-C81123084A12} |
 | Bosch SmartHome Türen und Fenster     |    Gerät     |  BSHC  | {1080892A-31C2-4234-A1FB-D88E6C14118C} |
 
-
 ----------
+
 ### 2. Changelog
 
-**Version 1.20:**  
+__Version 1.20:__  
+
 - Version für Symcon 8.1 und neuer  
 - Durchgängige Nutzung von Darstellungen anstatt von Profilen  
   
-**Version 1.10:**  
+__Version 1.10:__  
+
 - Setzen des Betriebsmodus von RoomClimateControl war fehlerhaft  
   
-**Version 1.00:**  
+__Version 1.00:__  
+
 - Diverse Rückmeldungen von Funktionen ergänzt  
 - Dokumentation erstellt  
 - Umrechnung Leistung war um den Faktor 1000 falsch  
 - Bei Lizenzwechsel war keine Verbindung mit dem Controller mehr möglich  
 - Neu Koppel Funktion ergänzt, nach Lizenzwechsel  
 
-**Version 0.70:**  
+__Version 0.70:__  
+
 - Beta Release für Symcon 7.0  
 
 ----------
+
 ### 3. Spenden  
   
   Die Library ist für die nicht kommerzielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:  
@@ -130,4 +137,4 @@ Wurde der Bosch SmartHome Controller im Netzwerk gefunden, so wird er in der [Bo
 ## 6. Lizenz
 
   IPS-Modul:  
-  [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)  
+  [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)

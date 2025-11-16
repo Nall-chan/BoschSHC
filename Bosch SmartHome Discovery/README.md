@@ -1,12 +1,14 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version](https://img.shields.io/badge/Modul%20Version-1.20-blue.svg)](https://community.symcon.de/t/modul-bosch-smarthome-system-beta/138205)
-[![Version](https://img.shields.io/badge/Symcon%20Version-8.1%20%3E-green.svg)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)   
+[![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FBoschSHC%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-bosch-smarthome-system-beta/138205)
+[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FFritzBox%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Check Style](https://github.com/Nall-chan/BoschSHC/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/BoschSHC/actions)
 [![Run Tests](https://github.com/Nall-chan/BoschSHC/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/BoschSHC/actions)  
-[![Spenden](https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_SM.gif)](#2-spenden)[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)  
+[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
+[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)  
 
-# Bosch SmartHome Discovery <!-- omit in toc -->
+# Bosch SmartHome Discovery <!-- omit in toc -->  
+
 Auffinden von Bosch SmartHome Controllern im Netzwerk.
 
 ## Inhaltsverzeichnis <!-- omit in toc -->
@@ -25,28 +27,30 @@ Auffinden von Bosch SmartHome Controllern im Netzwerk.
 
 ## 1. Funktionsumfang
 
-* Auffinden von Bosch SmartHome Controllern im Netzwerk  
-* Unterstützung zum Anlegen der entsprechenden Instanzen in IP-Symcon  
+- Auffinden von Bosch SmartHome Controllern im Netzwerk  
+- Unterstützung zum Anlegen der entsprechenden Instanzen in IP-Symcon  
 
 ## 2. Voraussetzungen
 
-* IP-Symcon ab Version 8.1
-* Bosch SmartHome Controller I oder II.
+- IP-Symcon ab Version 8.1
+- Bosch SmartHome Controller I oder II.
 
 ## 3. Software-Installation
 
-* Dieses Modul ist Bestandteil der [Bosch SmartHome-Library](../README.md#4-software-installation).  
+- Dieses Modul ist Bestandteil der [Bosch SmartHome-Library](../README.md#4-software-installation).  
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
  Unter 'Instanz hinzufügen' kann das 'Bosch SHC Discovery'-Modul mithilfe des Schnellfilters gefunden werden.  
- - Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)  
 
-### Laden der Konfigurationsseite: <!-- omit in toc -->
+- Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)  
+
+### Laden der Konfigurationsseite: <!-- omit in toc -->  
+
 Beim Öffnen der Instanz wird automatisch ein Suchlauf gestartet.  
 ![Config](../imgs/install4.png) 
 <span style="color:red">**Wird Symcon in einen Docker Container welcher per NAT angebunden ist betrieben, so wird kein Controller gefunden.**</span>  
-**Werden der Controller und Symcon über ein geroutete Netzwerke verbunden, so muss für das Discover der mDNS/Bonjour/Zeroconf Dienst entsprechend weitergeleitet werden.** 
+**Werden der Controller und Symcon über ein geroutete Netzwerke verbunden, so muss für das Discover der mDNS/Bonjour/Zeroconf Dienst entsprechend weitergeleitet werden.**  
 
 ### Anlegen von Geräten in Symcon: <!-- omit in toc -->
 
@@ -58,7 +62,6 @@ Es wird ein Instanz des [Configurator-Module](../Bosch%20SmartHome%20Configurato
 ## 5. Statusvariablen
 
 Dieses Modul erzeugt keine Statusvariablen.  
-
 
 ## 6. PHP-Funktionsreferenz
 
@@ -80,7 +83,7 @@ Die Library ist für die nicht kommerzielle Nutzung kostenlos, Schenkungen als U
 
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](https://paypal.me/Nall4chan)  
 
-[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share) 
+[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share)  
 
 ## 9. Lizenz
 

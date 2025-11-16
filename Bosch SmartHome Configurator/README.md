@@ -1,15 +1,17 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version](https://img.shields.io/badge/Modul%20Version-1.20-blue.svg)](https://community.symcon.de/t/modul-bosch-smarthome-system-beta/138205)
-[![Version](https://img.shields.io/badge/Symcon%20Version-8.1%20%3E-green.svg)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)   
+[![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FBoschSHC%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-bosch-smarthome-system-beta/138205)
+[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FFritzBox%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Check Style](https://github.com/Nall-chan/BoschSHC/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/BoschSHC/actions)
 [![Run Tests](https://github.com/Nall-chan/BoschSHC/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/BoschSHC/actions)  
-[![Spenden](https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_SM.gif)](#2-spenden)[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)  
+[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
+[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)  
 
 # Bosch SmartHome Konfigurator <!-- omit in toc -->
+
 Erstellen von Instanzen eines Bosch SmartHome System in Symcon.
 
-### Inhaltsverzeichnis <!-- omit in toc -->
+## Inhaltsverzeichnis <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -25,37 +27,39 @@ Erstellen von Instanzen eines Bosch SmartHome System in Symcon.
 
 ## 1. Funktionsumfang
 
-* Erstellen von Instanzen eines Bosch SmartHome System in Symcon.
+- Erstellen von Instanzen eines Bosch SmartHome System in Symcon.
 
 ## 2. Voraussetzungen
 
-* IP-Symcon ab Version 8.1
-* Bosch SmartHome Controller I oder II.
+- IP-Symcon ab Version 8.1
+- Bosch SmartHome Controller I oder II.
 
 ## 3. Software-Installation
 
-* Dieses Modul ist Bestandteil der [Bosch SmartHome-Library](../README.md#4-software-installation).  
+- Dieses Modul ist Bestandteil der [Bosch SmartHome-Library](../README.md#4-software-installation).  
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
  Unter 'Instanz hinzufügen' kann das 'Bosch SHC Configurator'-Modul mithilfe des Schnellfilters gefunden werden.  
- - Die Einrichtung sollte durch die [Bosch SmartHome Discovery](../Bosch%20SmartHome%20Discovery/README.md)-Instanz erfolgen.  
- - Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)  
 
-### Laden der Konfigurationsseite: <!-- omit in toc -->
+- Die Einrichtung sollte durch die [Bosch SmartHome Discovery](../Bosch%20SmartHome%20Discovery/README.md)-Instanz erfolgen.  
+- Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)  
+
+### Laden der Konfigurationsseite: <!-- omit in toc -->  
+
 Wurden der SmartHome Controller und Symcon gekoppelt, so werden automatisch die Geräte und Dienste des SmartHome Systems ausgelesen.
 Beim ersten öffnen nach dem anlegen, bzw. wenn der Controller noch nicht gekoppelt wurde, wird folgende Meldung angezeigt:  
 ![Config](imgs/config1.png)  
 Über den Button `Konfigurieren` ist die entsprechende [Bosch SmartHome IO](../Bosch%20SmartHome%20IO/README.md)-Instanz zu konfigurieren.  
 
-### Anlegen von Geräten in Symcon: <!-- omit in toc -->
+### Anlegen von Geräten in Symcon: <!-- omit in toc -->  
+
 ![Config](imgs/config2.png)  
 Wird eine Zeile selektiert und die Schaltfläche `Erstellen` betätigt, so erzeugt Symcon automatisch eine entsprechende Instanzen.  
 
 ## 5. Statusvariablen
 
 Dieses Modul erzeugt keine Statusvariablen.  
-
 
 ## 6. PHP-Funktionsreferenz
 
@@ -77,7 +81,7 @@ Die Library ist für die nicht kommerzielle Nutzung kostenlos, Schenkungen als U
 
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](https://paypal.me/Nall4chan)  
 
-[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share) 
+[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share)  
 
 ## 9. Lizenz
 
